@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"encoding/json"
+
 	"github.com/octohelm/courier/pkg/openapi/jsonschema/util"
 )
 
@@ -49,13 +50,13 @@ func (Deploy) Discriminator() string {
 
 func (Deploy) Mapping() map[string]any {
 	return map[string]any{
-		"Deployment":  (&DeployDeployment{}),
-		"DaemonSet":   (&DeployDaemonSet{}),
-		"StatefulSet": (&DeployStatefulSet{}),
-		"Job":         (&DeployJob{}),
-		"CronJob":     (&DeployCronJob{}),
+		"Deployment":  &DeployDeployment{},
+		"DaemonSet":   &DeployDaemonSet{},
+		"StatefulSet": &DeployStatefulSet{},
+		"Job":         &DeployJob{},
+		"CronJob":     &DeployCronJob{},
 
-		"Secret":    (&DeploySecret{}),
-		"ConfigMap": (&DeployConfigMap{}),
+		"Secret":    &DeploySecret{},
+		"ConfigMap": &DeployConfigMap{},
 	}
 }

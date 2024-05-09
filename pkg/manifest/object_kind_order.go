@@ -1,6 +1,10 @@
 package manifest
 
-import "sort"
+import (
+	"sort"
+
+	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
+)
 
 type SortOrder []string
 
@@ -33,14 +37,14 @@ var InstallOrder SortOrder = []string{
 	"APIService",
 }
 
-func SortByKind(manifests []Object) []Object {
+func SortByKind(manifests []object.Object) []object.Object {
 	ordering := InstallOrder
 	ks := newKindSorter(manifests, ordering)
 	sort.Sort(ks)
 	return ks.manifests
 }
 
-func sortByKind(manifests []Object, ordering SortOrder) []Object {
+func sortByKind(manifests []object.Object, ordering SortOrder) []object.Object {
 	ks := newKindSorter(manifests, ordering)
 	sort.Sort(ks)
 	return ks.manifests
@@ -48,10 +52,10 @@ func sortByKind(manifests []Object, ordering SortOrder) []Object {
 
 type kindSorter struct {
 	ordering  map[string]int
-	manifests []Object
+	manifests []object.Object
 }
 
-func newKindSorter(m []Object, s SortOrder) *kindSorter {
+func newKindSorter(m []object.Object, s SortOrder) *kindSorter {
 	o := make(map[string]int, len(s))
 	for v, k := range s {
 		o[k] = v

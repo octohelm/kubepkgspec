@@ -6,6 +6,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
+	batchv1 "k8s.io/api/batch/v1"
+
 	"github.com/containerd/containerd/platforms"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -17,13 +20,13 @@ import (
 	"github.com/octohelm/kubepkgspec/pkg/manifest/strfmt"
 )
 
-func SortedExtract(kpkg *v1alpha1.KubePkg) ([]Object, error) {
+func SortedExtract(kpkg *v1alpha1.KubePkg) ([]object.Object, error) {
 	manifests, err := Extract(kpkg)
 	if err != nil {
 		return nil, err
 	}
 
-	list := make([]Object, 0, len(manifests)+1)
+	list := make([]object.Object, 0, len(manifests)+1)
 
 	if namespace := kpkg.Namespace; namespace != "" {
 		n := &corev1.Namespace{}
@@ -40,7 +43,7 @@ func SortedExtract(kpkg *v1alpha1.KubePkg) ([]Object, error) {
 	return SortByKind(list), nil
 }
 
-func Extract(kpkg *v1alpha1.KubePkg) (map[string]Object, error) {
+func Extract(kpkg *v1alpha1.KubePkg) (map[string]object.Object, error) {
 	e := &extractor{}
 	if err := e.walk(kpkg); err != nil {
 		return nil, err
@@ -52,20 +55,20 @@ func Extract(kpkg *v1alpha1.KubePkg) (map[string]Object, error) {
 }
 
 type extractor struct {
-	manifests map[string]Object
+	manifests map[string]object.Object
 }
 
-func (e *extractor) register(o Object) {
+func (e *extractor) register(o object.Object) {
 	if o == nil || o.GetObjectKind() == nil {
 		return
 	}
 	if e.manifests == nil {
-		e.manifests = map[string]Object{}
+		e.manifests = map[string]object.Object{}
 	}
 	e.manifests[objectID(o)] = o
 }
 
-func objectID(d Object) string {
+func objectID(d object.Object) string {
 	return fmt.Sprintf("%s.%s", strings.ToLower(d.GetObjectKind().GroupVersionKind().Kind), d.GetName())
 }
 
@@ -85,7 +88,6 @@ func (e *extractor) walk(kpkg *v1alpha1.KubePkg) error {
 	if err := e.walkManifests(kpkg); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -288,17 +290,17 @@ func (e *extractor) walkManifests(kpkg *v1alpha1.KubePkg) error {
 		kpkg: kpkg,
 	}
 
-	i := NewIter(
+	i := object.NewIter(
 		c.patchNamespace,
 		c.patchConfigMapOrSecret,
 		c.patchNodeAffinityIfNeed,
 	)
 
-	for m := range i.Manifest(context.Background(), kpkg.Spec.Manifests) {
+	for m := range i.Object(context.Background(), kpkg.Spec.Manifests) {
 		e.register(m)
 	}
 
-	return nil
+	return i.Err()
 }
 
 func (e *extractor) patchConfigMapOrSecretDeps() error {
@@ -359,67 +361,46 @@ type completer struct {
 	kpkg *v1alpha1.KubePkg
 }
 
-func (c *completer) patchNamespace(o Object) (Object, error) {
+func (c *completer) patchNamespace(o object.Object) (object.Object, error) {
 	o.SetNamespace(c.kpkg.Namespace)
 
-	if gvk := o.GetObjectKind().GroupVersionKind(); gvk.Group == rbacv1.GroupName {
-		switch gvk.Kind {
-		case "RoleBinding":
-			d, err := FromUnstructured[rbacv1.RoleBinding](o)
-			if err != nil {
-				return nil, err
-			}
-			for i := range d.Subjects {
-				s := d.Subjects[i]
-				s.Namespace = c.kpkg.Namespace
-				d.Subjects[i] = s
-			}
-			return d, nil
-		case "ClusterRoleBinding":
-			d, err := FromUnstructured[rbacv1.ClusterRoleBinding](o)
-			if err != nil {
-				return nil, err
-			}
-			for i := range d.Subjects {
-				s := d.Subjects[i]
-				s.Namespace = c.kpkg.Namespace
-				d.Subjects[i] = s
-			}
-			return d, nil
+	switch x := o.(type) {
+	case *rbacv1.RoleBinding:
+		for i := range x.Subjects {
+			s := x.Subjects[i]
+			s.Namespace = c.kpkg.Namespace
+			x.Subjects[i] = s
 		}
+		return x, nil
+	case *rbacv1.ClusterRoleBinding:
+		for i := range x.Subjects {
+			s := x.Subjects[i]
+			s.Namespace = c.kpkg.Namespace
+			x.Subjects[i] = s
+		}
+		return x, nil
 	}
 
 	return o, nil
 }
 
-func (c *completer) patchConfigMapOrSecret(o Object) (Object, error) {
-	gvk := o.GetObjectKind().GroupVersionKind()
-	if gvk.Group == corev1.GroupName {
-		switch gvk.Kind {
-		case "ConfigMap":
-			cm, err := FromUnstructured[corev1.ConfigMap](o)
-			if err != nil {
-				return nil, err
-			}
-			if err := AnnotateDigestTo(cm, ScopeConfigMapDigest, cm.Name, cm.Data); err != nil {
-				return nil, err
-			}
-			return cm, nil
-		case "Secret":
-			s, err := FromUnstructured[corev1.Secret](o)
-			if err != nil {
-				return nil, err
-			}
-			if err := AnnotateDigestTo(s, ScopeSecretDigest, s.Name, s.StringData); err != nil {
-				return nil, err
-			}
-			return s, nil
+func (c *completer) patchConfigMapOrSecret(o object.Object) (object.Object, error) {
+	switch x := o.(type) {
+	case *corev1.ConfigMap:
+		if err := AnnotateDigestTo(x, ScopeConfigMapDigest, x.Name, x.Data); err != nil {
+			return nil, err
 		}
+		return x, nil
+	case *corev1.Secret:
+		if err := AnnotateDigestTo(x, ScopeSecretDigest, x.Name, x.StringData); err != nil {
+			return nil, err
+		}
+		return x, nil
 	}
 	return o, nil
 }
 
-func (c *completer) patchNodeAffinityIfNeed(o Object) (Object, error) {
+func (c *completer) patchNodeAffinityIfNeed(o object.Object) (object.Object, error) {
 	var platformList []string
 
 	if err := AnnotationPlatform.UnmarshalFrom(o, &platformList); err != nil {
@@ -427,31 +408,17 @@ func (c *completer) patchNodeAffinityIfNeed(o Object) (Object, error) {
 	}
 
 	if len(platformList) > 0 {
-		gvk := o.GetObjectKind().GroupVersionKind()
-		if gvk.Group == appsv1.GroupName {
-			switch gvk.Kind {
-			case "Deployment":
-				d, err := FromUnstructured[appsv1.Deployment](o)
-				if err != nil {
-					return nil, err
-				}
-				c.patchPodNodeAffinity(platformList, &d.Spec.Template)
-				return d, nil
-			case "StatefulSet":
-				d, err := FromUnstructured[appsv1.StatefulSet](o)
-				if err != nil {
-					return nil, err
-				}
-				c.patchPodNodeAffinity(platformList, &d.Spec.Template)
-				return d, nil
-			case "DaemonSet":
-				d, err := FromUnstructured[appsv1.DaemonSet](o)
-				if err != nil {
-					return nil, err
-				}
-				c.patchPodNodeAffinity(platformList, &d.Spec.Template)
-				return d, nil
-			}
+		switch d := o.(type) {
+		case *appsv1.Deployment:
+			c.patchPodNodeAffinity(platformList, &d.Spec.Template)
+		case *appsv1.DaemonSet:
+			c.patchPodNodeAffinity(platformList, &d.Spec.Template)
+		case *appsv1.StatefulSet:
+			c.patchPodNodeAffinity(platformList, &d.Spec.Template)
+		case *batchv1.Job:
+			c.patchPodNodeAffinity(platformList, &d.Spec.Template)
+		case *batchv1.CronJob:
+			c.patchPodNodeAffinity(platformList, &d.Spec.JobTemplate.Spec.Template)
 		}
 	}
 

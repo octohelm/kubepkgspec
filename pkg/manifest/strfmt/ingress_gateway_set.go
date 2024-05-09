@@ -2,13 +2,14 @@ package strfmt
 
 import (
 	"bytes"
-	"github.com/octohelm/x/ptr"
-	"github.com/pkg/errors"
 	"html/template"
 	"io"
-	networkingv1 "k8s.io/api/networking/v1"
 	"net/url"
 	"strings"
+
+	"github.com/octohelm/x/ptr"
+	"github.com/pkg/errors"
+	networkingv1 "k8s.io/api/networking/v1"
 )
 
 func From(templates []GatewayTemplate) *IngressGatewaySet {

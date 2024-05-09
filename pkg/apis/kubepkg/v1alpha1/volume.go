@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"encoding/json"
+
 	"github.com/octohelm/courier/pkg/openapi/jsonschema/util"
 )
 

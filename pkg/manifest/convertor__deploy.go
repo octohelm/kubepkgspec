@@ -11,9 +11,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
 )
 
-func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (Object, error) {
+func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	if underlying := kpkg.Spec.Deploy.Underlying; underlying != nil {
 		switch x := underlying.(type) {
 		case *v1alpha1.DeployDeployment:

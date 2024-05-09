@@ -1,0 +1,170 @@
+{
+  "apiVersion": "octohelm.tech/v1alpha1",
+  "kind": "KubePkg",
+  "metadata": {
+    "annotations": {
+      "octohelm.tech/platform": "linux/amd64,linux/arm64"
+    },
+    "name": "gpu-feature-discovery",
+    "namespace": "device-system"
+  },
+  "spec": {
+    "version": "1.0.0",
+    "manifests": {
+      "gpu-feature-discovery-gpu-feature-discovery.DaemonSet": {
+        "apiVersion": "apps/v1",
+        "kind": "DaemonSet",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "gpu-feature-discovery",
+            "app.kubernetes.io/version": "0.15.0",
+            "helm.sh/chart": "gpu-feature-discovery-0.15.0"
+          },
+          "name": "gpu-feature-discovery-gpu-feature-discovery",
+          "namespace": "device-system"
+        },
+        "spec": {
+          "selector": {
+            "matchLabels": {
+              "app.kubernetes.io/instance": "gpu-feature-discovery",
+              "app.kubernetes.io/name": "gpu-feature-discovery"
+            }
+          },
+          "template": {
+            "metadata": {
+              "annotations": {},
+              "labels": {
+                "app.kubernetes.io/instance": "gpu-feature-discovery",
+                "app.kubernetes.io/name": "gpu-feature-discovery"
+              }
+            },
+            "spec": {
+              "affinity": {
+                "nodeAffinity": {
+                  "requiredDuringSchedulingIgnoredDuringExecution": {
+                    "nodeSelectorTerms": [
+                      {
+                        "matchExpressions": [
+                          {
+                            "key": "feature.node.kubernetes.io/pci-10de.present",
+                            "operator": "In",
+                            "values": [
+                              "true"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "matchExpressions": [
+                          {
+                            "key": "feature.node.kubernetes.io/cpu-model.vendor_id",
+                            "operator": "In",
+                            "values": [
+                              "NVIDIA"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "matchExpressions": [
+                          {
+                            "key": "nvidia.com/gpu.present",
+                            "operator": "In",
+                            "values": [
+                              "true"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "containers": [
+                {
+                  "command": [
+                    "gpu-feature-discovery"
+                  ],
+                  "env": [
+                    {
+                      "name": "NODE_NAME",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "spec.nodeName"
+                        }
+                      }
+                    },
+                    {
+                      "name": "NAMESPACE",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "metadata.namespace"
+                        }
+                      }
+                    },
+                    {
+                      "name": "GFD_USE_NODE_FEATURE_API",
+                      "value": "false"
+                    },
+                    {
+                      "name": "NVIDIA_MIG_MONITOR_DEVICES",
+                      "value": "all"
+                    }
+                  ],
+                  "image": "nvcr.io/nvidia/k8s-device-plugin:v0.15.0",
+                  "imagePullPolicy": "IfNotPresent",
+                  "name": "gpu-feature-discovery-ctr",
+                  "securityContext": {
+                    "privileged": true
+                  },
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/etc/kubernetes/node-feature-discovery/features.d",
+                      "name": "output-dir"
+                    },
+                    {
+                      "mountPath": "/sys",
+                      "name": "host-sys"
+                    }
+                  ]
+                }
+              ],
+              "priorityClassName": "system-node-critical",
+              "securityContext": {},
+              "tolerations": [
+                {
+                  "key": "CriticalAddonsOnly",
+                  "operator": "Exists"
+                },
+                {
+                  "effect": "NoSchedule",
+                  "key": "nvidia.com/gpu",
+                  "operator": "Exists"
+                }
+              ],
+              "volumes": [
+                {
+                  "hostPath": {
+                    "path": "/etc/kubernetes/node-feature-discovery/features.d"
+                  },
+                  "name": "output-dir"
+                },
+                {
+                  "hostPath": {
+                    "path": "/sys"
+                  },
+                  "name": "host-sys"
+                }
+              ]
+            }
+          },
+          "updateStrategy": {
+            "type": "RollingUpdate"
+          }
+        }
+      }
+    }
+  }
+}

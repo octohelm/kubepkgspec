@@ -1,13 +1,15 @@
 package manifest
 
 import (
-	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/x/ptr"
 	corev1 "k8s.io/api/core/v1"
+
+	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
 )
 
 type VolumeConverter interface {
-	ToResource(kpkg *v1alpha1.KubePkg) (Object, error)
+	ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error)
 	MountTo(c *corev1.Container) (*corev1.Volume, error)
 }
 
@@ -78,7 +80,7 @@ type volumeEmptyDirConverter struct {
 	*v1alpha1.VolumeEmptyDir
 }
 
-func (volumeEmptyDirConverter) ToResource(kpkg *v1alpha1.KubePkg) (Object, error) {
+func (volumeEmptyDirConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	return nil, nil
 }
 
@@ -107,7 +109,7 @@ type volumeSecretConverter struct {
 	*v1alpha1.VolumeSecret
 }
 
-func (v *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (Object, error) {
+func (v *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	secret := &corev1.Secret{}
 	secret.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Secret"))
 	secret.SetNamespace(kpkg.Namespace)
@@ -157,7 +159,7 @@ type volumeHostPathConverter struct {
 	*v1alpha1.VolumeHostPath
 }
 
-func (volumeHostPathConverter) ToResource(kpkg *v1alpha1.KubePkg) (Object, error) {
+func (volumeHostPathConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	return nil, nil
 }
 
@@ -185,7 +187,7 @@ type volumePersistentVolumeClaimConverter struct {
 	*v1alpha1.VolumePersistentVolumeClaim
 }
 
-func (v *volumePersistentVolumeClaimConverter) ToResource(kpkg *v1alpha1.KubePkg) (Object, error) {
+func (v *volumePersistentVolumeClaimConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	pvc := &corev1.PersistentVolumeClaim{}
 	pvc.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("PersistentVolumeClaim"))
 	pvc.SetNamespace(kpkg.Namespace)
@@ -225,7 +227,7 @@ type volumeConfigMapConverter struct {
 	*v1alpha1.VolumeConfigMap
 }
 
-func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (Object, error) {
+func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	cm := &corev1.ConfigMap{}
 	cm.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))
 	cm.SetNamespace(kpkg.Namespace)

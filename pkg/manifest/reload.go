@@ -1,10 +1,31 @@
 package manifest
 
 import (
-	"github.com/octohelm/kubepkgspec/pkg/kubeutil"
-	corev1 "k8s.io/api/core/v1"
+	"encoding/json"
 	"sort"
+
+	"github.com/octohelm/kubekit/pkg/metadata"
+	"github.com/opencontainers/go-digest"
+	corev1 "k8s.io/api/core/v1"
 )
+
+var AnnotationReloadConfigMap = metadata.Annotation("reload.octohelm.tech/configmap")
+var AnnotationReloadSecret = metadata.Annotation("reload.octohelm.tech/secret")
+
+var ScopeConfigMapDigest = metadata.Scope("digest.configmap.octohelm.tech")
+var ScopeSecretDigest = metadata.Scope("digest.secret.octohelm.tech")
+
+func AnnotateDigestTo(o metadata.AnnotationsAccessor, scope metadata.Scope, name string, value any) error {
+	a, err := scope.Annotation(name)
+	if err != nil {
+		return err
+	}
+	raw, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	return a.MarshalTo(o, digest.FromBytes(raw), "")
+}
 
 type reload struct {
 	configMaps       map[string]bool
@@ -49,7 +70,7 @@ func (r *reload) recordConfigMap(name string) {
 	r.configMaps[name] = true
 }
 
-func (r *reload) MarshalTo(o kubeutil.AnnotationsAccessor) error {
+func (r *reload) MarshalTo(o metadata.AnnotationsAccessor) error {
 	if len(r.configMaps) > 0 {
 		if err := AnnotationReloadConfigMap.MarshalTo(o, keys(r.configMaps), ""); err != nil {
 			return err
