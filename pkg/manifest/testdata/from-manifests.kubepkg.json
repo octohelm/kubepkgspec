@@ -9,7 +9,6 @@
     "namespace": "device-system"
   },
   "spec": {
-    "version": "1.0.0",
     "manifests": {
       "gpu-feature-discovery-gpu-feature-discovery.DaemonSet": {
         "apiVersion": "apps/v1",
@@ -164,7 +163,872 @@
             "type": "RollingUpdate"
           }
         }
+      },
+      "gpu-feature-discovery-node-feature-discovery-gc.ClusterRole": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-gc"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "nodes"
+            ],
+            "verbs": [
+              "list",
+              "watch"
+            ]
+          },
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "nodes/proxy"
+            ],
+            "verbs": [
+              "get"
+            ]
+          },
+          {
+            "apiGroups": [
+              "topology.node.k8s.io"
+            ],
+            "resources": [
+              "noderesourcetopologies"
+            ],
+            "verbs": [
+              "delete",
+              "list"
+            ]
+          },
+          {
+            "apiGroups": [
+              "nfd.k8s-sigs.io"
+            ],
+            "resources": [
+              "nodefeatures"
+            ],
+            "verbs": [
+              "delete",
+              "list"
+            ]
+          }
+        ]
+      },
+      "gpu-feature-discovery-node-feature-discovery-gc.ClusterRoleBinding": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-gc"
+        },
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "gpu-feature-discovery-node-feature-discovery-gc"
+        },
+        "subjects": [
+          {
+            "kind": "ServiceAccount",
+            "name": "gpu-feature-discovery-node-feature-discovery-gc",
+            "namespace": "device-system"
+          }
+        ]
+      },
+      "gpu-feature-discovery-node-feature-discovery-gc.Deployment": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3",
+            "role": "gc"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-gc",
+          "namespace": "device-system"
+        },
+        "spec": {
+          "replicas": 1,
+          "selector": {
+            "matchLabels": {
+              "app.kubernetes.io/instance": "gpu-feature-discovery",
+              "app.kubernetes.io/name": "node-feature-discovery",
+              "role": "gc"
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app.kubernetes.io/instance": "gpu-feature-discovery",
+                "app.kubernetes.io/name": "node-feature-discovery",
+                "role": "gc"
+              }
+            },
+            "spec": {
+              "containers": [
+                {
+                  "args": [
+                    "-gc-interval=1h"
+                  ],
+                  "command": [
+                    "nfd-gc"
+                  ],
+                  "env": [
+                    {
+                      "name": "NODE_NAME",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "spec.nodeName"
+                        }
+                      }
+                    }
+                  ],
+                  "image": "registry.k8s.io/nfd/node-feature-discovery:v0.15.3",
+                  "imagePullPolicy": "IfNotPresent",
+                  "name": "gc",
+                  "ports": [
+                    {
+                      "containerPort": 8081,
+                      "name": "metrics"
+                    }
+                  ],
+                  "resources": {},
+                  "securityContext": {
+                    "allowPrivilegeEscalation": false,
+                    "capabilities": {
+                      "drop": [
+                        "ALL"
+                      ]
+                    },
+                    "readOnlyRootFilesystem": true,
+                    "runAsNonRoot": true
+                  }
+                }
+              ],
+              "dnsPolicy": "ClusterFirstWithHostNet",
+              "securityContext": {},
+              "serviceAccountName": "gpu-feature-discovery-node-feature-discovery-gc"
+            }
+          }
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-gc.ServiceAccount": {
+        "apiVersion": "v1",
+        "kind": "ServiceAccount",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-gc",
+          "namespace": "device-system"
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-master-conf.ConfigMap": {
+        "apiVersion": "v1",
+        "data": {
+          "nfd-master.conf": "null"
+        },
+        "kind": "ConfigMap",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-master-conf",
+          "namespace": "device-system"
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-master.Deployment": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3",
+            "role": "master"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-master",
+          "namespace": "device-system"
+        },
+        "spec": {
+          "replicas": 1,
+          "selector": {
+            "matchLabels": {
+              "app.kubernetes.io/instance": "gpu-feature-discovery",
+              "app.kubernetes.io/name": "node-feature-discovery",
+              "role": "master"
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app.kubernetes.io/instance": "gpu-feature-discovery",
+                "app.kubernetes.io/name": "node-feature-discovery",
+                "role": "master"
+              }
+            },
+            "spec": {
+              "affinity": {
+                "nodeAffinity": {
+                  "preferredDuringSchedulingIgnoredDuringExecution": [
+                    {
+                      "preference": {
+                        "matchExpressions": [
+                          {
+                            "key": "node-role.kubernetes.io/master",
+                            "operator": "In",
+                            "values": [
+                              ""
+                            ]
+                          }
+                        ]
+                      },
+                      "weight": 1
+                    },
+                    {
+                      "preference": {
+                        "matchExpressions": [
+                          {
+                            "key": "node-role.kubernetes.io/control-plane",
+                            "operator": "In",
+                            "values": [
+                              ""
+                            ]
+                          }
+                        ]
+                      },
+                      "weight": 1
+                    }
+                  ]
+                }
+              },
+              "containers": [
+                {
+                  "args": [
+                    "-crd-controller=true",
+                    "-metrics=8081"
+                  ],
+                  "command": [
+                    "nfd-master"
+                  ],
+                  "env": [
+                    {
+                      "name": "NODE_NAME",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "spec.nodeName"
+                        }
+                      }
+                    }
+                  ],
+                  "image": "registry.k8s.io/nfd/node-feature-discovery:v0.15.3",
+                  "imagePullPolicy": "IfNotPresent",
+                  "livenessProbe": {
+                    "grpc": {
+                      "port": 8080
+                    },
+                    "initialDelaySeconds": 10,
+                    "periodSeconds": 10
+                  },
+                  "name": "master",
+                  "ports": [
+                    {
+                      "containerPort": 8080,
+                      "name": "grpc"
+                    },
+                    {
+                      "containerPort": 8081,
+                      "name": "metrics"
+                    }
+                  ],
+                  "readinessProbe": {
+                    "failureThreshold": 10,
+                    "grpc": {
+                      "port": 8080
+                    },
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 10
+                  },
+                  "resources": {},
+                  "securityContext": {
+                    "allowPrivilegeEscalation": false,
+                    "capabilities": {
+                      "drop": [
+                        "ALL"
+                      ]
+                    },
+                    "readOnlyRootFilesystem": true,
+                    "runAsNonRoot": true
+                  },
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/etc/kubernetes/node-feature-discovery",
+                      "name": "nfd-master-conf",
+                      "readOnly": true
+                    }
+                  ]
+                }
+              ],
+              "enableServiceLinks": false,
+              "securityContext": {},
+              "serviceAccountName": "gpu-feature-discovery-node-feature-discovery",
+              "tolerations": [
+                {
+                  "effect": "NoSchedule",
+                  "key": "node-role.kubernetes.io/master",
+                  "operator": "Equal",
+                  "value": ""
+                },
+                {
+                  "effect": "NoSchedule",
+                  "key": "node-role.kubernetes.io/control-plane",
+                  "operator": "Equal",
+                  "value": ""
+                }
+              ],
+              "volumes": [
+                {
+                  "configMap": {
+                    "items": [
+                      {
+                        "key": "nfd-master.conf",
+                        "path": "nfd-master.conf"
+                      }
+                    ],
+                    "name": "gpu-feature-discovery-node-feature-discovery-master-conf"
+                  },
+                  "name": "nfd-master-conf"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-topology-updater-conf.ConfigMap": {
+        "apiVersion": "v1",
+        "data": {
+          "nfd-topology-updater.conf": "null"
+        },
+        "kind": "ConfigMap",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-topology-updater-conf",
+          "namespace": "device-system"
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-worker-conf.ConfigMap": {
+        "apiVersion": "v1",
+        "data": {
+          "nfd-worker.conf": "null"
+        },
+        "kind": "ConfigMap",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-worker-conf",
+          "namespace": "device-system"
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-worker.DaemonSet": {
+        "apiVersion": "apps/v1",
+        "kind": "DaemonSet",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3",
+            "role": "worker"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-worker",
+          "namespace": "device-system"
+        },
+        "spec": {
+          "selector": {
+            "matchLabels": {
+              "app.kubernetes.io/instance": "gpu-feature-discovery",
+              "app.kubernetes.io/name": "node-feature-discovery",
+              "role": "worker"
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app.kubernetes.io/instance": "gpu-feature-discovery",
+                "app.kubernetes.io/name": "node-feature-discovery",
+                "role": "worker"
+              }
+            },
+            "spec": {
+              "containers": [
+                {
+                  "args": [
+                    "-metrics=8081"
+                  ],
+                  "command": [
+                    "nfd-worker"
+                  ],
+                  "env": [
+                    {
+                      "name": "NODE_NAME",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "spec.nodeName"
+                        }
+                      }
+                    },
+                    {
+                      "name": "POD_NAME",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "metadata.name"
+                        }
+                      }
+                    },
+                    {
+                      "name": "POD_UID",
+                      "valueFrom": {
+                        "fieldRef": {
+                          "fieldPath": "metadata.uid"
+                        }
+                      }
+                    }
+                  ],
+                  "image": "registry.k8s.io/nfd/node-feature-discovery:v0.15.3",
+                  "imagePullPolicy": "IfNotPresent",
+                  "name": "worker",
+                  "ports": [
+                    {
+                      "containerPort": 8081,
+                      "name": "metrics"
+                    }
+                  ],
+                  "resources": {},
+                  "securityContext": {
+                    "allowPrivilegeEscalation": false,
+                    "capabilities": {
+                      "drop": [
+                        "ALL"
+                      ]
+                    },
+                    "readOnlyRootFilesystem": true,
+                    "runAsNonRoot": true
+                  },
+                  "volumeMounts": [
+                    {
+                      "mountPath": "/host-boot",
+                      "name": "host-boot",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/host-etc/os-release",
+                      "name": "host-os-release",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/host-sys",
+                      "name": "host-sys",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/host-usr/lib",
+                      "name": "host-usr-lib",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/host-lib",
+                      "name": "host-lib",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/etc/kubernetes/node-feature-discovery/source.d/",
+                      "name": "source-d",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/etc/kubernetes/node-feature-discovery/features.d/",
+                      "name": "features-d",
+                      "readOnly": true
+                    },
+                    {
+                      "mountPath": "/etc/kubernetes/node-feature-discovery",
+                      "name": "nfd-worker-conf",
+                      "readOnly": true
+                    }
+                  ]
+                }
+              ],
+              "dnsPolicy": "ClusterFirstWithHostNet",
+              "securityContext": {},
+              "serviceAccountName": "gpu-feature-discovery-node-feature-discovery-worker",
+              "volumes": [
+                {
+                  "hostPath": {
+                    "path": "/boot"
+                  },
+                  "name": "host-boot"
+                },
+                {
+                  "hostPath": {
+                    "path": "/etc/os-release"
+                  },
+                  "name": "host-os-release"
+                },
+                {
+                  "hostPath": {
+                    "path": "/sys"
+                  },
+                  "name": "host-sys"
+                },
+                {
+                  "hostPath": {
+                    "path": "/usr/lib"
+                  },
+                  "name": "host-usr-lib"
+                },
+                {
+                  "hostPath": {
+                    "path": "/lib"
+                  },
+                  "name": "host-lib"
+                },
+                {
+                  "hostPath": {
+                    "path": "/etc/kubernetes/node-feature-discovery/source.d/"
+                  },
+                  "name": "source-d"
+                },
+                {
+                  "hostPath": {
+                    "path": "/etc/kubernetes/node-feature-discovery/features.d/"
+                  },
+                  "name": "features-d"
+                },
+                {
+                  "configMap": {
+                    "items": [
+                      {
+                        "key": "nfd-worker.conf",
+                        "path": "nfd-worker.conf"
+                      }
+                    ],
+                    "name": "gpu-feature-discovery-node-feature-discovery-worker-conf"
+                  },
+                  "name": "nfd-worker-conf"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery-worker.Role": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-worker",
+          "namespace": "device-system"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              "nfd.k8s-sigs.io"
+            ],
+            "resources": [
+              "nodefeatures"
+            ],
+            "verbs": [
+              "create",
+              "get",
+              "update"
+            ]
+          }
+        ]
+      },
+      "gpu-feature-discovery-node-feature-discovery-worker.RoleBinding": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-worker",
+          "namespace": "device-system"
+        },
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "gpu-feature-discovery-node-feature-discovery-worker"
+        },
+        "subjects": [
+          {
+            "kind": "ServiceAccount",
+            "name": "gpu-feature-discovery-node-feature-discovery-worker",
+            "namespace": "device-system"
+          }
+        ]
+      },
+      "gpu-feature-discovery-node-feature-discovery-worker.ServiceAccount": {
+        "apiVersion": "v1",
+        "kind": "ServiceAccount",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery-worker",
+          "namespace": "device-system"
+        }
+      },
+      "gpu-feature-discovery-node-feature-discovery.ClusterRole": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "nodes",
+              "nodes/status"
+            ],
+            "verbs": [
+              "get",
+              "patch",
+              "update",
+              "list"
+            ]
+          },
+          {
+            "apiGroups": [
+              "nfd.k8s-sigs.io"
+            ],
+            "resources": [
+              "nodefeatures",
+              "nodefeaturerules"
+            ],
+            "verbs": [
+              "get",
+              "list",
+              "watch"
+            ]
+          },
+          {
+            "apiGroups": [
+              "coordination.k8s.io"
+            ],
+            "resources": [
+              "leases"
+            ],
+            "verbs": [
+              "create"
+            ]
+          },
+          {
+            "apiGroups": [
+              "coordination.k8s.io"
+            ],
+            "resourceNames": [
+              "nfd-master.nfd.kubernetes.io"
+            ],
+            "resources": [
+              "leases"
+            ],
+            "verbs": [
+              "get",
+              "update"
+            ]
+          }
+        ]
+      },
+      "gpu-feature-discovery-node-feature-discovery.ClusterRoleBinding": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery"
+        },
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "gpu-feature-discovery-node-feature-discovery"
+        },
+        "subjects": [
+          {
+            "kind": "ServiceAccount",
+            "name": "gpu-feature-discovery-node-feature-discovery",
+            "namespace": "device-system"
+          }
+        ]
+      },
+      "gpu-feature-discovery-node-feature-discovery.ServiceAccount": {
+        "apiVersion": "v1",
+        "kind": "ServiceAccount",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "node-feature-discovery",
+            "app.kubernetes.io/version": "v0.15.3",
+            "helm.sh/chart": "node-feature-discovery-0.15.3"
+          },
+          "name": "gpu-feature-discovery-node-feature-discovery",
+          "namespace": "device-system"
+        }
+      },
+      "gpu-feature-discovery-role-binding.ClusterRoleBinding": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "gpu-feature-discovery",
+            "app.kubernetes.io/version": "0.15.0",
+            "helm.sh/chart": "gpu-feature-discovery-0.15.0"
+          },
+          "name": "gpu-feature-discovery-role-binding",
+          "namespace": "device-system"
+        },
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "gpu-feature-discovery-role"
+        },
+        "subjects": [
+          {
+            "kind": "ServiceAccount",
+            "name": "gpu-feature-discovery-service-account",
+            "namespace": "device-system"
+          }
+        ]
+      },
+      "gpu-feature-discovery-role.ClusterRole": {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "gpu-feature-discovery",
+            "app.kubernetes.io/version": "0.15.0",
+            "helm.sh/chart": "gpu-feature-discovery-0.15.0"
+          },
+          "name": "gpu-feature-discovery-role",
+          "namespace": "device-system"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "nodes"
+            ],
+            "verbs": [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      },
+      "gpu-feature-discovery-service-account.ServiceAccount": {
+        "apiVersion": "v1",
+        "kind": "ServiceAccount",
+        "metadata": {
+          "labels": {
+            "app.kubernetes.io/instance": "gpu-feature-discovery",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "gpu-feature-discovery",
+            "app.kubernetes.io/version": "0.15.0",
+            "helm.sh/chart": "gpu-feature-discovery-0.15.0"
+          },
+          "name": "gpu-feature-discovery-service-account",
+          "namespace": "device-system"
+        }
+      },
+      "runtime-class": {
+        "apiVersion": "node.k8s.io/v1",
+        "handler": "nvidia",
+        "kind": "RuntimeClass",
+        "metadata": {
+          "name": "nvidia"
+        }
       }
-    }
+    },
+    "version": "1.0.0"
   }
 }

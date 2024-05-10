@@ -10,4 +10,5 @@ type DeployDeployment struct {
 
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+// +gengo:partialstruct:omit=Selector
 type deploymentSpec appsv1.DeploymentSpec

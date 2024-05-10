@@ -5,14 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
-	cueformat "cuelang.org/go/cue/format"
-	testingx "github.com/octohelm/x/testing"
 	"os"
 	"sort"
 	"strings"
 	"sync"
 	"testing"
+
+	cueformat "cuelang.org/go/cue/format"
+	testingx "github.com/octohelm/x/testing"
 
 	"sigs.k8s.io/yaml"
 

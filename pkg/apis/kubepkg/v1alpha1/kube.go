@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/octohelm/courier/pkg/openapi/jsonschema/extractors"
@@ -27,6 +28,10 @@ type KubePkg struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	Spec              Spec    `json:"spec"`
 	Status            *Status `json:"status,omitempty"`
+}
+
+func (k *KubePkg) String() string {
+	return fmt.Sprintf("%s.%s", k.Name, k.Kind)
 }
 
 func init() {

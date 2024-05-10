@@ -1,0 +1,359 @@
+-- gpu-feature-discovery-gpu-feature-discovery.KubePkg.yaml --
+apiVersion: octohelm.tech/v1alpha1
+kind: KubePkg
+metadata:
+  name: gpu-feature-discovery-gpu-feature-discovery
+spec:
+  config:
+    GFD_USE_NODE_FEATURE_API: "false"
+    NAMESPACE: '@field/metadata.namespace'
+    NODE_NAME: '@field/spec.nodeName'
+    NVIDIA_MIG_MONITOR_DEVICES: all
+  containers:
+    gpu-feature-discovery-ctr:
+      command:
+      - gpu-feature-discovery
+      image:
+        name: nvcr.io/nvidia/k8s-device-plugin
+        pullPolicy: IfNotPresent
+        tag: v0.15.0
+      securityContext:
+        privileged: true
+  deploy:
+    kind: DaemonSet
+    spec:
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: feature.node.kubernetes.io/pci-10de.present
+                    operator: In
+                    values:
+                    - "true"
+                - matchExpressions:
+                  - key: feature.node.kubernetes.io/cpu-model.vendor_id
+                    operator: In
+                    values:
+                    - NVIDIA
+                - matchExpressions:
+                  - key: nvidia.com/gpu.present
+                    operator: In
+                    values:
+                    - "true"
+          priorityClassName: system-node-critical
+          tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+          - effect: NoSchedule
+            key: nvidia.com/gpu
+            operator: Exists
+      updateStrategy:
+        type: RollingUpdate
+  version: 0.15.0
+  volumes:
+    host-sys:
+      mountPath: /sys
+      opt:
+        path: /sys
+      type: HostPath
+    output-dir:
+      mountPath: /etc/kubernetes/node-feature-discovery/features.d
+      opt:
+        path: /etc/kubernetes/node-feature-discovery/features.d
+      type: HostPath
+-- gpu-feature-discovery-node-feature-discovery-gc.KubePkg.yaml --
+apiVersion: octohelm.tech/v1alpha1
+kind: KubePkg
+metadata:
+  name: gpu-feature-discovery-node-feature-discovery-gc
+spec:
+  config:
+    NODE_NAME: '@field/spec.nodeName'
+  containers:
+    gc:
+      args:
+      - -gc-interval=1h
+      command:
+      - nfd-gc
+      image:
+        name: registry.k8s.io/nfd/node-feature-discovery
+        pullPolicy: IfNotPresent
+        tag: v0.15.3
+      ports:
+        metrics: 8081
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+  deploy:
+    kind: Deployment
+    spec:
+      replicas: 1
+      template:
+        spec:
+          dnsPolicy: ClusterFirstWithHostNet
+  serviceAccount:
+    rules:
+    - apiGroups:
+      - ""
+      resources:
+      - nodes
+      verbs:
+      - list
+      - watch
+    - apiGroups:
+      - ""
+      resources:
+      - nodes/proxy
+      verbs:
+      - get
+    - apiGroups:
+      - topology.node.k8s.io
+      resources:
+      - noderesourcetopologies
+      verbs:
+      - delete
+      - list
+    - apiGroups:
+      - nfd.k8s-sigs.io
+      resources:
+      - nodefeatures
+      verbs:
+      - delete
+      - list
+    scope: Cluster
+  version: v0.15.3
+-- gpu-feature-discovery-node-feature-discovery-master.KubePkg.yaml --
+apiVersion: octohelm.tech/v1alpha1
+kind: KubePkg
+metadata:
+  name: gpu-feature-discovery-node-feature-discovery-master
+spec:
+  config:
+    NODE_NAME: '@field/spec.nodeName'
+  containers:
+    master:
+      args:
+      - -crd-controller=true
+      - -metrics=8081
+      command:
+      - nfd-master
+      image:
+        name: registry.k8s.io/nfd/node-feature-discovery
+        pullPolicy: IfNotPresent
+        tag: v0.15.3
+      livenessProbe:
+        grpc:
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 10
+      ports:
+        grpc: 8080
+        metrics: 8081
+      readinessProbe:
+        failureThreshold: 10
+        grpc:
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+  deploy:
+    kind: Deployment
+    spec:
+      replicas: 1
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - preference:
+                  matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                    - ""
+                weight: 1
+              - preference:
+                  matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: In
+                    values:
+                    - ""
+                weight: 1
+          enableServiceLinks: false
+          tolerations:
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/master
+            operator: Equal
+          - effect: NoSchedule
+            key: node-role.kubernetes.io/control-plane
+            operator: Equal
+  serviceAccount:
+    rules:
+    - apiGroups:
+      - ""
+      resources:
+      - nodes
+      - nodes/status
+      verbs:
+      - get
+      - patch
+      - update
+      - list
+    - apiGroups:
+      - nfd.k8s-sigs.io
+      resources:
+      - nodefeatures
+      - nodefeaturerules
+      verbs:
+      - get
+      - list
+      - watch
+    - apiGroups:
+      - coordination.k8s.io
+      resources:
+      - leases
+      verbs:
+      - create
+    - apiGroups:
+      - coordination.k8s.io
+      resourceNames:
+      - nfd-master.nfd.kubernetes.io
+      resources:
+      - leases
+      verbs:
+      - get
+      - update
+    scope: Cluster
+  version: v0.15.3
+  volumes:
+    nfd-master-conf:
+      mountPath: /etc/kubernetes/node-feature-discovery
+      opt:
+        items:
+        - key: nfd-master.conf
+          path: nfd-master.conf
+      readOnly: true
+      spec:
+        data:
+          nfd-master.conf: "null"
+      type: ConfigMap
+-- gpu-feature-discovery-node-feature-discovery-worker.KubePkg.yaml --
+apiVersion: octohelm.tech/v1alpha1
+kind: KubePkg
+metadata:
+  name: gpu-feature-discovery-node-feature-discovery-worker
+spec:
+  config:
+    NODE_NAME: '@field/spec.nodeName'
+    POD_NAME: '@field/metadata.name'
+    POD_UID: '@field/metadata.uid'
+  containers:
+    worker:
+      args:
+      - -metrics=8081
+      command:
+      - nfd-worker
+      image:
+        name: registry.k8s.io/nfd/node-feature-discovery
+        pullPolicy: IfNotPresent
+        tag: v0.15.3
+      ports:
+        metrics: 8081
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+  deploy:
+    kind: DaemonSet
+    spec:
+      template:
+        spec:
+          dnsPolicy: ClusterFirstWithHostNet
+  serviceAccount:
+    rules:
+    - apiGroups:
+      - nfd.k8s-sigs.io
+      resources:
+      - nodefeatures
+      verbs:
+      - create
+      - get
+      - update
+    scope: Namespace
+  version: v0.15.3
+  volumes:
+    features-d:
+      mountPath: /etc/kubernetes/node-feature-discovery/features.d/
+      opt:
+        path: /etc/kubernetes/node-feature-discovery/features.d/
+      readOnly: true
+      type: HostPath
+    host-boot:
+      mountPath: /host-boot
+      opt:
+        path: /boot
+      readOnly: true
+      type: HostPath
+    host-lib:
+      mountPath: /host-lib
+      opt:
+        path: /lib
+      readOnly: true
+      type: HostPath
+    host-os-release:
+      mountPath: /host-etc/os-release
+      opt:
+        path: /etc/os-release
+      readOnly: true
+      type: HostPath
+    host-sys:
+      mountPath: /host-sys
+      opt:
+        path: /sys
+      readOnly: true
+      type: HostPath
+    host-usr-lib:
+      mountPath: /host-usr/lib
+      opt:
+        path: /usr/lib
+      readOnly: true
+      type: HostPath
+    nfd-worker-conf:
+      mountPath: /etc/kubernetes/node-feature-discovery
+      opt:
+        items:
+        - key: nfd-worker.conf
+          path: nfd-worker.conf
+      readOnly: true
+      spec:
+        data:
+          nfd-worker.conf: "null"
+      type: ConfigMap
+    source-d:
+      mountPath: /etc/kubernetes/node-feature-discovery/source.d/
+      opt:
+        path: /etc/kubernetes/node-feature-discovery/source.d/
+      readOnly: true
+      type: HostPath
+-- nvidia.RuntimeClass.yaml --
+apiVersion: node.k8s.io/v1
+handler: nvidia
+kind: RuntimeClass
+metadata:
+  name: nvidia

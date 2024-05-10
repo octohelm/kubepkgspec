@@ -6,7 +6,7 @@ import (
 
 	batchv1 "k8s.io/api/batch/v1"
 
-	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
+	"github.com/octohelm/kubepkgspec/pkg/object"
 	appsv1 "k8s.io/api/apps/v1"
 )
 

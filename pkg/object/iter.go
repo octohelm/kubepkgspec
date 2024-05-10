@@ -1,11 +1,10 @@
 package object
 
 import (
-	"context"
 	"iter"
 	"sync/atomic"
 
-	"github.com/stretchr/objx"
+	"github.com/octohelm/x/anyjson"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
@@ -16,7 +15,7 @@ func NewIter(progress ...Process) Iter {
 }
 
 type Iter interface {
-	Object(ctx context.Context, m any) iter.Seq[Object]
+	Object(m any) iter.Seq[Object]
 	Err() error
 }
 
@@ -39,9 +38,9 @@ func (w *objectIter) Err() error {
 	return v.(error)
 }
 
-func (w *objectIter) Object(ctx context.Context, m any) iter.Seq[Object] {
+func (w *objectIter) Object(m any) iter.Seq[Object] {
 	return func(yield func(Object) bool) {
-		for o := range w.iter(ctx, m) {
+		for o := range w.iter(m) {
 			if w.Err() != nil {
 				return
 			}
@@ -53,21 +52,27 @@ func (w *objectIter) Object(ctx context.Context, m any) iter.Seq[Object] {
 	}
 }
 
-func (w *objectIter) iter(ctx context.Context, v any) iter.Seq[Object] {
+func (w *objectIter) iter(v any) iter.Seq[Object] {
 	switch x := v.(type) {
+	case Object:
+		return func(yield func(Object) bool) {
+			if !yield(x) {
+				return
+			}
+		}
 	case map[string]any:
-		return w.iterObj(ctx, x)
+		return w.iterObj(x)
 	case []any:
-		return w.iterList(ctx, x)
+		return w.iterList(x)
 	}
 	return func(yield func(Object) bool) {
 	}
 }
 
-func (w *objectIter) iterList(ctx context.Context, list []any) iter.Seq[Object] {
+func (w *objectIter) iterList(list []any) iter.Seq[Object] {
 	return func(yield func(Object) bool) {
 		for _, value := range list {
-			for o := range w.iter(ctx, value) {
+			for o := range w.iter(value) {
 				if !yield(o) {
 				}
 			}
@@ -75,7 +80,7 @@ func (w *objectIter) iterList(ctx context.Context, list []any) iter.Seq[Object] 
 	}
 }
 
-func (w *objectIter) iterObj(ctx context.Context, obj objx.Map) iter.Seq[Object] {
+func (w *objectIter) iterObj(obj anyjson.Obj) iter.Seq[Object] {
 	return func(yield func(Object) bool) {
 		if isKubernetesManifest(obj) {
 			o, err := FromRuntimeObject(&unstructured.Unstructured{Object: obj})
@@ -89,6 +94,7 @@ func (w *objectIter) iterObj(ctx context.Context, obj objx.Map) iter.Seq[Object]
 				w.Done(err)
 				return
 			}
+
 			if typed != o {
 				o = typed
 			}
@@ -97,6 +103,7 @@ func (w *objectIter) iterObj(ctx context.Context, obj objx.Map) iter.Seq[Object]
 				o, err = w.progress[i](o)
 				if err != nil {
 					w.Done(err)
+					return
 				}
 			}
 
@@ -109,7 +116,7 @@ func (w *objectIter) iterObj(ctx context.Context, obj objx.Map) iter.Seq[Object]
 
 		// walk child
 		for _, value := range obj {
-			for o := range w.iter(ctx, value) {
+			for o := range w.iter(value) {
 				if !yield(o) {
 					return
 				}
@@ -118,9 +125,11 @@ func (w *objectIter) iterObj(ctx context.Context, obj objx.Map) iter.Seq[Object]
 	}
 }
 
-func isKubernetesManifest(obj objx.Map) bool {
-	return obj.Get("apiVersion").IsStr() &&
-		obj.Get("apiVersion").Str() != "" &&
-		obj.Get("kind").IsStr() &&
-		obj.Get("kind").Str() != ""
+func isKubernetesManifest(obj anyjson.Obj) bool {
+	if _, ok := obj["apiVersion"].(string); ok {
+		if _, ok := obj["kind"].(string); ok {
+			return true
+		}
+	}
+	return false
 }

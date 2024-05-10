@@ -1,0 +1,37 @@
+-- demo.KubePkg.yaml --
+apiVersion: octohelm.tech/v1alpha1
+kind: KubePkg
+metadata:
+  name: demo
+spec:
+  config:
+    X: x
+  containers:
+    web:
+      image:
+        name: docker.io/library/nginx
+        platforms:
+        - linux/amd64
+        - linux/arm64
+        pullPolicy: IfNotPresent
+        tag: 1.25.0-alpine
+      ports:
+        http: 80
+  deploy:
+    kind: Deployment
+    spec:
+      replicas: 1
+  services:
+    '#':
+      paths:
+        http: /
+      ports:
+        http: 80
+  version: ""
+  volumes:
+    demo-html:
+      mountPath: /usr/share/nginx/html
+      spec:
+        data:
+          index.html: <div>hello</div>
+      type: ConfigMap

@@ -1,9 +1,9 @@
-package manifest
+package install
 
 import (
 	"sort"
 
-	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
+	"github.com/octohelm/kubepkgspec/pkg/object"
 )
 
 type SortOrder []string

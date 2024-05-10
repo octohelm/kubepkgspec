@@ -12,6 +12,7 @@ type DeployCronJob struct {
 
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=JobTemplate:JobTemplateSpec
+// +gengo:partialstruct:omit=Selector
 type cronJobSpec batchv1.CronJobSpec
 
 type JobTemplateSpec struct {

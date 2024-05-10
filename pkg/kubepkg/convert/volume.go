@@ -1,11 +1,12 @@
-package manifest
+package convert
 
 import (
+	"github.com/octohelm/kubepkgspec/pkg/reload"
 	"github.com/octohelm/x/ptr"
 	corev1 "k8s.io/api/core/v1"
 
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
-	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
+	"github.com/octohelm/kubepkgspec/pkg/object"
 )
 
 type VolumeConverter interface {
@@ -119,7 +120,11 @@ func (v *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Objec
 		secret.StringData = spec.Data
 	}
 
-	if err := AnnotateDigestTo(secret, ScopeSecretDigest, secret.Name, secret.StringData); err != nil {
+	if len(secret.StringData) == 0 {
+		return nil, nil
+	}
+
+	if err := reload.AnnotateDigestTo(secret, reload.ScopeSecretDigest, secret.Name, secret.StringData); err != nil {
 		return nil, err
 	}
 
@@ -237,7 +242,11 @@ func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Ob
 		cm.Data = spec.Data
 	}
 
-	if err := AnnotateDigestTo(cm, ScopeConfigMapDigest, cm.Name, cm.Data); err != nil {
+	if len(cm.Data) == 0 {
+		return nil, nil
+	}
+
+	if err := reload.AnnotateDigestTo(cm, reload.ScopeConfigMapDigest, cm.Name, cm.Data); err != nil {
 		return nil, err
 	}
 
@@ -285,5 +294,17 @@ func toVolumeMount(name string, v v1alpha1.VolumeMount) (vv corev1.VolumeMount) 
 	case corev1.MountPropagationHostToContainer:
 		vv.MountPropagation = ptr.Ptr(corev1.MountPropagationHostToContainer)
 	}
+	return
+}
+
+func mountVolume(v *v1alpha1.VolumeMount, vm corev1.VolumeMount) {
+	v.MountPath = vm.MountPath
+	v.SubPath = vm.SubPath
+	v.ReadOnly = vm.ReadOnly
+
+	if mode := vm.MountPropagation; mode != nil {
+		v.MountPropagation = string(*mode)
+	}
+
 	return
 }

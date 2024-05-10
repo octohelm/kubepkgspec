@@ -6,8 +6,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Object = client.Object
-type List = client.ObjectList
+type (
+	Object = client.Object
+	List   = client.ObjectList
+)
 
 func FromRuntimeObject(ro runtime.Object) (Object, error) {
 	o, err := meta.Accessor(ro)

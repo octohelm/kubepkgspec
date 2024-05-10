@@ -12,4 +12,5 @@ type DeployDaemonSet struct {
 
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+// +gengo:partialstruct:omit=Selector
 type daemonSetSpec appsv1.DaemonSetSpec

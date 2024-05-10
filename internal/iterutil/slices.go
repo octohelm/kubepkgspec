@@ -9,7 +9,6 @@ func Items[O any](list []O) iter.Seq[O] {
 				return
 			}
 		}
-
 	}
 }
 

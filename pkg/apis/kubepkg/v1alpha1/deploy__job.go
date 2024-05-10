@@ -12,4 +12,5 @@ type DeployJob struct {
 
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+// +gengo:partialstruct:omit=Selector
 type jobSpec batchv1.JobSpec

@@ -39,5 +39,4 @@ func TestParseIngressGatewaySet(t *testing.T) {
 
 		testingx.Expect(t, rules[0].Host, testingx.Be("test.internal"))
 	})
-
 }

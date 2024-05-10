@@ -2,10 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  creationTimestamp: null
   name: default
-spec: {}
-status: {}
 -- demo.default.ConfigMap.yaml --
 apiVersion: v1
 data:
@@ -14,7 +11,6 @@ kind: ConfigMap
 metadata:
   annotations:
     digest.configmap.octohelm.tech/demo: sha256:b7cd93ed3ee6375b5d4fe8602512e2bd1d85729f0f98f62f0f0cdb322a62dd56
-  creationTimestamp: null
   name: demo
   namespace: default
 -- demo-html.default.ConfigMap.yaml --
@@ -25,7 +21,6 @@ kind: ConfigMap
 metadata:
   annotations:
     digest.configmap.octohelm.tech/demo-html: sha256:6507926d60a024b477a9e34419a78ab284a0ca528d8434851825632545214ece
-  creationTimestamp: null
   name: demo-html
   namespace: default
 -- endpoint-demo.default.ConfigMap.yaml --
@@ -36,14 +31,12 @@ data:
   public: https://demo---default.public
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
   name: endpoint-demo
   namespace: default
 -- demo.default.Service.yaml --
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
   name: demo
   namespace: default
 spec:
@@ -54,13 +47,10 @@ spec:
     targetPort: http
   selector:
     app: demo
-status:
-  loadBalancer: {}
 -- demo.default.Deployment.yaml --
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   name: demo
   namespace: default
 spec:
@@ -68,14 +58,12 @@ spec:
   selector:
     matchLabels:
       app: demo
-  strategy: {}
   template:
     metadata:
       annotations:
         digest.configmap.octohelm.tech/demo: sha256:b7cd93ed3ee6375b5d4fe8602512e2bd1d85729f0f98f62f0f0cdb322a62dd56
         digest.configmap.octohelm.tech/demo-html: sha256:6507926d60a024b477a9e34419a78ab284a0ca528d8434851825632545214ece
         reload.octohelm.tech/configmap: demo,demo-html
-      creationTimestamp: null
       labels:
         app: demo
     spec:
@@ -100,7 +88,6 @@ spec:
         - containerPort: 80
           name: http
           protocol: TCP
-        resources: {}
         volumeMounts:
         - mountPath: /usr/share/nginx/html
           name: demo-html
@@ -108,12 +95,10 @@ spec:
       - configMap:
           name: demo-html
         name: demo-html
-status: {}
 -- demo.default.Ingress.yaml --
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  creationTimestamp: null
   name: demo
   namespace: default
 spec:
@@ -128,5 +113,3 @@ spec:
               name: http
         path: /
         pathType: ImplementationSpecific
-status:
-  loadBalancer: {}

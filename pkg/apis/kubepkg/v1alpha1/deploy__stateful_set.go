@@ -12,4 +12,5 @@ type DeployStatefulSet struct {
 
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+// +gengo:partialstruct:omit=Selector
 type statefulSetSpec appsv1.StatefulSetSpec

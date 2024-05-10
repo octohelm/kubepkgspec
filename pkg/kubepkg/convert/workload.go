@@ -1,29 +1,31 @@
-package manifest
+package convert
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
+	"github.com/distribution/reference"
+	kubepkgv1alpha1 "github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/object"
+	"github.com/octohelm/kubepkgspec/pkg/reload"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
-	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
 )
 
-func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
+func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 	if underlying := kpkg.Spec.Deploy.Underlying; underlying != nil {
 		switch x := underlying.(type) {
-		case *v1alpha1.DeployDeployment:
+		case *kubepkgv1alpha1.DeployDeployment:
 			deployment := &appsv1.Deployment{}
 			deployment.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("Deployment"))
 			deployment.SetNamespace(kpkg.Namespace)
 			deployment.SetName(kpkg.Name)
 
-			podTemplateSpec, err := toPodTemplateSpec(kpkg)
+			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
 				return nil, err
 			}
@@ -40,13 +42,13 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			deployment.Spec = *spec
 
 			return deployment, nil
-		case *v1alpha1.DeployStatefulSet:
+		case *kubepkgv1alpha1.DeployStatefulSet:
 			statefulSet := &appsv1.StatefulSet{}
 			statefulSet.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("StatefulSet"))
 			statefulSet.SetNamespace(kpkg.Namespace)
 			statefulSet.SetName(kpkg.Name)
 
-			podTemplateSpec, err := toPodTemplateSpec(kpkg)
+			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
 				return nil, err
 			}
@@ -63,13 +65,13 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			statefulSet.Spec = *spec
 
 			return statefulSet, nil
-		case *v1alpha1.DeployDaemonSet:
+		case *kubepkgv1alpha1.DeployDaemonSet:
 			daemonSet := &appsv1.DaemonSet{}
 			daemonSet.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("DaemonSet"))
 			daemonSet.SetNamespace(kpkg.Namespace)
 			daemonSet.SetName(kpkg.Name)
 
-			podTemplateSpec, err := toPodTemplateSpec(kpkg)
+			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
 				return nil, err
 			}
@@ -86,13 +88,13 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			daemonSet.Spec = *spec
 
 			return daemonSet, nil
-		case *v1alpha1.DeployJob:
+		case *kubepkgv1alpha1.DeployJob:
 			job := &batchv1.Job{}
 			job.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("Job"))
 			job.SetNamespace(kpkg.Namespace)
 			job.SetName(kpkg.Name)
 
-			podTemplateSpec, err := toPodTemplateSpec(kpkg)
+			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
 				return nil, err
 			}
@@ -109,13 +111,13 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			job.Spec = *spec
 
 			return job, nil
-		case *v1alpha1.DeployCronJob:
+		case *kubepkgv1alpha1.DeployCronJob:
 			cronJob := &batchv1.CronJob{}
 			cronJob.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("CronJob"))
 			cronJob.SetNamespace(kpkg.Namespace)
 			cronJob.SetName(kpkg.Name)
 
-			podTemplateSpec, err := toPodTemplateSpec(kpkg)
+			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
 				return nil, err
 			}
@@ -132,7 +134,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			cronJob.Spec = *spec
 
 			return cronJob, nil
-		case *v1alpha1.DeployConfigMap:
+		case *kubepkgv1alpha1.DeployConfigMap:
 			cm := &corev1.ConfigMap{}
 			cm.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))
 			cm.SetNamespace(kpkg.Namespace)
@@ -149,14 +151,19 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			if len(data) == 0 {
+				return nil, err
+			}
+
 			cm.Data = data
 
-			if err := AnnotateDigestTo(cm, ScopeConfigMapDigest, kpkg.Name, cm.Data); err != nil {
+			if err := reload.AnnotateDigestTo(cm, reload.ScopeConfigMapDigest, kpkg.Name, cm.Data); err != nil {
 				return nil, err
 			}
 
 			return cm, nil
-		case *v1alpha1.DeploySecret:
+		case *kubepkgv1alpha1.DeploySecret:
 			secret := &corev1.Secret{}
 			secret.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Secret"))
 			secret.SetNamespace(kpkg.Namespace)
@@ -173,9 +180,14 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			if len(data) == 0 {
+				return nil, err
+			}
+
 			secret.StringData = data
 
-			if err := AnnotateDigestTo(secret, ScopeSecretDigest, kpkg.Name, secret.StringData); err != nil {
+			if err := reload.AnnotateDigestTo(secret, reload.ScopeSecretDigest, kpkg.Name, secret.StringData); err != nil {
 				return nil, err
 			}
 
@@ -186,7 +198,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 	return nil, nil
 }
 
-func toPodTemplateSpec(kpkg *v1alpha1.KubePkg) (*corev1.PodTemplateSpec, error) {
+func ToPodTemplateSpec(kpkg *kubepkgv1alpha1.KubePkg) (*corev1.PodTemplateSpec, error) {
 	if len(kpkg.Spec.Containers) == 0 {
 		return nil, errors.New("containers should not empty")
 	}
@@ -245,9 +257,9 @@ func toPodTemplateSpec(kpkg *v1alpha1.KubePkg) (*corev1.PodTemplateSpec, error) 
 			}
 		}
 
-		template.Spec.Affinity = must(template.Spec.Affinity)
-		template.Spec.Affinity.NodeAffinity = must(template.Spec.Affinity.NodeAffinity)
-		template.Spec.Affinity.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution = must(template.Spec.Affinity.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution)
+		template.Spec.Affinity = Must(template.Spec.Affinity)
+		template.Spec.Affinity.NodeAffinity = Must(template.Spec.Affinity.NodeAffinity)
+		template.Spec.Affinity.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution = Must(template.Spec.Affinity.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution)
 
 		// patch only when empty
 		if len(template.Spec.Affinity.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms) == 0 {
@@ -267,7 +279,204 @@ func toPodTemplateSpec(kpkg *v1alpha1.KubePkg) (*corev1.PodTemplateSpec, error) 
 	return template, nil
 }
 
-func toContainer(c v1alpha1.Container, name string, podTemplateSpec *corev1.PodTemplateSpec, kpkg *v1alpha1.KubePkg) (*corev1.Container, error) {
+func ContainersAndVolumesFromPodTemplateSpec(k *kubepkgv1alpha1.KubePkg, podTemplateSpec *corev1.PodTemplateSpec) error {
+	k.Spec.Containers = map[string]kubepkgv1alpha1.Container{}
+
+	k.Spec.Volumes = map[string]kubepkgv1alpha1.Volume{}
+
+	for _, c := range podTemplateSpec.Spec.Volumes {
+		v := kubepkgv1alpha1.Volume{}
+
+		if vs := c.EmptyDir; vs != nil {
+			v.SetUnderlying(&kubepkgv1alpha1.VolumeEmptyDir{
+				Type: "EmptyDir",
+				Opt:  vs,
+			})
+
+			k.Spec.Volumes[c.Name] = v
+			continue
+		}
+
+		if vs := c.HostPath; vs != nil {
+			v.SetUnderlying(&kubepkgv1alpha1.VolumeHostPath{
+				Type: "HostPath",
+				Opt:  vs,
+			})
+
+			k.Spec.Volumes[c.Name] = v
+			continue
+		}
+
+		if vs := c.PersistentVolumeClaim; vs != nil {
+			v.SetUnderlying(&kubepkgv1alpha1.VolumePersistentVolumeClaim{
+				Type: "PersistentVolumeClaim",
+				Opt:  vs,
+			})
+			continue
+		}
+
+		if vs := c.ConfigMap; vs != nil {
+			v.SetUnderlying(&kubepkgv1alpha1.VolumeConfigMap{
+				Type: "ConfigMap",
+				Opt:  vs,
+			})
+
+			k.Spec.Volumes[c.Name] = v
+			continue
+		}
+
+		if vs := c.Secret; vs != nil {
+			v.SetUnderlying(&kubepkgv1alpha1.VolumeSecret{
+				Type: "Secret",
+				Opt:  vs,
+			})
+
+			k.Spec.Volumes[c.Name] = v
+			continue
+		}
+	}
+
+	resolveEnvFrom := func(c corev1.Container) {
+		for _, envSource := range c.EnvFrom {
+			if ref := envSource.SecretRef; ref != nil {
+				v := kubepkgv1alpha1.Volume{}
+
+				v.SetUnderlying(&kubepkgv1alpha1.VolumeSecret{
+					Type: "Secret",
+					Opt: &corev1.SecretVolumeSource{
+						SecretName: ref.Name,
+					},
+				})
+
+				k.Spec.Volumes[ref.Name] = v
+
+				v.Underlying.GetVolumeMount().MountPath = "export"
+				v.Underlying.GetVolumeMount().Prefix = envSource.Prefix
+
+				continue
+			}
+
+			if ref := envSource.ConfigMapRef; ref != nil {
+				v := kubepkgv1alpha1.Volume{}
+
+				v.SetUnderlying(&kubepkgv1alpha1.VolumeConfigMap{
+					Type: "ConfigMap",
+					Opt: &corev1.ConfigMapVolumeSource{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: ref.Name,
+						},
+					},
+				})
+
+				k.Spec.Volumes[ref.Name] = v
+
+				v.Underlying.GetVolumeMount().MountPath = "export"
+				v.Underlying.GetVolumeMount().Prefix = envSource.Prefix
+
+				continue
+			}
+		}
+	}
+
+	for _, c := range podTemplateSpec.Spec.InitContainers {
+		cc, err := fromContainer(&c)
+		if err != nil {
+			return err
+		}
+		k.Spec.Containers[fmt.Sprintf("init-%s", c.Name)] = *cc
+
+		for _, m := range c.VolumeMounts {
+			if v, ok := k.Spec.Volumes[m.Name]; ok {
+				mountVolume(v.Underlying.GetVolumeMount(), m)
+			}
+		}
+
+		resolveEnvFrom(c)
+	}
+
+	for _, c := range podTemplateSpec.Spec.Containers {
+		cc, err := fromContainer(&c)
+		if err != nil {
+			return err
+		}
+		k.Spec.Containers[c.Name] = *cc
+
+		for _, m := range c.VolumeMounts {
+			if v, ok := k.Spec.Volumes[m.Name]; ok {
+				mountVolume(v.Underlying.GetVolumeMount(), m)
+			}
+		}
+
+		resolveEnvFrom(c)
+	}
+
+	return nil
+}
+
+func fromContainer(c *corev1.Container) (*kubepkgv1alpha1.Container, error) {
+	n, err := reference.Parse(c.Image)
+	if err != nil {
+		return nil, err
+	}
+
+	container := &kubepkgv1alpha1.Container{}
+
+	switch x := n.(type) {
+	case reference.NamedTagged:
+		container.Image.Name = x.Name()
+		container.Image.Tag = x.Tag()
+	case reference.Named:
+		container.Image.Name = n.String()
+	}
+
+	container.Image.PullPolicy = c.ImagePullPolicy
+
+	container.WorkingDir = c.WorkingDir
+	container.Command = c.Command
+	container.Args = c.Args
+
+	container.Stdin = c.Stdin
+	container.StdinOnce = c.StdinOnce
+	container.TTY = c.TTY
+
+	container.Resources = &c.Resources
+
+	container.LivenessProbe = c.LivenessProbe
+	container.ReadinessProbe = c.ReadinessProbe
+	container.StartupProbe = c.StartupProbe
+	container.Lifecycle = c.Lifecycle
+
+	container.SecurityContext = c.SecurityContext
+
+	container.TerminationMessagePath = c.TerminationMessagePath
+	container.TerminationMessagePolicy = c.TerminationMessagePolicy
+
+	container.Ports = map[string]int32{}
+
+	for _, port := range c.Ports {
+		name := FormatPortName(port.Name, port.Protocol, port.HostPort)
+
+		container.Ports[name] = port.ContainerPort
+	}
+
+	container.Env = map[string]kubepkgv1alpha1.EnvVarValueOrFrom{}
+
+	for _, env := range c.Env {
+		if from := env.ValueFrom; from != nil {
+			container.Env[env.Name] = kubepkgv1alpha1.EnvVarValueOrFrom{
+				ValueFrom: from,
+			}
+		} else {
+			container.Env[env.Name] = kubepkgv1alpha1.EnvVarValueOrFrom{
+				Value: env.Value,
+			}
+		}
+	}
+
+	return container, nil
+}
+
+func toContainer(c kubepkgv1alpha1.Container, name string, podTemplateSpec *corev1.PodTemplateSpec, kpkg *kubepkgv1alpha1.KubePkg) (*corev1.Container, error) {
 	container := &corev1.Container{}
 	container.Name = name
 
@@ -296,7 +505,7 @@ func toContainer(c v1alpha1.Container, name string, podTemplateSpec *corev1.PodT
 	container.TerminationMessagePath = c.TerminationMessagePath
 	container.TerminationMessagePolicy = c.TerminationMessagePolicy
 
-	envs := make(map[string]v1alpha1.EnvVarValueOrFrom)
+	envs := make(map[string]kubepkgv1alpha1.EnvVarValueOrFrom)
 
 	for k := range kpkg.Spec.Config {
 		if kpkg.Spec.Config[k].ValueFrom != nil {
@@ -336,9 +545,8 @@ func toContainer(c v1alpha1.Container, name string, podTemplateSpec *corev1.PodT
 
 	for _, n := range portNames {
 		p := corev1.ContainerPort{}
-		p.Protocol = PortProtocol(n)
 		p.ContainerPort = c.Ports[n]
-		p.Name, p.HostPort = PortNameAndHostPort(n)
+		p.Name, p.Protocol, p.HostPort = DecodePortName(n)
 
 		container.Ports = append(container.Ports, p)
 	}
@@ -375,11 +583,4 @@ func appendVolumeToPodSpec(podTemplateSpec *corev1.PodTemplateSpec, volume *core
 	if !added {
 		podTemplateSpec.Spec.Volumes = append(podTemplateSpec.Spec.Volumes, *volume)
 	}
-}
-
-func must[T any](v *T) *T {
-	if v == nil {
-		v = new(T)
-	}
-	return v
 }

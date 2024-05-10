@@ -5,15 +5,16 @@ go 1.22.2
 require (
 	cuelang.org/go v0.8.2
 	github.com/containerd/containerd v1.7.16
+	github.com/distribution/reference v0.6.0
+	github.com/go-json-experiment/json v0.0.0-20240418180308-af2d5061e6c2
 	github.com/innoai-tech/infra v0.0.0-20240508041032-12069adfe35c
 	github.com/octohelm/courier v0.0.0-20240510063732-a8aa1af87601
 	github.com/octohelm/gengo v0.0.0-20240510051519-974fb897453b
 	github.com/octohelm/kubekit v0.0.0-20240508035712-15cb61729772
 	github.com/octohelm/storage v0.0.0-20240430010427-f412a0c84f3b
-	github.com/octohelm/x v0.0.0-20240510051043-465fd2975359
+	github.com/octohelm/x v0.0.0-20240511094440-fab759d735f8
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/objx v0.5.2
 	golang.org/x/tools v0.21.0
 	k8s.io/api v0.30.0
 	k8s.io/apiextensions-apiserver v0.30.0
@@ -31,7 +32,6 @@ require (
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
 	github.com/go-courier/logr v0.3.0 // indirect
-	github.com/go-json-experiment/json v0.0.0-20240418180308-af2d5061e6c2 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect

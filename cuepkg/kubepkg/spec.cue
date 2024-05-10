@@ -131,11 +131,6 @@ package kubepkg
 	// This is a pointer to distinguish between explicit zero and not specified.
 	// Defaults to 10.
 	revisionHistoryLimit?: int
-	// A label query over pods that are managed by the daemon set.
-	// Must match in order to be controlled.
-	// It must match the pod template's labels.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
-	selector: #LabelSelector
 	// An object that describes the pod that will be created.
 	// The DaemonSet will create exactly one copy of this pod on every node
 	// that matches the template's node selector (or on every node if no node
@@ -218,10 +213,6 @@ package kubepkg
 	// This is a pointer to distinguish between explicit zero and not specified.
 	// Defaults to 10.
 	revisionHistoryLimit?: int
-	// Label selector for pods. Existing ReplicaSets whose pods are
-	// selected by this will be the ones affected by this deployment.
-	// It must match the pod template's labels.
-	selector: #LabelSelector
 	// The deployment strategy to use to replace existing pods with new ones.
 	strategy?: #DeploymentStrategy
 	// Template describes the pods that will be created.
@@ -434,10 +425,6 @@ package kubepkg
 	// This is an beta field. To use this, enable the JobPodReplacementPolicy feature toggle.
 	// This is on by default.
 	podReplacementPolicy?: #PodReplacementPolicy
-	// A label query over pods that should match the pod count.
-	// Normally, the system sets this field for you.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
-	selector?: #LabelSelector
 	// successPolicy specifies the policy when the Job can be declared as succeeded.
 	// If empty, the default behavior applies - the Job is declared as succeeded
 	// only when the number of succeeded pods equals to the completions.
@@ -628,9 +615,7 @@ package kubepkg
 	dataSourceRef?: #TypedObjectReference
 	// resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 	resources?: #VolumeResourceRequirements
-	// selector is a label query over pods that should match the replica count.
-	// It must match the pod template's labels.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
+	// selector is a label query over volumes to consider for binding.
 	selector?: #LabelSelector
 	// storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
 	storageClassName?: string
@@ -1299,10 +1284,6 @@ package kubepkg
 	// consists of all revisions not represented by a currently applied
 	// StatefulSetSpec version. The default value is 10.
 	revisionHistoryLimit?: int
-	// selector is a label query over pods that should match the replica count.
-	// It must match the pod template's labels.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
-	selector: #LabelSelector
 	// serviceName is the name of the service that governs this StatefulSet.
 	// This service must exist before the StatefulSet, and is responsible for
 	// the network identity of the set. Pods get DNS/hostnames that follow the
