@@ -3,12 +3,13 @@ module github.com/octohelm/kubepkgspec
 go 1.22.2
 
 require (
-	github.com/containerd/containerd v1.7.13
-	github.com/innoai-tech/infra v0.0.0-20240304023514-48eaf27b837d
-	github.com/octohelm/courier v0.0.0-20240309100633-7d6a3bc08878
+	cuelang.org/go v0.8.2
+	github.com/containerd/containerd v1.7.16
+	github.com/innoai-tech/infra v0.0.0-20240508041032-12069adfe35c
+	github.com/octohelm/courier v0.0.0-20240510063732-a8aa1af87601
 	github.com/octohelm/gengo v0.0.0-20240510051519-974fb897453b
 	github.com/octohelm/kubekit v0.0.0-20240508035712-15cb61729772
-	github.com/octohelm/storage v0.0.0-20240311031904-722fae0a0075
+	github.com/octohelm/storage v0.0.0-20240430010427-f412a0c84f3b
 	github.com/octohelm/x v0.0.0-20240510051043-465fd2975359
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/pkg/errors v0.9.1
@@ -23,15 +24,14 @@ require (
 )
 
 require (
-	cuelang.org/go v0.7.1 // indirect
-	github.com/Microsoft/hcsshim v0.12.0 // indirect
+	github.com/Microsoft/hcsshim v0.11.4 // indirect
 	github.com/cockroachdb/apd/v3 v3.2.1 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
 	github.com/go-courier/logr v0.3.0 // indirect
-	github.com/go-json-experiment/json v0.0.0-20231102232822-2e55bd4e08b0 // indirect
+	github.com/go-json-experiment/json v0.0.0-20240418180308-af2d5061e6c2 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
@@ -50,7 +50,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/mpvl/unique v0.0.0-20150818121801-cbe035fff7de // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/onsi/gomega v1.33.1 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
@@ -66,8 +65,8 @@ require (
 	golang.org/x/term v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240308144416-29370a3891b7 // indirect
-	google.golang.org/grpc v1.62.1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
+	google.golang.org/grpc v1.63.2 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
