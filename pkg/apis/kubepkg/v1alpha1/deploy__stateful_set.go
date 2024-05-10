@@ -5,7 +5,11 @@ import (
 )
 
 type DeployStatefulSet struct {
-	Kind        string                 `json:"kind" validate:"@string{StatefulSet}"`
-	Annotations map[string]string      `json:"annotations,omitempty"`
-	Spec        appsv1.StatefulSetSpec `json:"spec,omitempty"`
+	Kind        string            `json:"kind" validate:"@string{StatefulSet}"`
+	Annotations map[string]string `json:"annotations,omitempty"`
+	Spec        StatefulSetSpec   `json:"spec,omitempty"`
 }
+
+// +gengo:partialstruct
+// +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+type statefulSetSpec appsv1.StatefulSetSpec

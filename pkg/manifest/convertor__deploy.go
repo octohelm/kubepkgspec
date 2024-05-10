@@ -33,7 +33,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 				MatchLabels: deployment.Spec.Template.Labels,
 			}
 
-			spec, err := Merge(&deployment.Spec, &x.Spec)
+			spec, err := Merge(&deployment.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
 				return nil, err
 			}
@@ -56,7 +56,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 				MatchLabels: statefulSet.Spec.Template.Labels,
 			}
 
-			spec, err := Merge(&statefulSet.Spec, &x.Spec)
+			spec, err := Merge(&statefulSet.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
 				return nil, err
 			}
@@ -79,7 +79,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 				MatchLabels: daemonSet.Spec.Template.Labels,
 			}
 
-			spec, err := Merge(&daemonSet.Spec, &x.Spec)
+			spec, err := Merge(&daemonSet.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
 				return nil, err
 			}
@@ -102,7 +102,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 				MatchLabels: job.Spec.Template.Labels,
 			}
 
-			spec, err := Merge(&job.Spec, &x.Spec)
+			spec, err := Merge(&job.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
 				return nil, err
 			}
@@ -125,7 +125,7 @@ func DeployResourceFrom(kpkg *v1alpha1.KubePkg) (object.Object, error) {
 				MatchLabels: cronJob.Spec.JobTemplate.Spec.Template.Labels,
 			}
 
-			spec, err := Merge(&cronJob.Spec, &x.Spec)
+			spec, err := Merge(&cronJob.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
 				return nil, err
 			}

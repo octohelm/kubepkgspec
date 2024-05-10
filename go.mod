@@ -6,13 +6,14 @@ require (
 	github.com/containerd/containerd v1.7.13
 	github.com/innoai-tech/infra v0.0.0-20240304023514-48eaf27b837d
 	github.com/octohelm/courier v0.0.0-20240309100633-7d6a3bc08878
-	github.com/octohelm/gengo v0.0.0-20240227021734-f42e02623187
+	github.com/octohelm/gengo v0.0.0-20240510051519-974fb897453b
 	github.com/octohelm/kubekit v0.0.0-20240508035712-15cb61729772
 	github.com/octohelm/storage v0.0.0-20240311031904-722fae0a0075
-	github.com/octohelm/x v0.0.0-20240507072036-923e675e18dc
+	github.com/octohelm/x v0.0.0-20240510051043-465fd2975359
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/objx v0.5.2
+	golang.org/x/tools v0.21.0
 	k8s.io/api v0.30.0
 	k8s.io/apiextensions-apiserver v0.30.0
 	k8s.io/apimachinery v0.30.0
@@ -65,7 +66,6 @@ require (
 	golang.org/x/term v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240308144416-29370a3891b7 // indirect
 	google.golang.org/grpc v1.62.1 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect

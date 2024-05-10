@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/octohelm/kubepkgspec/pkg/manifest/object"
+	"golang.org/x/tools/txtar"
 	appsv1 "k8s.io/api/apps/v1"
 	"sigs.k8s.io/yaml"
 
@@ -30,20 +32,13 @@ func TestExtract(t *testing.T) {
 			list, err := SortedExtract(kpkg)
 			testingx.Expect(t, err, testingx.BeNil[error]())
 
-			names := make([]string, len(list))
-			for i, o := range list {
-				names[i] = fmt.Sprintf("%s.%s %s", o.GetName(), o.GetNamespace(), o.GetObjectKind().GroupVersionKind())
+			s := &txtar.Archive{}
+
+			for _, o := range list {
+				s.Files = append(s.Files, asTxtTarFile(o))
 			}
 
-			testingx.Expect(t, names, testingx.Equal([]string{
-				"default. /v1, Kind=Namespace",
-				"demo.default /v1, Kind=ConfigMap",
-				"demo-html.default /v1, Kind=ConfigMap",
-				"endpoint-demo.default /v1, Kind=ConfigMap",
-				"demo.default /v1, Kind=Service",
-				"demo.default apps/v1, Kind=Deployment",
-				"demo.default networking.k8s.io/v1, Kind=Ingress",
-			}))
+			testingx.Expect(t, s, testingx.MatchSnapshot("example.kubepkg"))
 
 			t.Run("could change image names", func(t *testing.T) {
 				renames := map[string]string{
@@ -82,4 +77,20 @@ func TestExtract(t *testing.T) {
 			"gpu-feature-discovery-gpu-feature-discovery.device-system apps/v1, Kind=DaemonSet",
 		}))
 	})
+}
+
+func asTxtTarFile(o object.Object) txtar.File {
+	x := txtar.File{
+		Name: o.GetName(),
+	}
+
+	if namespace := o.GetNamespace(); namespace != "" {
+		x.Name += "." + namespace
+	}
+
+	x.Name += "." + o.GetObjectKind().GroupVersionKind().Kind + "." + "yaml"
+
+	x.Data, _ = yaml.Marshal(o)
+
+	return x
 }
