@@ -1,6 +1,7 @@
 package object
 
 import (
+	"encoding/json"
 	kubepkgv1alpha1 "github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -22,8 +23,12 @@ func Convert(o Object) (Object, error) {
 
 	typed, err := Scheme.New(gvk)
 	if err == nil {
-		if err := Scheme.Convert(o, typed, nil); err != nil {
+		raw, err := json.Marshal(o)
+		if err != nil {
 			return nil, err
+		}
+		if err := json.Unmarshal(raw, typed); err != nil {
+			return nil, errors.Wrap(err, "convert failed")
 		}
 
 		stableGV := Scheme.VersionsForGroupKind(gvk.GroupKind())[0]

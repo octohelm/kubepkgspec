@@ -42,7 +42,7 @@ func TestExtract(t *testing.T) {
 			testingx.Expect(t, s, testingx.MatchSnapshot("example.kubepkg"))
 
 			t.Run("should extract as kubepkg from manifests", func(t *testing.T) {
-				kpkg, err := kubepkg.Extract(iterutil.Items(list))
+				kpkg, err := kubepkg.ExtractAsKubePkg(iterutil.Items(list))
 				testingx.Expect(t, err, testingx.BeNil[error]())
 
 				list, err := SortedExtract(kpkg)
@@ -81,7 +81,7 @@ func TestExtract(t *testing.T) {
 
 		manifests := iterutil.Items(install.SortByKind(iterutil.ToSlice(object.NewIter().Object(rawKPkg.Spec.Manifests))))
 
-		kpkg, err := kubepkg.Extract(manifests)
+		kpkg, err := kubepkg.ExtractAsKubePkg(manifests)
 		testingx.Expect(t, err, testingx.BeNil[error]())
 
 		list, err := SortedExtract(kpkg)

@@ -90,7 +90,7 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			return daemonSet, nil
 		case *kubepkgv1alpha1.DeployJob:
 			job := &batchv1.Job{}
-			job.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("Job"))
+			job.SetGroupVersionKind(batchv1.SchemeGroupVersion.WithKind("Job"))
 			job.SetNamespace(kpkg.Namespace)
 			job.SetName(kpkg.Name)
 
@@ -100,9 +100,6 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			}
 
 			job.Spec.Template = *podTemplateSpec
-			job.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: job.Spec.Template.Labels,
-			}
 
 			spec, err := Merge(&job.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
@@ -113,7 +110,7 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			return job, nil
 		case *kubepkgv1alpha1.DeployCronJob:
 			cronJob := &batchv1.CronJob{}
-			cronJob.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("CronJob"))
+			cronJob.SetGroupVersionKind(batchv1.SchemeGroupVersion.WithKind("CronJob"))
 			cronJob.SetNamespace(kpkg.Namespace)
 			cronJob.SetName(kpkg.Name)
 
@@ -123,9 +120,6 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			}
 
 			cronJob.Spec.JobTemplate.Spec.Template = *podTemplateSpec
-			cronJob.Spec.JobTemplate.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: cronJob.Spec.JobTemplate.Spec.Template.Labels,
-			}
 
 			spec, err := Merge(&cronJob.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {

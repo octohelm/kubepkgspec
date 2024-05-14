@@ -62,11 +62,11 @@ func (r *reload) walk(podSpec *corev1.PodSpec) {
 	}
 
 	for _, v := range podSpec.Volumes {
-		if v.ConfigMap != nil {
-			r.recordConfigMap(v.ConfigMap.Name)
+		if cm := v.ConfigMap; cm != nil {
+			r.recordConfigMap(cm.Name)
 		}
-		if v.Secret != nil {
-			r.recordSecret(v.ConfigMap.Name)
+		if s := v.Secret; s != nil {
+			r.recordSecret(s.SecretName)
 		}
 	}
 }

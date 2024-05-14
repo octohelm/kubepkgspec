@@ -105,60 +105,6 @@ func (c volumeEmptyDirConverter) MountTo(container *corev1.Container) (*corev1.V
 	return nil, nil
 }
 
-type volumeSecretConverter struct {
-	ResourceName string
-	*v1alpha1.VolumeSecret
-}
-
-func (v *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
-	secret := &corev1.Secret{}
-	secret.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Secret"))
-	secret.SetNamespace(kpkg.Namespace)
-	secret.SetName(v.ResourceName)
-
-	if spec := v.Spec; spec != nil {
-		secret.StringData = spec.Data
-	}
-
-	if len(secret.StringData) == 0 {
-		return nil, nil
-	}
-
-	if err := reload.AnnotateDigestTo(secret, reload.ScopeSecretDigest, secret.Name, secret.StringData); err != nil {
-		return nil, err
-	}
-
-	return secret, nil
-}
-
-func (c *volumeSecretConverter) MountTo(container *corev1.Container) (*corev1.Volume, error) {
-	if c.MountPath == "export" {
-		source := corev1.EnvFromSource{
-			Prefix: c.Prefix,
-		}
-
-		source.SecretRef = &corev1.SecretEnvSource{}
-		source.SecretRef.Name = c.ResourceName
-		source.SecretRef.Optional = c.Optional
-
-		container.EnvFrom = append(container.EnvFrom, source)
-
-		return nil, nil
-	}
-
-	v := &corev1.Volume{
-		Name: c.ResourceName,
-	}
-	v.Secret = c.Opt
-	if v.Secret == nil {
-		v.Secret = &corev1.SecretVolumeSource{}
-	}
-	v.Secret.SecretName = c.ResourceName
-
-	container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
-	return v, nil
-}
-
 type volumeHostPathConverter struct {
 	ResourceName string
 	*v1alpha1.VolumeHostPath
@@ -232,7 +178,25 @@ type volumeConfigMapConverter struct {
 	*v1alpha1.VolumeConfigMap
 }
 
+func (v *volumeConfigMapConverter) IsZero() bool {
+	if v.Spec == nil {
+		return true
+	}
+	return len(v.Spec.Data) == 0
+}
+
+func (v *volumeConfigMapConverter) IsOptional() bool {
+	if v.Opt != nil && v.Opt.Optional != nil {
+		return *v.Opt.Optional
+	}
+	return false
+}
+
 func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
+	if c.IsZero() {
+		return nil, nil
+	}
+
 	cm := &corev1.ConfigMap{}
 	cm.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))
 	cm.SetNamespace(kpkg.Namespace)
@@ -240,10 +204,6 @@ func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Ob
 
 	if spec := c.Spec; spec != nil {
 		cm.Data = spec.Data
-	}
-
-	if len(cm.Data) == 0 {
-		return nil, nil
 	}
 
 	if err := reload.AnnotateDigestTo(cm, reload.ScopeConfigMapDigest, cm.Name, cm.Data); err != nil {
@@ -255,6 +215,10 @@ func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Ob
 
 func (c *volumeConfigMapConverter) MountTo(container *corev1.Container) (*corev1.Volume, error) {
 	if c.MountPath == "export" {
+		if c.IsZero() {
+			return nil, nil
+		}
+
 		source := corev1.EnvFromSource{
 			Prefix: c.Prefix,
 		}
@@ -265,6 +229,10 @@ func (c *volumeConfigMapConverter) MountTo(container *corev1.Container) (*corev1
 
 		container.EnvFrom = append(container.EnvFrom, source)
 
+		return nil, nil
+	}
+
+	if c.IsZero() && !c.IsOptional() {
 		return nil, nil
 	}
 
@@ -279,6 +247,82 @@ func (c *volumeConfigMapConverter) MountTo(container *corev1.Container) (*corev1
 
 	container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
 
+	return v, nil
+}
+
+type volumeSecretConverter struct {
+	ResourceName string
+	*v1alpha1.VolumeSecret
+}
+
+func (v *volumeSecretConverter) IsZero() bool {
+	if v.Spec == nil {
+		return true
+	}
+	return len(v.Spec.Data) == 0
+}
+
+func (v *volumeSecretConverter) IsOptional() bool {
+	if v.Opt != nil && v.Opt.Optional != nil {
+		return *v.Opt.Optional
+	}
+	return false
+}
+
+func (c *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
+	if c.IsZero() {
+		return nil, nil
+	}
+
+	secret := &corev1.Secret{}
+	secret.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Secret"))
+	secret.SetNamespace(kpkg.Namespace)
+	secret.SetName(c.ResourceName)
+
+	if spec := c.Spec; spec != nil {
+		secret.StringData = spec.Data
+	}
+
+	if err := reload.AnnotateDigestTo(secret, reload.ScopeSecretDigest, secret.Name, secret.StringData); err != nil {
+		return nil, err
+	}
+
+	return secret, nil
+}
+
+func (c *volumeSecretConverter) MountTo(container *corev1.Container) (*corev1.Volume, error) {
+	if c.MountPath == "export" {
+		if c.IsZero() {
+			return nil, nil
+		}
+
+		source := corev1.EnvFromSource{
+			Prefix: c.Prefix,
+		}
+
+		source.SecretRef = &corev1.SecretEnvSource{}
+		source.SecretRef.Name = c.ResourceName
+		source.SecretRef.Optional = c.Optional
+
+		container.EnvFrom = append(container.EnvFrom, source)
+
+		return nil, nil
+	}
+
+	if c.IsZero() && !c.IsOptional() {
+		return nil, nil
+	}
+
+	v := &corev1.Volume{
+		Name: c.ResourceName,
+	}
+	v.Secret = c.Opt
+	if v.Secret == nil {
+		v.Secret = &corev1.SecretVolumeSource{}
+	}
+	v.Secret.SecretName = c.ResourceName
+
+	container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
 	return v, nil
 }
 

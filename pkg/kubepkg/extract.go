@@ -19,9 +19,23 @@ import (
 	"github.com/octohelm/kubepkgspec/pkg/workload"
 )
 
-func Extract(objIter iter.Seq[object.Object]) (*kubepkgv1alpha1.KubePkg, error) {
-	kk := &kubepkgv1alpha1.KubePkg{}
+func ExtractAsKubePkg(objIter iter.Seq[object.Object]) (*kubepkgv1alpha1.KubePkg, error) {
+	ii, err := Extract(objIter)
+	if err != nil {
+		return nil, err
+	}
 
+	kk := &kubepkgv1alpha1.KubePkg{}
+	kk.Spec.Manifests = map[string]any{}
+
+	for o := range ii {
+		kk.Spec.Manifests[id(o)] = o
+	}
+
+	return kk, nil
+}
+
+func Extract(objIter iter.Seq[object.Object]) (iter.Seq[object.Object], error) {
 	manifests := map[string]object.Object{}
 	workloads := make([]object.Object, 0)
 
@@ -39,24 +53,34 @@ func Extract(objIter iter.Seq[object.Object]) (*kubepkgv1alpha1.KubePkg, error) 
 			used:      map[string]bool{},
 		}
 
-		kk.Spec.Manifests = map[string]any{}
+		kubepkgs := make([]*kubepkgv1alpha1.KubePkg, 0)
 
 		for _, w := range workloads {
 			kpkg, err := s.SimpleWorkload(w)
 			if err != nil {
 				return nil, err
 			}
-			kk.Spec.Manifests[id(kpkg)] = kpkg
+			kubepkgs = append(kubepkgs, kpkg)
 		}
 
-		for k, o := range s.RemainManifests() {
-			kk.Spec.Manifests[k] = o
-		}
+		return func(yield func(object.Object) bool) {
+			for _, x := range kubepkgs {
+				if !yield(x) {
+					return
+				}
+			}
 
-		return kk, nil
+			for o := range s.RemainManifests() {
+				if !yield(o) {
+					return
+				}
+			}
+		}, nil
 	}
 
-	return kk, nil
+	return func(yield func(object.Object) bool) {
+
+	}, nil
 }
 
 type extractor struct {
@@ -64,25 +88,25 @@ type extractor struct {
 	used      map[string]bool
 }
 
-func (e *extractor) RemainManifests() map[string]any {
-	manifests := map[string]any{}
+func (e *extractor) RemainManifests() iter.Seq[object.Object] {
+	return func(yield func(object.Object) bool) {
+		for _, o := range e.manifests {
+			switch o.(type) {
+			case *rbacv1.Role, *rbacv1.RoleBinding, *rbacv1.ClusterRole, *rbacv1.ClusterRoleBinding, *corev1.ServiceAccount:
+				continue
+			case *corev1.ConfigMap, *corev1.Secret:
+				continue
+			case *corev1.Namespace:
+				continue
+			}
 
-	for _, o := range e.manifests {
-		switch o.(type) {
-		case *rbacv1.Role, *rbacv1.RoleBinding, *rbacv1.ClusterRole, *rbacv1.ClusterRoleBinding, *corev1.ServiceAccount:
-			continue
-		case *corev1.ConfigMap, *corev1.Secret:
-			continue
-		case *corev1.Namespace:
-			continue
-		}
-
-		if !e.used[id(o)] {
-			manifests[id(o)] = o
+			if !e.used[id(o)] {
+				if !yield(o) {
+					return
+				}
+			}
 		}
 	}
-
-	return manifests
 }
 
 func (e extractor) SimpleWorkload(o object.Object) (*kubepkgv1alpha1.KubePkg, error) {
@@ -310,7 +334,7 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 
 	for _, o := range e.manifests {
 		if x, ok := o.(*corev1.Service); ok {
-			if equals(x.Spec.Selector, selector.MatchLabels) {
+			if mapContains(selector.MatchLabels, x.Spec.Selector) {
 				e.markUse(x)
 
 				if k.Spec.Services == nil {
@@ -325,14 +349,6 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 					name := convert.FormatPortName(p.Name, p.Protocol, 0)
 
 					svc.Ports[name] = p.Port
-
-					if nodePort := p.NodePort; nodePort > 0 {
-						svc.Expose = &kubepkgv1alpha1.Expose{
-							Type: "NodePort",
-						}
-						// force node port same as port
-						svc.Ports[name] = nodePort
-					}
 				}
 
 				name := k.Name
@@ -397,17 +413,12 @@ func (e *extractor) resolvePathsFromIngress(ks *kubepkgv1alpha1.Service, s *core
 	return nil
 }
 
-func equals[K comparable, V comparable](a, b map[K]V) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for k, v := range a {
-		if w, ok := b[k]; !ok || v != w {
+func mapContains[K comparable, V comparable](scope, target map[K]V) bool {
+	for k, v := range target {
+		if w, ok := scope[k]; !ok || v != w {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -454,6 +465,10 @@ func (e *extractor) resolveServiceAccount(k *kubepkgv1alpha1.KubePkg, serviceAcc
 }
 
 func (e *extractor) resolveRoleBinding(serviceAccountName string) *kubepkgv1alpha1.ServiceAccount {
+	sa := &kubepkgv1alpha1.ServiceAccount{
+		Scope: kubepkgv1alpha1.ScopeTypeNamespace,
+	}
+
 	for _, o := range e.manifests {
 		switch x := o.(type) {
 		case *rbacv1.RoleBinding:
@@ -462,10 +477,7 @@ func (e *extractor) resolveRoleBinding(serviceAccountName string) *kubepkgv1alph
 					if sub.Name == serviceAccountName {
 						e.markUse(x)
 
-						return &kubepkgv1alpha1.ServiceAccount{
-							Scope: kubepkgv1alpha1.ScopeTypeNamespace,
-							Rules: e.resolveRules(x.RoleRef),
-						}
+						sa.Rules = append(sa.Rules, e.resolveRules(x.RoleRef)...)
 					}
 				}
 			}
@@ -475,14 +487,16 @@ func (e *extractor) resolveRoleBinding(serviceAccountName string) *kubepkgv1alph
 					if sub.Name == serviceAccountName {
 						e.markUse(x)
 
-						return &kubepkgv1alpha1.ServiceAccount{
-							Scope: kubepkgv1alpha1.ScopeTypeCluster,
-							Rules: e.resolveRules(x.RoleRef),
-						}
+						sa.Rules = append(sa.Rules, e.resolveRules(x.RoleRef)...)
+						sa.Scope = kubepkgv1alpha1.ScopeTypeCluster
 					}
 				}
 			}
 		}
+	}
+
+	if len(sa.Rules) > 0 {
+		return sa
 	}
 
 	return nil

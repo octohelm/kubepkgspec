@@ -31,10 +31,8 @@ func ParseImage(imageName string) *kubepkgv1alpha1.Image {
 }
 
 func Images(obj iter.Seq[object.Object]) iter.Seq[*kubepkgv1alpha1.Image] {
-	workloads := Workloads(obj)
-
 	return func(yield func(img *kubepkgv1alpha1.Image) bool) {
-		for o := range workloads {
+		for o := range obj {
 			switch x := o.(type) {
 			case *kubepkgv1alpha1.KubePkg:
 				for name, c := range x.Spec.Containers {

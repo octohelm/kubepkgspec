@@ -2,10 +2,7 @@ package v1alpha1
 
 import (
 	"fmt"
-	"reflect"
 
-	"github.com/octohelm/courier/pkg/openapi/jsonschema/extractors"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -32,24 +29,4 @@ type KubePkg struct {
 
 func (k *KubePkg) String() string {
 	return fmt.Sprintf("%s.%s", k.Name, k.Kind)
-}
-
-func init() {
-	extractors.RegisterFieldFilter(reflect.TypeOf(metav1.ObjectMeta{}), extractors.FieldFilter{
-		Include: []string{
-			"name",
-			"namespace",
-			"labels",
-			"annotations",
-		},
-	})
-
-	extractors.RegisterFieldFilter(reflect.TypeOf(corev1.PodSpec{}), extractors.FieldFilter{
-		Exclude: []string{
-			"containers",
-			"volumes",
-			"initContainers",
-			"ephemeralContainers",
-		},
-	})
 }

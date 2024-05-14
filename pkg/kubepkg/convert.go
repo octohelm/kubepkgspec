@@ -2,6 +2,7 @@ package kubepkg
 
 import (
 	"fmt"
+	"iter"
 	"sort"
 	"strings"
 
@@ -20,16 +21,39 @@ import (
 	"github.com/octohelm/kubepkgspec/pkg/strfmt"
 )
 
-func Convert(kpkg *v1alpha1.KubePkg) (map[string]object.Object, error) {
+type Option = func(c *converter)
+
+func WithRecursive(recursive bool) Option {
+	return func(c *converter) {
+		c.recursive = recursive
+	}
+}
+
+func Convert(kpkg *v1alpha1.KubePkg, options ...Option) (iter.Seq[object.Object], error) {
 	e := &converter{}
+	e.build(options...)
+
 	if err := e.walk(kpkg); err != nil {
 		return nil, err
 	}
-	return e.manifests, nil
+	return func(yield func(object.Object) bool) {
+		for _, m := range e.manifests {
+			if !yield(m) {
+				return
+			}
+		}
+	}, nil
 }
 
 type converter struct {
 	manifests map[string]object.Object
+	recursive bool
+}
+
+func (c *converter) build(options ...Option) {
+	for _, o := range options {
+		o(c)
+	}
 }
 
 func (e *converter) register(o object.Object) {
@@ -267,6 +291,15 @@ func (e *converter) walkManifests(kpkg *v1alpha1.KubePkg) error {
 	)
 
 	for m := range i.Object(kpkg.Spec.Manifests) {
+		if e.recursive {
+			if k, ok := m.(*v1alpha1.KubePkg); ok {
+				if err := e.walk(k); err != nil {
+					return err
+				}
+				continue
+			}
+		}
+
 		e.register(m)
 	}
 
