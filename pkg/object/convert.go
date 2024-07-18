@@ -2,21 +2,8 @@ package object
 
 import (
 	"encoding/json"
-	kubepkgv1alpha1 "github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/runtime"
-
-	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-	"k8s.io/client-go/kubernetes/scheme"
 )
-
-var Scheme = runtime.NewScheme()
-
-func init() {
-	_ = scheme.AddToScheme(Scheme)
-	_ = apiextensionsv1.AddToScheme(Scheme)
-	_ = kubepkgv1alpha1.AddToScheme(Scheme)
-}
 
 func Convert(o Object) (Object, error) {
 	gvk := o.GetObjectKind().GroupVersionKind()
