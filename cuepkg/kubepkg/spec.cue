@@ -257,9 +257,7 @@ package kubepkg
 	type: string
 }
 
-#FieldsV1: {
-
-}
+#FieldsV1: {}
 
 #FileSize: int
 

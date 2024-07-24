@@ -134,6 +134,8 @@ github.com/octohelm/courier v0.0.0-20240516021431-5cf7af6666a1 h1:jTrL+dpYmrjTPA
 github.com/octohelm/courier v0.0.0-20240516021431-5cf7af6666a1/go.mod h1:lYPuTnuOSyTHOweXCoDQbPphAZ00ZMRtctUTGSI0YNE=
 github.com/octohelm/courier v0.0.0-20240713110603-ccd3033e9180 h1:hK7O1lgvB9LXbdjsP4WmRKC4slZEpnooP6Xyin1EoTc=
 github.com/octohelm/courier v0.0.0-20240713110603-ccd3033e9180/go.mod h1:ZqnTloL9ZtrPltL2m816qzisKrMDoT8h99tCKVjOSqY=
+github.com/octohelm/courier v0.0.0-20240723055937-13d07eef9d84 h1:ez39VRQDySB/TGLI3P6Sa0jEN6vSoJK273EHdqZXyLA=
+github.com/octohelm/courier v0.0.0-20240723055937-13d07eef9d84/go.mod h1:ZqnTloL9ZtrPltL2m816qzisKrMDoT8h99tCKVjOSqY=
 github.com/octohelm/gengo v0.0.0-20240510051519-974fb897453b h1:z/XJuBmwnxoPPMl2mY11CsU2w8yiLq5q3bwdmkrPCWo=
 github.com/octohelm/gengo v0.0.0-20240510051519-974fb897453b/go.mod h1:mlnC4bXnp0RdKxBf1u4bFQ0pmyDHUfXI9czal6K8lS0=
 github.com/octohelm/gengo v0.0.0-20240622092313-cc61f99ecd84 h1:VH5E6nJ3UR60bOmXojgzu6mQPmuWzG0+dm2AIGnRxVo=
@@ -152,6 +154,8 @@ github.com/octohelm/x v0.0.0-20240513022938-1bd86d96adef h1:BoG/tg33jwNZ8BZA6nFc
 github.com/octohelm/x v0.0.0-20240513022938-1bd86d96adef/go.mod h1:H8L5swKf8wx4DfgGbOhnPMe+POcExkmQmUm3p7W1EF0=
 github.com/octohelm/x v0.0.0-20240622073357-3fcb5294a9e0 h1:25JOHKNSWuU65Omf7Ob9VVPA6e7M+hWLAmzZL/ndYQY=
 github.com/octohelm/x v0.0.0-20240622073357-3fcb5294a9e0/go.mod h1:H8L5swKf8wx4DfgGbOhnPMe+POcExkmQmUm3p7W1EF0=
+github.com/octohelm/x v0.0.0-20240724060656-359813d685aa h1:1Xd/Ep0ZOsbcElxfmZauzMixm6MmWbXSprpBrNzngQg=
+github.com/octohelm/x v0.0.0-20240724060656-359813d685aa/go.mod h1:H8L5swKf8wx4DfgGbOhnPMe+POcExkmQmUm3p7W1EF0=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/ginkgo v1.16.5/go.mod h1:+E8gABHa3K6zRBolWtd+ROzc/U5bkGt0FwiG042wbpU=
 github.com/onsi/ginkgo/v2 v2.17.2 h1:7eMhcy3GimbsA3hEnVKdw/PQM9XN9krpKVXsZdph0/g=

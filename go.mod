@@ -8,11 +8,11 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/go-json-experiment/json v0.0.0-20240524174822-2d9f40f7385b
 	github.com/innoai-tech/infra v0.0.0-20240628125259-5dad47544c26
-	github.com/octohelm/courier v0.0.0-20240713110603-ccd3033e9180
+	github.com/octohelm/courier v0.0.0-20240723055937-13d07eef9d84
 	github.com/octohelm/gengo v0.0.0-20240622092313-cc61f99ecd84
 	github.com/octohelm/kubekit v0.0.0-20240508035712-15cb61729772
 	github.com/octohelm/storage v0.0.0-20240717063837-40e14509556f
-	github.com/octohelm/x v0.0.0-20240622073357-3fcb5294a9e0
+	github.com/octohelm/x v0.0.0-20240724060656-359813d685aa
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/tools v0.23.0
