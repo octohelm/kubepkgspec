@@ -251,11 +251,15 @@ package kubepkg
 
 #ExecAction: command?: [...string]
 
-#Expose: {
+#Expose: #ExposeIngress | #ExposeNodePort
+
+#ExposeIngress: {
+	// Gateway
 	gateway?: [...string]
-	// Type NodePort | Ingress
-	type: string
+	type: "Ingress"
 }
+
+#ExposeNodePort: type: "NodePort"
 
 #FieldsV1: {}
 
@@ -1287,6 +1291,7 @@ package kubepkg
 }
 
 #Service: {
+	// ClusterIP
 	clusterIP?: string
 	expose?:    #Expose
 	// Paths [PortName]BashPath

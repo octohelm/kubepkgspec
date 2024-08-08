@@ -136,27 +136,29 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 		if n == "#" && len(gatewayTemplates) > 0 {
 			if len(paths) > 0 && s.Expose == nil {
 				s.Expose = &v1alpha1.Expose{
-					Type: "Ingress",
+					Underlying: &v1alpha1.ExposeIngress{
+						Type: "Ingress",
+					},
 				}
 			}
 		}
 
-		if s.Expose == nil || s.Expose.Type != "NodePort" {
+		if s.Expose == nil || s.Expose.GetType() != "NodePort" {
 			endpoints["default"] = fmt.Sprintf("http://%s", service.Name)
 		}
 
 		if s.Expose != nil {
-			switch s.Expose.Type {
-			case "NodePort":
+			switch x := s.Expose.Underlying.(type) {
+			case *v1alpha1.ExposeNodePort:
 				service.Spec.Type = corev1.ServiceTypeNodePort
 				for i, p := range service.Spec.Ports {
 					service.Spec.Ports[i].NodePort = p.Port
 				}
-			case "Ingress":
+			case *v1alpha1.ExposeIngress:
 				if len(gatewayTemplates) > 0 {
 					igs := strfmt.From(gatewayTemplates)
 
-					rules := igs.For(service.Name, service.Namespace).IngressRules(paths, s.Expose.Gateway...)
+					rules := igs.For(service.Name, service.Namespace).IngressRules(paths, x.Gateway...)
 
 					for name, e := range igs.For(service.Name, service.Namespace).Endpoints() {
 						endpoints[name] = e
