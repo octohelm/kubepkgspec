@@ -43,15 +43,25 @@ func Images(obj iter.Seq[object.Object]) iter.Seq[*kubepkgv1alpha1.Image] {
 				}
 
 				for name, sub := range x.Spec.Manifests {
-					if obj, ok := sub.(object.Object); ok {
-						for i := range Images(func(yield func(object.Object) bool) {
-							if !yield(obj) {
-								return
+					if o, ok := object.Is(sub); ok {
+
+						o, err := object.Convert(o)
+						if err == nil {
+							subImages := Images(func(yield func(object.Object) bool) {
+								if !yield(o) {
+									return
+								}
+							})
+
+							for i := range subImages {
+								if !yield(i) {
+									return
+								}
 							}
-						}) {
-							if !yield(i) {
-								return
-							}
+
+							x.Spec.Manifests[name] = o
+
+							continue
 						}
 					}
 

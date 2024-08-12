@@ -124,12 +124,3 @@ func (w *objectIter) iterObj(obj anyjson.Obj) iter.Seq[Object] {
 		}
 	}
 }
-
-func isKubernetesManifest(obj anyjson.Obj) bool {
-	if _, ok := obj["apiVersion"].(string); ok {
-		if _, ok := obj["kind"].(string); ok {
-			return true
-		}
-	}
-	return false
-}
