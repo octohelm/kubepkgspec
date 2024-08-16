@@ -576,5 +576,11 @@ func appendVolumeToPodSpec(podTemplateSpec *corev1.PodTemplateSpec, volume *core
 
 	if !added {
 		podTemplateSpec.Spec.Volumes = append(podTemplateSpec.Spec.Volumes, *volume)
+
+		if len(podTemplateSpec.Spec.Volumes) > 1 {
+			sort.Slice(podTemplateSpec.Spec.Volumes, func(i, j int) bool {
+				return podTemplateSpec.Spec.Volumes[i].Name < podTemplateSpec.Spec.Volumes[j].Name
+			})
+		}
 	}
 }

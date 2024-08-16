@@ -1,12 +1,12 @@
 package convert
 
 import (
+	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/object"
 	"github.com/octohelm/kubepkgspec/pkg/reload"
 	"github.com/octohelm/x/ptr"
 	corev1 "k8s.io/api/core/v1"
-
-	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
-	"github.com/octohelm/kubepkgspec/pkg/object"
+	"sort"
 )
 
 type VolumeConverter interface {
@@ -97,7 +97,7 @@ func (c volumeEmptyDirConverter) MountTo(container *corev1.Container) (*corev1.V
 			v.EmptyDir = &corev1.EmptyDirVolumeSource{}
 		}
 
-		container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
+		sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
 
 		return v, nil
 	}
@@ -125,7 +125,7 @@ func (c *volumeHostPathConverter) MountTo(container *corev1.Container) (*corev1.
 			v.HostPath = &corev1.HostPathVolumeSource{}
 		}
 
-		container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
+		sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
 
 		return v, nil
 	}
@@ -165,7 +165,7 @@ func (c volumePersistentVolumeClaimConverter) MountTo(container *corev1.Containe
 		}
 		v.PersistentVolumeClaim.ClaimName = c.ResourceName
 
-		container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
+		sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
 
 		return v, nil
 	}
@@ -245,7 +245,7 @@ func (c *volumeConfigMapConverter) MountTo(container *corev1.Container) (*corev1
 	}
 	v.ConfigMap.Name = c.ResourceName
 
-	container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
+	sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
 
 	return v, nil
 }
@@ -322,7 +322,7 @@ func (c *volumeSecretConverter) MountTo(container *corev1.Container) (*corev1.Vo
 	}
 	v.Secret.SecretName = c.ResourceName
 
-	container.VolumeMounts = append(container.VolumeMounts, toVolumeMount(c.ResourceName, c.VolumeMount))
+	sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
 	return v, nil
 }
 
@@ -351,4 +351,14 @@ func mountVolume(v *v1alpha1.VolumeMount, vm corev1.VolumeMount) {
 	}
 
 	return
+}
+
+func sortedAppendVolumeMount(container *corev1.Container, vm corev1.VolumeMount) {
+	container.VolumeMounts = append(container.VolumeMounts, vm)
+
+	if len(container.VolumeMounts) > 1 {
+		sort.Slice(container.VolumeMounts, func(i, j int) bool {
+			return container.VolumeMounts[i].Name < container.VolumeMounts[j].Name
+		})
+	}
 }
