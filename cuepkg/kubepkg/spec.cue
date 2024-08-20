@@ -32,17 +32,6 @@ package kubepkg
 
 #ClaimResourceStatus: string
 
-#ClaimSource: {
-	// ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod.
-	resourceClaimName?: string
-	// ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
-	// 
-	// The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The pod name and resource name, along with a generated component, will be used to form a unique name for the ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
-	// 
-	// This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
-	resourceClaimTemplateName?: string
-}
-
 #CompletionMode: string
 
 #ConcurrencyPolicy: string
@@ -713,7 +702,7 @@ package kubepkg
 	selector?: #LabelSelector
 	// storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
 	storageClassName?: string
-	// volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/ (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
+	// volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/ (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
 	volumeAttributesClassName?: string
 	// volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
 	volumeMode?: #PersistentVolumeMode
@@ -773,9 +762,9 @@ package kubepkg
 	capacity?: #ResourceList
 	// conditions is the current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'Resizing'.
 	conditions?: [...#PersistentVolumeClaimCondition]
-	// currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature.
+	// currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is a beta field and requires enabling VolumeAttributesClass feature (off by default).
 	currentVolumeAttributesClassName?: string
-	// ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature.
+	// ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is a beta field and requires enabling VolumeAttributesClass feature (off by default).
 	modifyVolumeStatus?: #ModifyVolumeStatus
 	// phase represents the current phase of PersistentVolumeClaim.
 	phase?: #PersistentVolumeClaimPhase
@@ -800,9 +789,9 @@ package kubepkg
 #PodAffinityTerm: {
 	// A label query over a set of resources, in this case pods. If it's null, this PodAffinityTerm matches with no Pods.
 	labelSelector?: #LabelSelector
-	// MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both matchLabelKeys and labelSelector. Also, matchLabelKeys cannot be set when labelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+	// MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both matchLabelKeys and labelSelector. Also, matchLabelKeys cannot be set when labelSelector isn't set. This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
 	matchLabelKeys?: [...string]
-	// MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both mismatchLabelKeys and labelSelector. Also, mismatchLabelKeys cannot be set when labelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+	// MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both mismatchLabelKeys and labelSelector. Also, mismatchLabelKeys cannot be set when labelSelector isn't set. This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
 	mismatchLabelKeys?: [...string]
 	// A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
 	namespaceSelector?: #LabelSelector
@@ -849,7 +838,7 @@ package kubepkg
 
 #PodFailurePolicyOnExitCodesRequirement: {
 	// Restricts the check for exit codes to the container with the specified name. When null, the rule applies to all containers. When specified, it should match one the container or initContainer names in the pod template.
-	containerName: string
+	containerName?: string
 	// Represents the relationship between the container exit code(s) and the specified values. Containers completed with success (exit code 0) are excluded from the requirement check. Possible values are:
 	// 
 	// - In: the requirement is satisfied if at least one container exit code
@@ -887,9 +876,9 @@ package kubepkg
 	// Additional values are considered to be added in the future. Clients should react to an unknown action by skipping the rule.
 	action: #PodFailurePolicyAction
 	// Represents the requirement on the container exit codes.
-	onExitCodes: #PodFailurePolicyOnExitCodesRequirement
+	onExitCodes?: #PodFailurePolicyOnExitCodesRequirement
 	// Represents the requirement on the pod conditions. The requirement is represented as a list of pod condition patterns. The requirement is satisfied if at least one pattern matches an actual pod condition. At most 20 elements are allowed.
-	onPodConditions: [...#PodFailurePolicyOnPodConditionsPattern]
+	onPodConditions?: [...#PodFailurePolicyOnPodConditionsPattern]
 }
 
 #PodManagementPolicyType: string
@@ -1101,8 +1090,18 @@ package kubepkg
 #PodResourceClaim: {
 	// Name uniquely identifies this resource claim inside the pod. This must be a DNS_LABEL.
 	name: string
-	// Source describes where to find the ResourceClaim.
-	source?: #ClaimSource
+	// ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod.
+	// 
+	// Exactly one of ResourceClaimName and ResourceClaimTemplateName must be set.
+	resourceClaimName?: string
+	// ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
+	// 
+	// The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The pod name and resource name, along with a generated component, will be used to form a unique name for the ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
+	// 
+	// This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
+	// 
+	// Exactly one of ResourceClaimName and ResourceClaimTemplateName must be set.
+	resourceClaimTemplateName?: string
 }
 
 #PodSchedulingGate: {
@@ -1129,8 +1128,10 @@ package kubepkg
 	seLinuxOptions?: #SELinuxOptions
 	// The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.
 	seccompProfile?: #SeccompProfile
-	// A list of groups applied to the first process run in each container, in addition to the container's primary GID, the fsGroup (if specified), and group memberships defined in the container image for the uid of the container process. If unspecified, no additional groups are added to any container. Note that group memberships defined in the container image for the uid of the container process are still effective, even if they are not included in this list. Note that this field cannot be set when spec.os.name is windows.
+	// A list of groups applied to the first process run in each container, in addition to the container's primary GID and fsGroup (if specified).  If the SupplementalGroupsPolicy feature is enabled, the supplementalGroupsPolicy field determines whether these are in addition to or instead of any group memberships defined in the container image. If unspecified, no additional groups are added, though group memberships defined in the container image may still be used, depending on the supplementalGroupsPolicy field. Note that this field cannot be set when spec.os.name is windows.
 	supplementalGroups?: [...int]
+	// Defines how supplemental groups of the first container processes are calculated. Valid values are "Merge" and "Strict". If not specified, "Merge" is used. (Alpha) Using the field requires the SupplementalGroupsPolicy feature gate to be enabled and the container runtime must implement support for this feature. Note that this field cannot be set when spec.os.name is windows.
+	supplementalGroupsPolicy?: #SupplementalGroupsPolicy
 	// Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.
 	sysctls?: [...#Sysctl]
 	// The Windows specific settings applied to all containers. If unspecified, the options within a container's SecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux.
@@ -1187,6 +1188,8 @@ package kubepkg
 #ResourceClaim: {
 	// Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
 	name: string
+	// Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request.
+	request?: string
 }
 
 #ResourceList: [X=#ResourceName]: #Quantity
@@ -1272,7 +1275,7 @@ package kubepkg
 	capabilities?: #Capabilities
 	// Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false. Note that this field cannot be set when spec.os.name is windows.
 	privileged?: bool
-	// procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled. Note that this field cannot be set when spec.os.name is windows.
+	// procMount denotes the type of proc mount to use for the containers. The default value is Default which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled. Note that this field cannot be set when spec.os.name is windows.
 	procMount?: #ProcMountType
 	// Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows.
 	readOnlyRootFilesystem?: bool
@@ -1438,6 +1441,8 @@ package kubepkg
 	// succeededIndexes specifies the set of indexes which need to be contained in the actual set of the succeeded indexes for the Job. The list of indexes must be within 0 to ".spec.completions-1" and must not contain duplicates. At least one element is required. The indexes are represented as intervals separated by commas. The intervals can be a decimal integer or a pair of decimal integers separated by a hyphen. The number are listed in represented by the first and last element of the series, separated by a hyphen. For example, if the completed indexes are 1, 3, 4, 5 and 7, they are represented as "1,3-5,7". When this field is null, this field doesn't default to any value and is never evaluated at any time.
 	succeededIndexes?: string
 }
+
+#SupplementalGroupsPolicy: string
 
 #Sysctl: {
 	// Name of a property to set

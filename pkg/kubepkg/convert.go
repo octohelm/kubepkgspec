@@ -2,6 +2,7 @@ package kubepkg
 
 import (
 	"fmt"
+	"github.com/octohelm/x/ptr"
 	"iter"
 	"sort"
 	"strings"
@@ -10,15 +11,14 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	networkingv1 "k8s.io/api/networking/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/kubepkgspec/pkg/kubepkg/convert"
 	"github.com/octohelm/kubepkgspec/pkg/object"
 	"github.com/octohelm/kubepkgspec/pkg/reload"
-	"github.com/octohelm/kubepkgspec/pkg/strfmt"
 )
 
 type Option = func(c *converter)
@@ -86,11 +86,6 @@ func (e *converter) walk(kpkg *v1alpha1.KubePkg) error {
 }
 
 func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
-	var gatewayTemplates []strfmt.GatewayTemplate
-	if err := AnnotationIngressGateway.UnmarshalFrom(kpkg, &gatewayTemplates); err != nil {
-		return err
-	}
-
 	for n := range kpkg.Spec.Services {
 		s := kpkg.Spec.Services[n]
 
@@ -106,6 +101,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 		service.Spec.ClusterIP = s.ClusterIP
 
 		paths := map[string]string{}
+
 		for portName, p := range s.Paths {
 			paths[portName] = p
 		}
@@ -122,6 +118,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 			p.Port = s.Ports[n]
 			p.Name = n
 			p.TargetPort = intstr.FromString(n)
+
 			service.Spec.Ports = append(service.Spec.Ports, p)
 
 			if strings.HasPrefix(p.Name, "http") {
@@ -132,16 +129,6 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 		}
 
 		endpoints := map[string]string{}
-
-		if n == "#" && len(gatewayTemplates) > 0 {
-			if len(paths) > 0 && s.Expose == nil {
-				s.Expose = &v1alpha1.Expose{
-					Underlying: &v1alpha1.ExposeIngress{
-						Type: "Ingress",
-					},
-				}
-			}
-		}
 
 		if s.Expose == nil || s.Expose.GetType() != "NodePort" {
 			endpoints["default"] = fmt.Sprintf("http://%s", service.Name)
@@ -155,40 +142,70 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 					service.Spec.Ports[i].NodePort = p.Port
 				}
 			case *v1alpha1.ExposeIngress:
-				if len(gatewayTemplates) > 0 {
-					igs := strfmt.From(gatewayTemplates)
+				if len(x.Gateway) > 0 {
+					for _, gateway := range x.Gateway {
+						if len(s.Paths) > 0 {
+							httpRoute := &gatewayv1.HTTPRoute{}
+							httpRoute.SetGroupVersionKind(gatewayv1.SchemeGroupVersion.WithKind("HTTPRoute"))
+							httpRoute.SetNamespace(kpkg.Namespace)
+							httpRoute.SetName(convert.SubResourceName(kpkg, n))
 
-					rules := igs.For(service.Name, service.Namespace).IngressRules(paths, x.Gateway...)
+							parts := strings.Split(gateway, ".")
 
-					for name, e := range igs.For(service.Name, service.Namespace).Endpoints() {
-						endpoints[name] = e
+							if len(parts) > 1 {
+								httpRoute.Spec.ParentRefs = []gatewayv1.ParentReference{
+									{
+										Name:      gatewayv1.ObjectName(parts[0]),
+										Namespace: ptr.Ptr(gatewayv1.Namespace(parts[1])),
+									},
+								}
+							} else {
+								httpRoute.Spec.ParentRefs = []gatewayv1.ParentReference{
+									{
+										Name: gatewayv1.ObjectName(parts[0]),
+									},
+								}
+							}
+
+							httpRoute.Spec.Rules = []gatewayv1.HTTPRouteRule{}
+
+							for n, path := range s.Paths {
+								rule := gatewayv1.HTTPRouteRule{}
+								rule.Matches = []gatewayv1.HTTPRouteMatch{
+									{
+										Path: &gatewayv1.HTTPPathMatch{
+											Type:  ptr.Ptr(gatewayv1.PathMatchPathPrefix),
+											Value: ptr.Ptr(path),
+										},
+									},
+								}
+
+								httpBackendRef := gatewayv1.HTTPBackendRef{}
+								httpBackendRef.Name = gatewayv1.ObjectName(service.Name)
+
+								if port, ok := s.Ports[n]; ok {
+									httpBackendRef.Port = ptr.Ptr(gatewayv1.PortNumber(port))
+								} else {
+									httpBackendRef.Port = ptr.Ptr(gatewayv1.PortNumber(80))
+								}
+
+								rule.BackendRefs = []gatewayv1.HTTPBackendRef{
+									httpBackendRef,
+								}
+
+								httpRoute.Spec.Rules = append(httpRoute.Spec.Rules, rule)
+							}
+
+							e.register(httpRoute)
+						}
+
 					}
 
-					if len(rules) > 0 {
-						ingress := &networkingv1.Ingress{}
-						ingress.SetGroupVersionKind(networkingv1.SchemeGroupVersion.WithKind("Ingress"))
-						ingress.SetNamespace(kpkg.Namespace)
-						ingress.SetName(convert.SubResourceName(kpkg, n))
-
-						ingress.Spec.Rules = rules
-
-						e.register(ingress)
-					}
 				}
 			}
 		}
 
 		e.register(service)
-
-		if len(endpoints) > 0 {
-			cmForEndpoints := &corev1.ConfigMap{}
-			cmForEndpoints.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))
-			cmForEndpoints.SetNamespace(service.Namespace)
-			cmForEndpoints.SetName(fmt.Sprintf("endpoint-%s", service.Name))
-			cmForEndpoints.Data = endpoints
-
-			e.register(cmForEndpoints)
-		}
 	}
 
 	return nil

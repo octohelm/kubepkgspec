@@ -3,6 +3,7 @@ package kubepkg
 import (
 	"fmt"
 	"iter"
+	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"strings"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -360,7 +361,7 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 				}
 
 				if svc.Expose == nil {
-					if err := e.resolvePathsFromIngress(&svc, x); err != nil {
+					if err := e.resolvePathsFromIngressOrGateway(&svc, x); err != nil {
 						return err
 					}
 				}
@@ -375,9 +376,40 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 	return nil
 }
 
-func (e *extractor) resolvePathsFromIngress(ks *kubepkgv1alpha1.Service, s *corev1.Service) error {
+func (e *extractor) resolvePathsFromIngressOrGateway(ks *kubepkgv1alpha1.Service, s *corev1.Service) error {
 	for _, o := range e.manifests {
-		if x, ok := o.(*networkingv1.Ingress); ok {
+		switch x := o.(type) {
+		case *gatewayv1.HTTPRoute:
+			for _, r := range x.Spec.Rules {
+				for _, m := range r.Matches {
+					if p := m.Path; p != nil {
+						if path := p.Value; path != nil {
+							if len(r.BackendRefs) > 0 {
+								b := r.BackendRefs[0]
+
+								portName := ""
+								for _, p := range s.Spec.Ports {
+									if b.Port != nil && int32(*b.Port) == p.Port {
+										portName = p.Name
+										break
+									}
+								}
+
+								if portName != "" {
+									e.markUse(o)
+
+									if ks.Paths == nil {
+										ks.Paths = map[string]string{}
+									}
+
+									ks.Paths[portName] = *path
+								}
+							}
+						}
+					}
+				}
+			}
+		case *networkingv1.Ingress:
 			for _, r := range x.Spec.Rules {
 				if r.HTTP != nil {
 					for _, p := range r.HTTP.Paths {

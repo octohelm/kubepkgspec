@@ -57,6 +57,7 @@ import (
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 )
 
 var Scheme = runtime.NewScheme()
@@ -113,6 +114,7 @@ var localSchemeBuilder = runtime.SchemeBuilder{
 	storagev1alpha1.AddToScheme,
 	storagemigrationv1alpha1.AddToScheme,
 
+	gatewayv1.AddToScheme,
 	apiextensionsv1.AddToScheme,
 	kubepkgv1alpha1.AddToScheme,
 }

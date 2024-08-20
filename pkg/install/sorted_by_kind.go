@@ -35,6 +35,8 @@ var InstallOrder SortOrder = []string{
 	"CronJob",
 	"Ingress",
 	"APIService",
+	"Gateway",
+	"HTTPRoute",
 }
 
 func SortByKind(manifests []object.Object) []object.Object {

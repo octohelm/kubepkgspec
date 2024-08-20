@@ -3,10 +3,7 @@
   "kind": "KubePkg",
   "metadata": {
     "name": "demo",
-    "namespace": "default",
-    "annotations": {
-      "ingress.octohelm.tech/gateway": "public+https://{{ .Name }}---{{ .Namespace }}.public,internal+https://{{ .Name }}---{{ .Namespace }}.internal?always=true"
-    }
+    "namespace": "default"
   },
   "spec": {
     "version": "0.0.2",
@@ -39,6 +36,12 @@
       "#": {
         "ports": {
           "http": 80
+        },
+        "expose": {
+          "type": "Ingress",
+          "gateway": [
+            "internal.network-system"
+          ]
         },
         "paths": {
           "http": "/"

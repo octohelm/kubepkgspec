@@ -23,16 +23,6 @@ metadata:
     digest.configmap.octohelm.tech/demo-html: sha256:6507926d60a024b477a9e34419a78ab284a0ca528d8434851825632545214ece
   name: demo-html
   namespace: default
--- endpoint-demo.default.ConfigMap.yaml --
-apiVersion: v1
-data:
-  default: http://demo
-  internal: https://demo---default.internal
-  public: https://demo---default.public
-kind: ConfigMap
-metadata:
-  name: endpoint-demo
-  namespace: default
 -- demo.default.Service.yaml --
 apiVersion: v1
 kind: Service
@@ -95,21 +85,21 @@ spec:
       - configMap:
           name: demo-html
         name: demo-html
--- demo.default.Ingress.yaml --
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+-- demo.default.HTTPRoute.yaml --
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
 metadata:
   name: demo
   namespace: default
 spec:
+  parentRefs:
+  - name: internal
+    namespace: network-system
   rules:
-  - host: demo---default.internal
-    http:
-      paths:
-      - backend:
-          service:
-            name: demo
-            port:
-              name: http
-        path: /
-        pathType: ImplementationSpecific
+  - backendRefs:
+    - name: demo
+      port: 80
+    matches:
+    - path:
+        type: PathPrefix
+        value: /

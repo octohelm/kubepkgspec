@@ -5,6 +5,5 @@ import (
 )
 
 var (
-	AnnotationIngressGateway = metadata.Annotation("ingress.octohelm.tech/gateway")
-	AnnotationPlatform       = metadata.Annotation("octohelm.tech/platform")
+	AnnotationPlatform = metadata.Annotation("octohelm.tech/platform")
 )
