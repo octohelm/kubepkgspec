@@ -179,9 +179,6 @@ type JobSpec struct {
 	// represented by the jobs's .status.failed field, is incremented and it is
 	// checked against the backoffLimit. This field cannot be used in combination
 	// with restartPolicy=OnFailure.
-	//
-	// This field is beta-level. It can be used when the `JobPodFailurePolicy`
-	// feature gate is enabled (enabled by default).
 	PodFailurePolicy *k8s_io_api_batch_v1.PodFailurePolicy `json:"podFailurePolicy,omitempty" protobuf:"bytes,11,opt,name=podFailurePolicy"`
 	// successPolicy specifies the policy when the Job can be declared as succeeded.
 	// If empty, the default behavior applies - the Job is declared as succeeded
@@ -189,8 +186,8 @@ type JobSpec struct {
 	// When the field is specified, it must be immutable and works only for the Indexed Jobs.
 	// Once the Job meets the SuccessPolicy, the lingering pods are terminated.
 	//
-	// This field  is alpha-level. To use this field, you must enable the
-	// `JobSuccessPolicy` feature gate (disabled by default).
+	// This field is beta-level. To use this field, you must enable the
+	// `JobSuccessPolicy` feature gate (enabled by default).
 	SuccessPolicy *k8s_io_api_batch_v1.SuccessPolicy `json:"successPolicy,omitempty" protobuf:"bytes,16,opt,name=successPolicy"`
 	// Specifies the number of retries before marking this job failed.
 	// Defaults to 6
@@ -288,7 +285,8 @@ type JobSpec struct {
 	// The value must be a valid domain-prefixed path (e.g. acme.io/foo) -
 	// all characters before the first "/" must be a valid subdomain as defined
 	// by RFC 1123. All characters trailing the first "/" must be valid HTTP Path
-	// characters as defined by RFC 3986. The value cannot exceed 64 characters.
+	// characters as defined by RFC 3986. The value cannot exceed 63 characters.
+	// This field is immutable.
 	//
 	// This field is alpha-level. The job controller accepts setting the field
 	// when the feature gate JobManagedBy is enabled (disabled by default).
@@ -355,9 +353,11 @@ type PodPartialSpec struct {
 	NodeSelector map[string]string `json:"nodeSelector,omitempty" protobuf:"bytes,7,rep,name=nodeSelector"`
 	// AutomountServiceAccountToken indicates whether a service account token should be automatically mounted.
 	AutomountServiceAccountToken *bool `json:"automountServiceAccountToken,omitempty" protobuf:"varint,21,opt,name=automountServiceAccountToken"`
-	// NodeName is a request to schedule this pod onto a specific node. If it is non-empty,
-	// the scheduler simply schedules this pod onto that node, assuming that it fits resource
-	// requirements.
+	// NodeName indicates in which node this pod is scheduled.
+	// If empty, this pod is a candidate for scheduling by the scheduler defined in schedulerName.
+	// Once this field is set, the kubelet for this node becomes responsible for the lifecycle of this pod.
+	// This field should not be used to express a desire for the pod to be scheduled on a specific node.
+	// https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodename
 	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
 	// Host networking requested for this pod. Use the host's network namespace.
 	// If this option is set, the ports that will be used must be specified.
@@ -472,6 +472,7 @@ type PodPartialSpec struct {
 	// - spec.securityContext.runAsUser
 	// - spec.securityContext.runAsGroup
 	// - spec.securityContext.supplementalGroups
+	// - spec.securityContext.supplementalGroupsPolicy
 	// - spec.containers[*].securityContext.appArmorProfile
 	// - spec.containers[*].securityContext.seLinuxOptions
 	// - spec.containers[*].securityContext.seccompProfile
@@ -648,13 +649,11 @@ type StatefulSetSpec struct {
 	// policy allows the lifecycle to be altered, for example by deleting persistent
 	// volume claims when their stateful set is deleted, or when their pod is scaled
 	// down. This requires the StatefulSetAutoDeletePVC feature gate to be enabled,
-	// which is alpha.  +optional
+	// which is beta.
 	PersistentVolumeClaimRetentionPolicy *k8s_io_api_apps_v1.StatefulSetPersistentVolumeClaimRetentionPolicy `json:"persistentVolumeClaimRetentionPolicy,omitempty" protobuf:"bytes,10,opt,name=persistentVolumeClaimRetentionPolicy"`
 	// ordinals controls the numbering of replica indices in a StatefulSet. The
 	// default ordinals behavior assigns a "0" index to the first replica and
-	// increments the index by one for each additional replica requested. Using
-	// the ordinals field requires the StatefulSetStartOrdinal feature gate to be
-	// enabled, which is beta.
+	// increments the index by one for each additional replica requested.
 	Ordinals *k8s_io_api_apps_v1.StatefulSetOrdinals `json:"ordinals,omitempty" protobuf:"bytes,11,opt,name=ordinals"`
 }
 

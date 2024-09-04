@@ -610,13 +610,7 @@ func (in *Spec) DeepCopyInto(out *Spec) {
 		}
 	}
 	out.ServiceAccount = in.ServiceAccount
-	if in.Manifests != nil {
-		i, o := &in.Manifests, &out.Manifests
-		*o = make(map[string]any, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	out.Manifests = in.Manifests
 
 }
 func (in *KubePkgList) DeepCopyObject() k8s_io_apimachinery_pkg_runtime.Object {

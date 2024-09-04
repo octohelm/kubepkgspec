@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"cmp"
 	batchv1 "k8s.io/api/batch/v1"
 )
 
@@ -8,6 +9,10 @@ type DeployCronJob struct {
 	Kind        string            `json:"kind" validate:"@string{CronJob}"`
 	Annotations map[string]string `json:"annotations,omitempty"`
 	Spec        CronJobSpec       `json:"spec,omitempty"`
+}
+
+func (d DeployCronJob) GetKind() string {
+	return cmp.Or(d.Kind, "CronJob")
 }
 
 // +gengo:partialstruct

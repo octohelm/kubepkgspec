@@ -6,9 +6,13 @@ import (
 	"github.com/octohelm/courier/pkg/openapi/jsonschema/util"
 )
 
+type Deployer interface {
+	GetKind() string
+}
+
 // +gengo:deepcopy=false
 type Deploy struct {
-	Underlying any `json:"-"`
+	Underlying Deployer `json:"-"`
 }
 
 func (in *Deploy) DeepCopy() *Deploy {
@@ -41,7 +45,7 @@ func (d Deploy) MarshalJSON() ([]byte, error) {
 }
 
 func (d *Deploy) SetUnderlying(u any) {
-	d.Underlying = u
+	d.Underlying = u.(Deployer)
 }
 
 func (Deploy) Discriminator() string {
@@ -50,13 +54,13 @@ func (Deploy) Discriminator() string {
 
 func (Deploy) Mapping() map[string]any {
 	return map[string]any{
-		"Deployment":  &DeployDeployment{},
-		"DaemonSet":   &DeployDaemonSet{},
-		"StatefulSet": &DeployStatefulSet{},
-		"Job":         &DeployJob{},
-		"CronJob":     &DeployCronJob{},
+		"Deployment":  Deployer(&DeployDeployment{}),
+		"DaemonSet":   Deployer(&DeployDaemonSet{}),
+		"StatefulSet": Deployer(&DeployStatefulSet{}),
+		"Job":         Deployer(&DeployJob{}),
+		"CronJob":     Deployer(&DeployCronJob{}),
 
-		"Secret":    &DeploySecret{},
-		"ConfigMap": &DeployConfigMap{},
+		"Secret":    Deployer(&DeploySecret{}),
+		"ConfigMap": Deployer(&DeployConfigMap{}),
 	}
 }
