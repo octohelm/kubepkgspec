@@ -19,6 +19,31 @@ import (
 func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 	if underlying := kpkg.Spec.Deploy.Underlying; underlying != nil {
 		switch x := underlying.(type) {
+		case *kubepkgv1alpha1.DeployEndpoints:
+			e := &corev1.Endpoints{}
+			e.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Endpoints"))
+			e.SetNamespace(kpkg.Namespace)
+			e.SetName(kpkg.Name)
+
+			subset := corev1.EndpointSubset{}
+			subset.Addresses = x.Addresses
+
+			portNames := make([]string, 0, len(x.Ports))
+			for n := range x.Ports {
+				portNames = append(portNames, n)
+			}
+			sort.Strings(portNames)
+			for _, n := range portNames {
+				p := corev1.EndpointPort{}
+				p.Port = x.Ports[n]
+				p.Name, p.Protocol, _ = DecodePortName(n)
+
+				subset.Ports = append(subset.Ports, p)
+			}
+
+			e.Subsets = []corev1.EndpointSubset{subset}
+
+			return e, nil
 		case *kubepkgv1alpha1.DeployDeployment:
 			deployment := &appsv1.Deployment{}
 			deployment.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("Deployment"))

@@ -1,0 +1,49 @@
+-- default.Namespace.yaml --
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+-- demo.default.Service.yaml --
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  namespace: default
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+-- demo.default.HTTPRoute.yaml --
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo
+  namespace: default
+spec:
+  parentRefs:
+  - name: internal
+    namespace: network-system
+  rules:
+  - backendRefs:
+    - name: demo
+      port: 80
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+-- demo.default.Endpoints.yaml --
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: demo
+  namespace: default
+subsets:
+- addresses:
+  - ip: 127.0.0.1
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP

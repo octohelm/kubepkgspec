@@ -369,6 +369,38 @@ func (in *DeploymentSpec) DeepCopyInto(out *DeploymentSpec) {
 	out.ProgressDeadlineSeconds = in.ProgressDeadlineSeconds
 
 }
+func (in *DeployEndpoints) DeepCopy() *DeployEndpoints {
+	if in == nil {
+		return nil
+	}
+	out := new(DeployEndpoints)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *DeployEndpoints) DeepCopyInto(out *DeployEndpoints) {
+	out.Kind = in.Kind
+	if in.Annotations != nil {
+		i, o := &in.Annotations, &out.Annotations
+		*o = make(map[string]string, len(*i))
+		for key, val := range *i {
+			(*o)[key] = val
+		}
+	}
+	if in.Ports != nil {
+		i, o := &in.Ports, &out.Ports
+		*o = make(map[string]int32, len(*i))
+		for key, val := range *i {
+			(*o)[key] = val
+		}
+	}
+	if in.Addresses != nil {
+		i, o := &in.Addresses, &out.Addresses
+		*o = make([]k8s_io_api_core_v1.EndpointAddress, len(*i))
+		copy(*o, *i)
+	}
+
+}
 func (in *DeployJob) DeepCopy() *DeployJob {
 	if in == nil {
 		return nil

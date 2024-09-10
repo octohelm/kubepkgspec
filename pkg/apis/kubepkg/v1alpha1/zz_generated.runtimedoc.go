@@ -250,6 +250,25 @@ func (v DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
+func (v DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
+	if len(names) > 0 {
+		switch names[0] {
+		case "Kind":
+			return []string{}, true
+		case "Annotations":
+			return []string{}, true
+		case "Ports":
+			return []string{}, true
+		case "Addresses":
+			return []string{}, true
+
+		}
+
+		return nil, false
+	}
+	return []string{}, true
+}
+
 func (v DeployJob) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
@@ -493,9 +512,6 @@ func (v JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"represented by the jobs's .status.failed field, is incremented and it is",
 				"checked against the backoffLimit. This field cannot be used in combination",
 				"with restartPolicy=OnFailure.",
-				"",
-				"This field is beta-level. It can be used when the `JobPodFailurePolicy`",
-				"feature gate is enabled (enabled by default).",
 			}, true
 		case "SuccessPolicy":
 			return []string{
@@ -505,8 +521,8 @@ func (v JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"When the field is specified, it must be immutable and works only for the Indexed Jobs.",
 				"Once the Job meets the SuccessPolicy, the lingering pods are terminated.",
 				"",
-				"This field  is alpha-level. To use this field, you must enable the",
-				"`JobSuccessPolicy` feature gate (disabled by default).",
+				"This field is beta-level. To use this field, you must enable the",
+				"`JobSuccessPolicy` feature gate (enabled by default).",
 			}, true
 		case "BackoffLimit":
 			return []string{
@@ -624,7 +640,8 @@ func (v JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"The value must be a valid domain-prefixed path (e.g. acme.io/foo) -",
 				"all characters before the first \"/\" must be a valid subdomain as defined",
 				"by RFC 1123. All characters trailing the first \"/\" must be valid HTTP Path",
-				"characters as defined by RFC 3986. The value cannot exceed 64 characters.",
+				"characters as defined by RFC 3986. The value cannot exceed 63 characters.",
+				"This field is immutable.",
 				"",
 				"This field is alpha-level. The job controller accepts setting the field",
 				"when the feature gate JobManagedBy is enabled (disabled by default).",
@@ -750,9 +767,11 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "NodeName":
 			return []string{
-				"NodeName is a request to schedule this pod onto a specific node. If it is non-empty,",
-				"the scheduler simply schedules this pod onto that node, assuming that it fits resource",
-				"requirements.",
+				"NodeName indicates in which node this pod is scheduled.",
+				"If empty, this pod is a candidate for scheduling by the scheduler defined in schedulerName.",
+				"Once this field is set, the kubelet for this node becomes responsible for the lifecycle of this pod.",
+				"This field should not be used to express a desire for the pod to be scheduled on a specific node.",
+				"https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodename",
 			}, true
 		case "HostNetwork":
 			return []string{
@@ -913,6 +932,7 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"- spec.securityContext.runAsUser",
 				"- spec.securityContext.runAsGroup",
 				"- spec.securityContext.supplementalGroups",
+				"- spec.securityContext.supplementalGroupsPolicy",
 				"- spec.containers[*].securityContext.appArmorProfile",
 				"- spec.containers[*].securityContext.seLinuxOptions",
 				"- spec.containers[*].securityContext.seccompProfile",
@@ -1124,15 +1144,13 @@ func (v StatefulSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"policy allows the lifecycle to be altered, for example by deleting persistent",
 				"volume claims when their stateful set is deleted, or when their pod is scaled",
 				"down. This requires the StatefulSetAutoDeletePVC feature gate to be enabled,",
-				"which is alpha.  +optional",
+				"which is beta.",
 			}, true
 		case "Ordinals":
 			return []string{
 				"ordinals controls the numbering of replica indices in a StatefulSet. The",
 				"default ordinals behavior assigns a \"0\" index to the first replica and",
-				"increments the index by one for each additional replica requested. Using",
-				"the ordinals field requires the StatefulSetStartOrdinal feature gate to be",
-				"enabled, which is beta.",
+				"increments the index by one for each additional replica requested.",
 			}, true
 
 		}

@@ -1,6 +1,6 @@
 module github.com/octohelm/kubepkgspec
 
-go 1.23
+go 1.23.1
 
 require (
 	cuelang.org/go v0.10.0

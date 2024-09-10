@@ -20,6 +20,9 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+//go:embed testdata/proxy.kubepkg.json
+var kubepkgProxy []byte
+
 //go:embed testdata/example.kubepkg.json
 var kubepkgExample []byte
 
@@ -27,6 +30,20 @@ var kubepkgExample []byte
 var kubepkgFromManifests []byte
 
 func TestExtract(t *testing.T) {
+	t.Run("should extract proxy kubepkg", func(t *testing.T) {
+		kpkg := &v1alpha1.KubePkg{}
+		testingx.Expect(t, yaml.Unmarshal(kubepkgProxy, kpkg), testingx.BeNil[error]())
+
+		list, err := SortedExtract(kpkg)
+		testingx.Expect(t, err, testingx.BeNil[error]())
+
+		s := &txtar.Archive{}
+		for _, o := range list {
+			s.Files = append(s.Files, asTxtTarFile(o))
+		}
+		testingx.Expect(t, s, testingx.MatchSnapshot("proxy.kubepkg"))
+	})
+
 	t.Run("example", func(t *testing.T) {
 		t.Run("should extract raw manifests", func(t *testing.T) {
 			kpkg := &v1alpha1.KubePkg{}

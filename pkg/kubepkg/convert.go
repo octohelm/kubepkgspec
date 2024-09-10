@@ -94,11 +94,15 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 		service.SetNamespace(kpkg.Namespace)
 		service.SetName(convert.SubResourceName(kpkg, n))
 
-		service.Spec.Selector = map[string]string{
-			"app": kpkg.Name,
-		}
+		if kpkg.Spec.Deploy.Underlying.GetKind() == (&v1alpha1.DeployEndpoints{}).GetKind() {
+			service.Spec.ClusterIP = corev1.ClusterIPNone
+		} else {
+			service.Spec.Selector = map[string]string{
+				"app": kpkg.Name,
+			}
 
-		service.Spec.ClusterIP = s.ClusterIP
+			service.Spec.ClusterIP = s.ClusterIP
+		}
 
 		paths := map[string]string{}
 
