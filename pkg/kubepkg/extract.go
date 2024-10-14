@@ -139,7 +139,6 @@ func (e extractor) SimpleWorkload(o object.Object) (*kubepkgv1alpha1.KubePkg, er
 			return nil, err
 		}
 		k.Spec.Deploy.SetUnderlying(d)
-
 	case *appsv1.DaemonSet:
 		d := &kubepkgv1alpha1.DeployDaemonSet{}
 		d.Kind = "DaemonSet"

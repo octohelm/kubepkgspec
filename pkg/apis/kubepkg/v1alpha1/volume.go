@@ -1,9 +1,8 @@
 package v1alpha1
 
 import (
-	"encoding/json"
-
-	"github.com/octohelm/courier/pkg/openapi/jsonschema/util"
+	"github.com/octohelm/courier/pkg/validator"
+	"github.com/octohelm/courier/pkg/validator/taggedunion"
 )
 
 // +gengo:deepcopy=false
@@ -30,7 +29,7 @@ func (in *Volume) DeepCopyInto(out *Volume) {
 
 func (d *Volume) UnmarshalJSON(data []byte) error {
 	vv := Volume{}
-	if err := util.UnmarshalTaggedUnionFromJSON(data, &vv); err != nil {
+	if err := taggedunion.Unmarshal(data, &vv); err != nil {
 		return err
 	}
 	*d = vv
@@ -41,7 +40,7 @@ func (d Volume) MarshalJSON() ([]byte, error) {
 	if d.Underlying == nil {
 		return nil, nil
 	}
-	return json.Marshal(d.Underlying)
+	return validator.Marshal(d.Underlying)
 }
 
 func (Volume) Discriminator() string {

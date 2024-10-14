@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"cmp"
+
 	batchv1 "k8s.io/api/batch/v1"
 )
 
@@ -16,7 +17,7 @@ func (d DeployCronJob) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=JobTemplate:JobTemplateSpec
+// +gengo:partialstruct:replace=JobTemplate:*JobTemplateSpec json:"template,omitempty"
 // +gengo:partialstruct:omit=Selector
 type cronJobSpec batchv1.CronJobSpec
 

@@ -2,7 +2,7 @@ package object
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
+	"fmt"
 )
 
 func Convert(o Object) (Object, error) {
@@ -15,12 +15,12 @@ func Convert(o Object) (Object, error) {
 			return nil, err
 		}
 		if err := json.Unmarshal(raw, typed); err != nil {
-			return nil, errors.Wrap(err, "convert failed")
+			return nil, fmt.Errorf("convert failed: %w", err)
 		}
 
 		stableGV := Scheme.VersionsForGroupKind(gvk.GroupKind())[0]
 		if gvk.Version != stableGV.Version {
-			return nil, errors.Errorf("unsupport gvk %s, please upgrade to %s", gvk, stableGV.WithKind(gvk.Kind))
+			return nil, fmt.Errorf("unsupport gvk %s, please upgrade to %s", gvk, stableGV.WithKind(gvk.Kind))
 		}
 
 		typedObj, err := FromRuntimeObject(typed)

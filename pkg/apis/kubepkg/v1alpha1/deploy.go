@@ -1,9 +1,8 @@
 package v1alpha1
 
 import (
-	"encoding/json"
-
-	"github.com/octohelm/courier/pkg/openapi/jsonschema/util"
+	"github.com/octohelm/courier/pkg/validator"
+	"github.com/octohelm/courier/pkg/validator/taggedunion"
 )
 
 type Deployer interface {
@@ -30,7 +29,7 @@ func (in *Deploy) DeepCopyInto(out *Deploy) {
 
 func (d *Deploy) UnmarshalJSON(data []byte) error {
 	dd := Deploy{}
-	if err := util.UnmarshalTaggedUnionFromJSON(data, &dd); err != nil {
+	if err := taggedunion.Unmarshal(data, &dd); err != nil {
 		return err
 	}
 	*d = dd
@@ -41,7 +40,7 @@ func (d Deploy) MarshalJSON() ([]byte, error) {
 	if d.Underlying == nil {
 		return []byte("{}"), nil
 	}
-	return json.Marshal(d.Underlying)
+	return validator.Marshal(d.Underlying)
 }
 
 func (d *Deploy) SetUnderlying(u any) {

@@ -16,6 +16,6 @@ func (d DeployJob) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitempty"
 // +gengo:partialstruct:omit=Selector
 type jobSpec batchv1.JobSpec

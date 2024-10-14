@@ -5,12 +5,11 @@ DON'T EDIT THIS FILE
 package v1alpha1
 
 import (
+	errors "errors"
 	fmt "fmt"
-
-	github_com_pkg_errors "github.com/pkg/errors"
 )
 
-var InvalidDigestMetaType = github_com_pkg_errors.New("invalid DigestMetaType")
+var InvalidDigestMetaType = errors.New("invalid DigestMetaType")
 
 func (DigestMetaType) EnumValues() []any {
 	return []any{
@@ -41,7 +40,7 @@ func (v DigestMetaType) Label() string {
 	}
 }
 
-var InvalidScopeType = github_com_pkg_errors.New("invalid ScopeType")
+var InvalidScopeType = errors.New("invalid ScopeType")
 
 func (ScopeType) EnumValues() []any {
 	return []any{

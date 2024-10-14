@@ -1,8 +1,8 @@
 package v1alpha1
 
 import (
-	"encoding/json"
-	"github.com/octohelm/courier/pkg/openapi/jsonschema/util"
+	"github.com/octohelm/courier/pkg/validator"
+	"github.com/octohelm/courier/pkg/validator/taggedunion"
 )
 
 type Service struct {
@@ -51,7 +51,7 @@ func (in *Expose) DeepCopyInto(out *Expose) {
 
 func (d *Expose) UnmarshalJSON(data []byte) error {
 	vv := Expose{}
-	if err := util.UnmarshalTaggedUnionFromJSON(data, &vv); err != nil {
+	if err := taggedunion.Unmarshal(data, &vv); err != nil {
 		return err
 	}
 	*d = vv
@@ -62,7 +62,7 @@ func (d Expose) MarshalJSON() ([]byte, error) {
 	if d.Underlying == nil {
 		return nil, nil
 	}
-	return json.Marshal(d.Underlying)
+	return validator.Marshal(d.Underlying)
 }
 
 func (Expose) Discriminator() string {

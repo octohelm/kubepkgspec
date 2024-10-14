@@ -12,12 +12,18 @@ func (in *PodPartialTemplateSpec) DeepCopyAs() *corev1.PodTemplateSpec {
 	if in == nil {
 		return nil
 	}
+
 	out := new(corev1.PodTemplateSpec)
 	in.DeepCopyIntoAs(out)
+
 	return out
 }
 
 func (in *PodPartialTemplateSpec) DeepCopyIntoAs(templateSpec *corev1.PodTemplateSpec) {
+	if in == nil {
+		return
+	}
+
 	in.Spec.DeepCopyIntoAs(&templateSpec.Spec)
 }
 

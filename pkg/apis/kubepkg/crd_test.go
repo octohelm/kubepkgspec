@@ -3,8 +3,9 @@ package kubepkg
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"os"
 	"sort"
 	"strings"
@@ -32,7 +33,7 @@ func TestCueify(t *testing.T) {
 	schema := scanner.ExtractSchema(context.Background(), &v1alpha1.KubePkg{})
 
 	t.Run("should write json schema", func(t *testing.T) {
-		data, err := json.MarshalIndent(schema, "", "  ")
+		data, err := json.Marshal(schema, jsontext.WithIndent("  "))
 		testingx.Expect(t, err, testingx.BeNil[error]())
 
 		err = os.WriteFile("schema.json", data, 0o644)

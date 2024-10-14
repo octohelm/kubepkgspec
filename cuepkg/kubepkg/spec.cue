@@ -83,8 +83,6 @@ package kubepkg
 	// The number of failed finished jobs to retain. Value must be non-negative integer.
 	// Defaults to 1.
 	failedJobsHistoryLimit?: int
-	// Specifies the job that will be created when executing a CronJob.
-	jobTemplate: #JobTemplateSpec
 	// The schedule in Cron format, see https://en.wikipedia.org/wiki/Cron.
 	schedule: string
 	// Optional deadline in seconds for starting the job if it misses scheduled
@@ -96,6 +94,8 @@ package kubepkg
 	// This flag tells the controller to suspend subsequent executions, it does
 	// not apply to already started executions.  Defaults to false.
 	suspend?: bool
+	// Specifies the job that will be created when executing a CronJob.
+	template?: #JobTemplateSpec
 	// The time zone name for the given schedule, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
 	// If not specified, this will default to the time zone of the kube-controller-manager process.
 	// The set of valid time zone names and the time zone offset is loaded from the system-wide time zone
@@ -126,7 +126,7 @@ package kubepkg
 	// selector is specified).
 	// The only allowed template.spec.restartPolicy value is "Always".
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template
-	template: #PodPartialTemplateSpec
+	template?: #PodPartialTemplateSpec
 	// An update strategy to replace existing DaemonSet pods with new pods.
 	updateStrategy?: #DaemonSetUpdateStrategy
 }
@@ -213,7 +213,7 @@ package kubepkg
 	strategy?: #DeploymentStrategy
 	// Template describes the pods that will be created.
 	// The only allowed template.spec.restartPolicy value is "Always".
-	template: #PodPartialTemplateSpec
+	template?: #PodPartialTemplateSpec
 }
 
 #DeploymentStrategy: {
@@ -456,7 +456,7 @@ package kubepkg
 	// Describes the pod that will be created when executing a job.
 	// The only allowed template.spec.restartPolicy values are "Never" or "OnFailure".
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
-	template: #PodPartialTemplateSpec
+	template?: #PodPartialTemplateSpec
 	// ttlSecondsAfterFinished limits the lifetime of a Job that has finished
 	// execution (either Complete or Failed). If this field is set,
 	// ttlSecondsAfterFinished after the Job finishes, it is eligible to be
@@ -1428,7 +1428,7 @@ package kubepkg
 	// <statefulsetname>-<podindex>. For example, a pod in a StatefulSet named
 	// "web" with index number "3" would be named "web-3".
 	// The only allowed template.spec.restartPolicy value is "Always".
-	template: #PodPartialTemplateSpec
+	template?: #PodPartialTemplateSpec
 	// updateStrategy indicates the StatefulSetUpdateStrategy that will be
 	// employed to update Pods in the StatefulSet when a revision is made to
 	// Template.

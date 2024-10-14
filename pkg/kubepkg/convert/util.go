@@ -1,14 +1,14 @@
 package convert
 
 import (
-	jsonv1 "encoding/json"
 	"io"
 	"strings"
 
 	"github.com/go-json-experiment/json"
-	"github.com/octohelm/x/anyjson"
-
+	jsonv1 "github.com/go-json-experiment/json/v1"
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/x/anyjson"
+	"golang.org/x/sync/errgroup"
 )
 
 func Must[T any](v *T) *T {
@@ -77,21 +77,23 @@ func Unmarshal[X any](src any, target *X) error {
 		anyjson.WithEmptyObjectAsNull(),
 		anyjson.WithArrayMergeKey("name"),
 	)
+
 	return unmarshal(merged, target)
 }
 
 func unmarshal(src any, target any) error {
 	r, w := io.Pipe()
-	defer func() {
-		_ = r.Close()
-	}()
+	eg := &errgroup.Group{}
 
-	go func() {
-		defer func() {
-			_ = w.Close()
-		}()
-		_ = jsonv1.NewEncoder(w).Encode(src)
-	}()
+	eg.Go(func() error {
+		defer w.Close()
+		return json.MarshalWrite(w, src, jsonv1.OmitEmptyWithLegacyDefinition(true))
+	})
 
-	return json.UnmarshalRead(r, target)
+	eg.Go(func() error {
+		defer r.Close()
+		return json.UnmarshalRead(r, target, jsonv1.OmitEmptyWithLegacyDefinition(true))
+	})
+
+	return eg.Wait()
 }

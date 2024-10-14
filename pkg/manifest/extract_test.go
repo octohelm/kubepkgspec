@@ -4,16 +4,14 @@ import (
 	_ "embed"
 	"testing"
 
-	"github.com/octohelm/kubepkgspec/pkg/kubepkg/convert"
-	"github.com/octohelm/x/anyjson"
-
-	"github.com/octohelm/kubepkgspec/pkg/install"
-
 	"github.com/octohelm/kubepkgspec/internal/iterutil"
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/install"
 	"github.com/octohelm/kubepkgspec/pkg/kubepkg"
+	"github.com/octohelm/kubepkgspec/pkg/kubepkg/convert"
 	"github.com/octohelm/kubepkgspec/pkg/object"
 	"github.com/octohelm/kubepkgspec/pkg/workload"
+	"github.com/octohelm/x/anyjson"
 	testingx "github.com/octohelm/x/testing"
 	"golang.org/x/tools/txtar"
 	appsv1 "k8s.io/api/apps/v1"
@@ -48,7 +46,6 @@ func TestExtract(t *testing.T) {
 		t.Run("should extract raw manifests", func(t *testing.T) {
 			kpkg := &v1alpha1.KubePkg{}
 			testingx.Expect(t, yaml.Unmarshal(kubepkgExample, kpkg), testingx.BeNil[error]())
-
 			list, err := SortedExtract(kpkg)
 			testingx.Expect(t, err, testingx.BeNil[error]())
 

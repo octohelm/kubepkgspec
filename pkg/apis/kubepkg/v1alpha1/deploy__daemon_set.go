@@ -16,6 +16,6 @@ func (d DeployDaemonSet) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=Template:PodPartialTemplateSpec
+// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitempty"
 // +gengo:partialstruct:omit=Selector
 type daemonSetSpec appsv1.DaemonSetSpec

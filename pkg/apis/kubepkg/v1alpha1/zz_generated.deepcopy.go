@@ -5,9 +5,9 @@ DON'T EDIT THIS FILE
 package v1alpha1
 
 import (
-	k8s_io_api_core_v1 "k8s.io/api/core/v1"
-	k8s_io_api_rbac_v1 "k8s.io/api/rbac/v1"
-	k8s_io_apimachinery_pkg_runtime "k8s.io/apimachinery/pkg/runtime"
+	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	pkgruntime "k8s.io/apimachinery/pkg/runtime"
 )
 
 func (in *ConfigMapSpec) DeepCopy() *ConfigMapSpec {
@@ -114,141 +114,9 @@ func (in *CronJobSpec) DeepCopyInto(out *CronJobSpec) {
 	out.StartingDeadlineSeconds = in.StartingDeadlineSeconds
 	out.ConcurrencyPolicy = in.ConcurrencyPolicy
 	out.Suspend = in.Suspend
-	in.JobTemplate.DeepCopyInto(&out.JobTemplate)
+	out.JobTemplate = in.JobTemplate
 	out.SuccessfulJobsHistoryLimit = in.SuccessfulJobsHistoryLimit
 	out.FailedJobsHistoryLimit = in.FailedJobsHistoryLimit
-
-}
-func (in *JobTemplateSpec) DeepCopy() *JobTemplateSpec {
-	if in == nil {
-		return nil
-	}
-	out := new(JobTemplateSpec)
-	in.DeepCopyInto(out)
-	return out
-}
-
-func (in *JobTemplateSpec) DeepCopyInto(out *JobTemplateSpec) {
-	in.Spec.DeepCopyInto(&out.Spec)
-
-}
-func (in *JobSpec) DeepCopy() *JobSpec {
-	if in == nil {
-		return nil
-	}
-	out := new(JobSpec)
-	in.DeepCopyInto(out)
-	return out
-}
-
-func (in *JobSpec) DeepCopyInto(out *JobSpec) {
-	out.Parallelism = in.Parallelism
-	out.Completions = in.Completions
-	out.ActiveDeadlineSeconds = in.ActiveDeadlineSeconds
-	out.PodFailurePolicy = in.PodFailurePolicy
-	out.SuccessPolicy = in.SuccessPolicy
-	out.BackoffLimit = in.BackoffLimit
-	out.BackoffLimitPerIndex = in.BackoffLimitPerIndex
-	out.MaxFailedIndexes = in.MaxFailedIndexes
-	out.ManualSelector = in.ManualSelector
-	in.Template.DeepCopyInto(&out.Template)
-	out.TTLSecondsAfterFinished = in.TTLSecondsAfterFinished
-	out.CompletionMode = in.CompletionMode
-	out.Suspend = in.Suspend
-	out.PodReplacementPolicy = in.PodReplacementPolicy
-	out.ManagedBy = in.ManagedBy
-
-}
-func (in *PodPartialTemplateSpec) DeepCopy() *PodPartialTemplateSpec {
-	if in == nil {
-		return nil
-	}
-	out := new(PodPartialTemplateSpec)
-	in.DeepCopyInto(out)
-	return out
-}
-
-func (in *PodPartialTemplateSpec) DeepCopyInto(out *PodPartialTemplateSpec) {
-	in.Spec.DeepCopyInto(&out.Spec)
-
-}
-func (in *PodPartialSpec) DeepCopy() *PodPartialSpec {
-	if in == nil {
-		return nil
-	}
-	out := new(PodPartialSpec)
-	in.DeepCopyInto(out)
-	return out
-}
-
-func (in *PodPartialSpec) DeepCopyInto(out *PodPartialSpec) {
-	out.RestartPolicy = in.RestartPolicy
-	out.TerminationGracePeriodSeconds = in.TerminationGracePeriodSeconds
-	out.ActiveDeadlineSeconds = in.ActiveDeadlineSeconds
-	out.DNSPolicy = in.DNSPolicy
-	if in.NodeSelector != nil {
-		i, o := &in.NodeSelector, &out.NodeSelector
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
-	out.AutomountServiceAccountToken = in.AutomountServiceAccountToken
-	out.NodeName = in.NodeName
-	out.HostNetwork = in.HostNetwork
-	out.HostPID = in.HostPID
-	out.HostIPC = in.HostIPC
-	out.ShareProcessNamespace = in.ShareProcessNamespace
-	out.SecurityContext = in.SecurityContext
-	if in.ImagePullSecrets != nil {
-		i, o := &in.ImagePullSecrets, &out.ImagePullSecrets
-		*o = make([]k8s_io_api_core_v1.LocalObjectReference, len(*i))
-		copy(*o, *i)
-	}
-	out.Hostname = in.Hostname
-	out.Subdomain = in.Subdomain
-	out.Affinity = in.Affinity
-	out.SchedulerName = in.SchedulerName
-	if in.Tolerations != nil {
-		i, o := &in.Tolerations, &out.Tolerations
-		*o = make([]k8s_io_api_core_v1.Toleration, len(*i))
-		copy(*o, *i)
-	}
-	if in.HostAliases != nil {
-		i, o := &in.HostAliases, &out.HostAliases
-		*o = make([]k8s_io_api_core_v1.HostAlias, len(*i))
-		copy(*o, *i)
-	}
-	out.PriorityClassName = in.PriorityClassName
-	out.Priority = in.Priority
-	out.DNSConfig = in.DNSConfig
-	if in.ReadinessGates != nil {
-		i, o := &in.ReadinessGates, &out.ReadinessGates
-		*o = make([]k8s_io_api_core_v1.PodReadinessGate, len(*i))
-		copy(*o, *i)
-	}
-	out.RuntimeClassName = in.RuntimeClassName
-	out.EnableServiceLinks = in.EnableServiceLinks
-	out.PreemptionPolicy = in.PreemptionPolicy
-	out.Overhead = in.Overhead.DeepCopy()
-	if in.TopologySpreadConstraints != nil {
-		i, o := &in.TopologySpreadConstraints, &out.TopologySpreadConstraints
-		*o = make([]k8s_io_api_core_v1.TopologySpreadConstraint, len(*i))
-		copy(*o, *i)
-	}
-	out.SetHostnameAsFQDN = in.SetHostnameAsFQDN
-	out.OS = in.OS
-	out.HostUsers = in.HostUsers
-	if in.SchedulingGates != nil {
-		i, o := &in.SchedulingGates, &out.SchedulingGates
-		*o = make([]k8s_io_api_core_v1.PodSchedulingGate, len(*i))
-		copy(*o, *i)
-	}
-	if in.ResourceClaims != nil {
-		i, o := &in.ResourceClaims, &out.ResourceClaims
-		*o = make([]k8s_io_api_core_v1.PodResourceClaim, len(*i))
-		copy(*o, *i)
-	}
 
 }
 func (in *DaemonSetSpec) DeepCopy() *DaemonSetSpec {
@@ -261,7 +129,7 @@ func (in *DaemonSetSpec) DeepCopy() *DaemonSetSpec {
 }
 
 func (in *DaemonSetSpec) DeepCopyInto(out *DaemonSetSpec) {
-	in.Template.DeepCopyInto(&out.Template)
+	out.Template = in.Template
 	out.UpdateStrategy = *in.UpdateStrategy.DeepCopy()
 	out.MinReadySeconds = in.MinReadySeconds
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
@@ -361,7 +229,7 @@ func (in *DeploymentSpec) DeepCopy() *DeploymentSpec {
 
 func (in *DeploymentSpec) DeepCopyInto(out *DeploymentSpec) {
 	out.Replicas = in.Replicas
-	in.Template.DeepCopyInto(&out.Template)
+	out.Template = in.Template
 	out.Strategy = *in.Strategy.DeepCopy()
 	out.MinReadySeconds = in.MinReadySeconds
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
@@ -396,7 +264,7 @@ func (in *DeployEndpoints) DeepCopyInto(out *DeployEndpoints) {
 	}
 	if in.Addresses != nil {
 		i, o := &in.Addresses, &out.Addresses
-		*o = make([]k8s_io_api_core_v1.EndpointAddress, len(*i))
+		*o = make([]corev1.EndpointAddress, len(*i))
 		copy(*o, *i)
 	}
 
@@ -420,6 +288,33 @@ func (in *DeployJob) DeepCopyInto(out *DeployJob) {
 		}
 	}
 	in.Spec.DeepCopyInto(&out.Spec)
+
+}
+func (in *JobSpec) DeepCopy() *JobSpec {
+	if in == nil {
+		return nil
+	}
+	out := new(JobSpec)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *JobSpec) DeepCopyInto(out *JobSpec) {
+	out.Parallelism = in.Parallelism
+	out.Completions = in.Completions
+	out.ActiveDeadlineSeconds = in.ActiveDeadlineSeconds
+	out.PodFailurePolicy = in.PodFailurePolicy
+	out.SuccessPolicy = in.SuccessPolicy
+	out.BackoffLimit = in.BackoffLimit
+	out.BackoffLimitPerIndex = in.BackoffLimitPerIndex
+	out.MaxFailedIndexes = in.MaxFailedIndexes
+	out.ManualSelector = in.ManualSelector
+	out.Template = in.Template
+	out.TTLSecondsAfterFinished = in.TTLSecondsAfterFinished
+	out.CompletionMode = in.CompletionMode
+	out.Suspend = in.Suspend
+	out.PodReplacementPolicy = in.PodReplacementPolicy
+	out.ManagedBy = in.ManagedBy
 
 }
 func (in *DeploySecret) DeepCopy() *DeploySecret {
@@ -474,10 +369,10 @@ func (in *StatefulSetSpec) DeepCopy() *StatefulSetSpec {
 
 func (in *StatefulSetSpec) DeepCopyInto(out *StatefulSetSpec) {
 	out.Replicas = in.Replicas
-	in.Template.DeepCopyInto(&out.Template)
+	out.Template = in.Template
 	if in.VolumeClaimTemplates != nil {
 		i, o := &in.VolumeClaimTemplates, &out.VolumeClaimTemplates
-		*o = make([]k8s_io_api_core_v1.PersistentVolumeClaim, len(*i))
+		*o = make([]corev1.PersistentVolumeClaim, len(*i))
 		copy(*o, *i)
 	}
 	out.ServiceName = in.ServiceName
@@ -578,7 +473,20 @@ func (in *ExposeNodePort) DeepCopyInto(out *ExposeNodePort) {
 	out.Type = in.Type
 
 }
-func (in *KubePkg) DeepCopyObject() k8s_io_apimachinery_pkg_runtime.Object {
+func (in *JobTemplateSpec) DeepCopy() *JobTemplateSpec {
+	if in == nil {
+		return nil
+	}
+	out := new(JobTemplateSpec)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *JobTemplateSpec) DeepCopyInto(out *JobTemplateSpec) {
+	in.Spec.DeepCopyInto(&out.Spec)
+
+}
+func (in *KubePkg) DeepCopyObject() pkgruntime.Object {
 	if c := in.DeepCopy(); c != nil {
 		return c
 	}
@@ -645,7 +553,7 @@ func (in *Spec) DeepCopyInto(out *Spec) {
 	out.Manifests = in.Manifests
 
 }
-func (in *KubePkgList) DeepCopyObject() k8s_io_apimachinery_pkg_runtime.Object {
+func (in *KubePkgList) DeepCopyObject() pkgruntime.Object {
 	if c := in.DeepCopy(); c != nil {
 		return c
 	}
@@ -669,6 +577,98 @@ func (in *KubePkgList) DeepCopyInto(out *KubePkgList) {
 		*o = make([]KubePkg, len(*i))
 		copy(*o, *i)
 	}
+
+}
+func (in *PodPartialSpec) DeepCopy() *PodPartialSpec {
+	if in == nil {
+		return nil
+	}
+	out := new(PodPartialSpec)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *PodPartialSpec) DeepCopyInto(out *PodPartialSpec) {
+	out.RestartPolicy = in.RestartPolicy
+	out.TerminationGracePeriodSeconds = in.TerminationGracePeriodSeconds
+	out.ActiveDeadlineSeconds = in.ActiveDeadlineSeconds
+	out.DNSPolicy = in.DNSPolicy
+	if in.NodeSelector != nil {
+		i, o := &in.NodeSelector, &out.NodeSelector
+		*o = make(map[string]string, len(*i))
+		for key, val := range *i {
+			(*o)[key] = val
+		}
+	}
+	out.AutomountServiceAccountToken = in.AutomountServiceAccountToken
+	out.NodeName = in.NodeName
+	out.HostNetwork = in.HostNetwork
+	out.HostPID = in.HostPID
+	out.HostIPC = in.HostIPC
+	out.ShareProcessNamespace = in.ShareProcessNamespace
+	out.SecurityContext = in.SecurityContext
+	if in.ImagePullSecrets != nil {
+		i, o := &in.ImagePullSecrets, &out.ImagePullSecrets
+		*o = make([]corev1.LocalObjectReference, len(*i))
+		copy(*o, *i)
+	}
+	out.Hostname = in.Hostname
+	out.Subdomain = in.Subdomain
+	out.Affinity = in.Affinity
+	out.SchedulerName = in.SchedulerName
+	if in.Tolerations != nil {
+		i, o := &in.Tolerations, &out.Tolerations
+		*o = make([]corev1.Toleration, len(*i))
+		copy(*o, *i)
+	}
+	if in.HostAliases != nil {
+		i, o := &in.HostAliases, &out.HostAliases
+		*o = make([]corev1.HostAlias, len(*i))
+		copy(*o, *i)
+	}
+	out.PriorityClassName = in.PriorityClassName
+	out.Priority = in.Priority
+	out.DNSConfig = in.DNSConfig
+	if in.ReadinessGates != nil {
+		i, o := &in.ReadinessGates, &out.ReadinessGates
+		*o = make([]corev1.PodReadinessGate, len(*i))
+		copy(*o, *i)
+	}
+	out.RuntimeClassName = in.RuntimeClassName
+	out.EnableServiceLinks = in.EnableServiceLinks
+	out.PreemptionPolicy = in.PreemptionPolicy
+	out.Overhead = in.Overhead.DeepCopy()
+	if in.TopologySpreadConstraints != nil {
+		i, o := &in.TopologySpreadConstraints, &out.TopologySpreadConstraints
+		*o = make([]corev1.TopologySpreadConstraint, len(*i))
+		copy(*o, *i)
+	}
+	out.SetHostnameAsFQDN = in.SetHostnameAsFQDN
+	out.OS = in.OS
+	out.HostUsers = in.HostUsers
+	if in.SchedulingGates != nil {
+		i, o := &in.SchedulingGates, &out.SchedulingGates
+		*o = make([]corev1.PodSchedulingGate, len(*i))
+		copy(*o, *i)
+	}
+	if in.ResourceClaims != nil {
+		i, o := &in.ResourceClaims, &out.ResourceClaims
+		*o = make([]corev1.PodResourceClaim, len(*i))
+		copy(*o, *i)
+	}
+
+}
+func (in *PodPartialTemplateSpec) DeepCopy() *PodPartialTemplateSpec {
+	if in == nil {
+		return nil
+	}
+	out := new(PodPartialTemplateSpec)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *PodPartialTemplateSpec) DeepCopyInto(out *PodPartialTemplateSpec) {
+	in.Spec.DeepCopyInto(&out.Spec)
 
 }
 func (in *ScopeType) DeepCopy() *ScopeType {
@@ -725,7 +725,7 @@ func (in *ServiceAccount) DeepCopyInto(out *ServiceAccount) {
 	in.Scope.DeepCopyInto(&out.Scope)
 	if in.Rules != nil {
 		i, o := &in.Rules, &out.Rules
-		*o = make([]k8s_io_api_rbac_v1.PolicyRule, len(*i))
+		*o = make([]rbacv1.PolicyRule, len(*i))
 		copy(*o, *i)
 	}
 
@@ -974,22 +974,22 @@ func (in *podPartialSpec) DeepCopy() *podPartialSpec {
 func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 	if in.Volumes != nil {
 		i, o := &in.Volumes, &out.Volumes
-		*o = make([]k8s_io_api_core_v1.Volume, len(*i))
+		*o = make([]corev1.Volume, len(*i))
 		copy(*o, *i)
 	}
 	if in.InitContainers != nil {
 		i, o := &in.InitContainers, &out.InitContainers
-		*o = make([]k8s_io_api_core_v1.Container, len(*i))
+		*o = make([]corev1.Container, len(*i))
 		copy(*o, *i)
 	}
 	if in.Containers != nil {
 		i, o := &in.Containers, &out.Containers
-		*o = make([]k8s_io_api_core_v1.Container, len(*i))
+		*o = make([]corev1.Container, len(*i))
 		copy(*o, *i)
 	}
 	if in.EphemeralContainers != nil {
 		i, o := &in.EphemeralContainers, &out.EphemeralContainers
-		*o = make([]k8s_io_api_core_v1.EphemeralContainer, len(*i))
+		*o = make([]corev1.EphemeralContainer, len(*i))
 		copy(*o, *i)
 	}
 	out.RestartPolicy = in.RestartPolicy
@@ -1014,7 +1014,7 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 	out.SecurityContext = in.SecurityContext
 	if in.ImagePullSecrets != nil {
 		i, o := &in.ImagePullSecrets, &out.ImagePullSecrets
-		*o = make([]k8s_io_api_core_v1.LocalObjectReference, len(*i))
+		*o = make([]corev1.LocalObjectReference, len(*i))
 		copy(*o, *i)
 	}
 	out.Hostname = in.Hostname
@@ -1023,12 +1023,12 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 	out.SchedulerName = in.SchedulerName
 	if in.Tolerations != nil {
 		i, o := &in.Tolerations, &out.Tolerations
-		*o = make([]k8s_io_api_core_v1.Toleration, len(*i))
+		*o = make([]corev1.Toleration, len(*i))
 		copy(*o, *i)
 	}
 	if in.HostAliases != nil {
 		i, o := &in.HostAliases, &out.HostAliases
-		*o = make([]k8s_io_api_core_v1.HostAlias, len(*i))
+		*o = make([]corev1.HostAlias, len(*i))
 		copy(*o, *i)
 	}
 	out.PriorityClassName = in.PriorityClassName
@@ -1036,7 +1036,7 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 	out.DNSConfig = in.DNSConfig
 	if in.ReadinessGates != nil {
 		i, o := &in.ReadinessGates, &out.ReadinessGates
-		*o = make([]k8s_io_api_core_v1.PodReadinessGate, len(*i))
+		*o = make([]corev1.PodReadinessGate, len(*i))
 		copy(*o, *i)
 	}
 	out.RuntimeClassName = in.RuntimeClassName
@@ -1045,7 +1045,7 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 	out.Overhead = in.Overhead.DeepCopy()
 	if in.TopologySpreadConstraints != nil {
 		i, o := &in.TopologySpreadConstraints, &out.TopologySpreadConstraints
-		*o = make([]k8s_io_api_core_v1.TopologySpreadConstraint, len(*i))
+		*o = make([]corev1.TopologySpreadConstraint, len(*i))
 		copy(*o, *i)
 	}
 	out.SetHostnameAsFQDN = in.SetHostnameAsFQDN
@@ -1053,12 +1053,12 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 	out.HostUsers = in.HostUsers
 	if in.SchedulingGates != nil {
 		i, o := &in.SchedulingGates, &out.SchedulingGates
-		*o = make([]k8s_io_api_core_v1.PodSchedulingGate, len(*i))
+		*o = make([]corev1.PodSchedulingGate, len(*i))
 		copy(*o, *i)
 	}
 	if in.ResourceClaims != nil {
 		i, o := &in.ResourceClaims, &out.ResourceClaims
-		*o = make([]k8s_io_api_core_v1.PodResourceClaim, len(*i))
+		*o = make([]corev1.PodResourceClaim, len(*i))
 		copy(*o, *i)
 	}
 
@@ -1078,7 +1078,7 @@ func (in *statefulSetSpec) DeepCopyInto(out *statefulSetSpec) {
 	out.Template = *in.Template.DeepCopy()
 	if in.VolumeClaimTemplates != nil {
 		i, o := &in.VolumeClaimTemplates, &out.VolumeClaimTemplates
-		*o = make([]k8s_io_api_core_v1.PersistentVolumeClaim, len(*i))
+		*o = make([]corev1.PersistentVolumeClaim, len(*i))
 		copy(*o, *i)
 	}
 	out.ServiceName = in.ServiceName

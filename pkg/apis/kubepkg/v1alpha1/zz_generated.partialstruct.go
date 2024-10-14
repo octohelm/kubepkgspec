@@ -5,9 +5,9 @@ DON'T EDIT THIS FILE
 package v1alpha1
 
 import (
-	k8s_io_api_apps_v1 "k8s.io/api/apps/v1"
-	k8s_io_api_batch_v1 "k8s.io/api/batch/v1"
-	k8s_io_api_core_v1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 type CronJobSpec struct {
@@ -32,12 +32,12 @@ type CronJobSpec struct {
 	// - "Allow" (default): allows CronJobs to run concurrently;
 	// - "Forbid": forbids concurrent runs, skipping next run if previous run hasn't finished yet;
 	// - "Replace": cancels currently running job and replaces it with a new one
-	ConcurrencyPolicy k8s_io_api_batch_v1.ConcurrencyPolicy `json:"concurrencyPolicy,omitempty" protobuf:"bytes,3,opt,name=concurrencyPolicy,casttype=ConcurrencyPolicy"`
+	ConcurrencyPolicy batchv1.ConcurrencyPolicy `json:"concurrencyPolicy,omitempty" protobuf:"bytes,3,opt,name=concurrencyPolicy,casttype=ConcurrencyPolicy"`
 	// This flag tells the controller to suspend subsequent executions, it does
 	// not apply to already started executions.  Defaults to false.
 	Suspend *bool `json:"suspend,omitempty" protobuf:"varint,4,opt,name=suspend"`
 	// Specifies the job that will be created when executing a CronJob.
-	JobTemplate JobTemplateSpec `json:"jobTemplate" protobuf:"bytes,5,opt,name=jobTemplate"`
+	JobTemplate *JobTemplateSpec `json:"template,omitempty"`
 	// The number of successful finished jobs to retain. Value must be non-negative integer.
 	// Defaults to 3.
 	SuccessfulJobsHistoryLimit *int32 `json:"successfulJobsHistoryLimit,omitempty" protobuf:"varint,6,opt,name=successfulJobsHistoryLimit"`
@@ -46,16 +46,16 @@ type CronJobSpec struct {
 	FailedJobsHistoryLimit *int32 `json:"failedJobsHistoryLimit,omitempty" protobuf:"varint,7,opt,name=failedJobsHistoryLimit"`
 }
 
-func (in *CronJobSpec) DeepCopyAs() *k8s_io_api_batch_v1.CronJobSpec {
+func (in *CronJobSpec) DeepCopyAs() *batchv1.CronJobSpec {
 	if in == nil {
 		return nil
 	}
-	out := new(k8s_io_api_batch_v1.CronJobSpec)
+	out := new(batchv1.CronJobSpec)
 	in.DeepCopyIntoAs(out)
 	return out
 }
 
-func (in *CronJobSpec) DeepCopyIntoAs(out *k8s_io_api_batch_v1.CronJobSpec) {
+func (in *CronJobSpec) DeepCopyIntoAs(out *batchv1.CronJobSpec) {
 	out.Schedule = in.Schedule
 	out.TimeZone = in.TimeZone
 	out.StartingDeadlineSeconds = in.StartingDeadlineSeconds
@@ -74,9 +74,9 @@ type DaemonSetSpec struct {
 	// selector is specified).
 	// The only allowed template.spec.restartPolicy value is "Always".
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template
-	Template PodPartialTemplateSpec `json:"template" protobuf:"bytes,2,opt,name=template"`
+	Template *PodPartialTemplateSpec `json:"template,omitempty"`
 	// An update strategy to replace existing DaemonSet pods with new pods.
-	UpdateStrategy k8s_io_api_apps_v1.DaemonSetUpdateStrategy `json:"updateStrategy,omitempty" protobuf:"bytes,3,opt,name=updateStrategy"`
+	UpdateStrategy appsv1.DaemonSetUpdateStrategy `json:"updateStrategy,omitempty" protobuf:"bytes,3,opt,name=updateStrategy"`
 	// The minimum number of seconds for which a newly created DaemonSet pod should
 	// be ready without any of its container crashing, for it to be considered
 	// available. Defaults to 0 (pod will be considered available as soon as it
@@ -88,16 +88,16 @@ type DaemonSetSpec struct {
 	RevisionHistoryLimit *int32 `json:"revisionHistoryLimit,omitempty" protobuf:"varint,6,opt,name=revisionHistoryLimit"`
 }
 
-func (in *DaemonSetSpec) DeepCopyAs() *k8s_io_api_apps_v1.DaemonSetSpec {
+func (in *DaemonSetSpec) DeepCopyAs() *appsv1.DaemonSetSpec {
 	if in == nil {
 		return nil
 	}
-	out := new(k8s_io_api_apps_v1.DaemonSetSpec)
+	out := new(appsv1.DaemonSetSpec)
 	in.DeepCopyIntoAs(out)
 	return out
 }
 
-func (in *DaemonSetSpec) DeepCopyIntoAs(out *k8s_io_api_apps_v1.DaemonSetSpec) {
+func (in *DaemonSetSpec) DeepCopyIntoAs(out *appsv1.DaemonSetSpec) {
 	in.Template.DeepCopyIntoAs(&out.Template)
 	out.UpdateStrategy = in.UpdateStrategy
 	out.MinReadySeconds = in.MinReadySeconds
@@ -111,9 +111,9 @@ type DeploymentSpec struct {
 	Replicas *int32 `json:"replicas,omitempty" protobuf:"varint,1,opt,name=replicas"`
 	// Template describes the pods that will be created.
 	// The only allowed template.spec.restartPolicy value is "Always".
-	Template PodPartialTemplateSpec `json:"template" protobuf:"bytes,3,opt,name=template"`
+	Template *PodPartialTemplateSpec `json:"template,omitempty"`
 	// The deployment strategy to use to replace existing pods with new ones.
-	Strategy k8s_io_api_apps_v1.DeploymentStrategy `json:"strategy,omitempty" patchStrategy:"retainKeys" protobuf:"bytes,4,opt,name=strategy"`
+	Strategy appsv1.DeploymentStrategy `json:"strategy,omitempty" patchStrategy:"retainKeys" protobuf:"bytes,4,opt,name=strategy"`
 	// Minimum number of seconds for which a newly created pod should be ready
 	// without any of its container crashing, for it to be considered available.
 	// Defaults to 0 (pod will be considered available as soon as it is ready)
@@ -132,16 +132,16 @@ type DeploymentSpec struct {
 	ProgressDeadlineSeconds *int32 `json:"progressDeadlineSeconds,omitempty" protobuf:"varint,9,opt,name=progressDeadlineSeconds"`
 }
 
-func (in *DeploymentSpec) DeepCopyAs() *k8s_io_api_apps_v1.DeploymentSpec {
+func (in *DeploymentSpec) DeepCopyAs() *appsv1.DeploymentSpec {
 	if in == nil {
 		return nil
 	}
-	out := new(k8s_io_api_apps_v1.DeploymentSpec)
+	out := new(appsv1.DeploymentSpec)
 	in.DeepCopyIntoAs(out)
 	return out
 }
 
-func (in *DeploymentSpec) DeepCopyIntoAs(out *k8s_io_api_apps_v1.DeploymentSpec) {
+func (in *DeploymentSpec) DeepCopyIntoAs(out *appsv1.DeploymentSpec) {
 	out.Replicas = in.Replicas
 	in.Template.DeepCopyIntoAs(&out.Template)
 	out.Strategy = in.Strategy
@@ -179,7 +179,7 @@ type JobSpec struct {
 	// represented by the jobs's .status.failed field, is incremented and it is
 	// checked against the backoffLimit. This field cannot be used in combination
 	// with restartPolicy=OnFailure.
-	PodFailurePolicy *k8s_io_api_batch_v1.PodFailurePolicy `json:"podFailurePolicy,omitempty" protobuf:"bytes,11,opt,name=podFailurePolicy"`
+	PodFailurePolicy *batchv1.PodFailurePolicy `json:"podFailurePolicy,omitempty" protobuf:"bytes,11,opt,name=podFailurePolicy"`
 	// successPolicy specifies the policy when the Job can be declared as succeeded.
 	// If empty, the default behavior applies - the Job is declared as succeeded
 	// only when the number of succeeded pods equals to the completions.
@@ -188,7 +188,7 @@ type JobSpec struct {
 	//
 	// This field is beta-level. To use this field, you must enable the
 	// `JobSuccessPolicy` feature gate (enabled by default).
-	SuccessPolicy *k8s_io_api_batch_v1.SuccessPolicy `json:"successPolicy,omitempty" protobuf:"bytes,16,opt,name=successPolicy"`
+	SuccessPolicy *batchv1.SuccessPolicy `json:"successPolicy,omitempty" protobuf:"bytes,16,opt,name=successPolicy"`
 	// Specifies the number of retries before marking this job failed.
 	// Defaults to 6
 	BackoffLimit *int32 `json:"backoffLimit,omitempty" protobuf:"varint,7,opt,name=backoffLimit"`
@@ -226,7 +226,7 @@ type JobSpec struct {
 	// Describes the pod that will be created when executing a job.
 	// The only allowed template.spec.restartPolicy values are "Never" or "OnFailure".
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
-	Template PodPartialTemplateSpec `json:"template" protobuf:"bytes,6,opt,name=template"`
+	Template *PodPartialTemplateSpec `json:"template,omitempty"`
 	// ttlSecondsAfterFinished limits the lifetime of a Job that has finished
 	// execution (either Complete or Failed). If this field is set,
 	// ttlSecondsAfterFinished after the Job finishes, it is eligible to be
@@ -257,7 +257,7 @@ type JobSpec struct {
 	// If the Job controller observes a mode that it doesn't recognize, which
 	// is possible during upgrades due to version skew, the controller
 	// skips updates for the Job.
-	CompletionMode *k8s_io_api_batch_v1.CompletionMode `json:"completionMode,omitempty" protobuf:"bytes,9,opt,name=completionMode,casttype=CompletionMode"`
+	CompletionMode *batchv1.CompletionMode `json:"completionMode,omitempty" protobuf:"bytes,9,opt,name=completionMode,casttype=CompletionMode"`
 	// suspend specifies whether the Job controller should create Pods or not. If
 	// a Job is created with suspend set to true, no Pods are created by the Job
 	// controller. If a Job is suspended after creation (i.e. the flag goes from
@@ -277,7 +277,7 @@ type JobSpec struct {
 	// TerminatingOrFailed and Failed are allowed values when podFailurePolicy is not in use.
 	// This is an beta field. To use this, enable the JobPodReplacementPolicy feature toggle.
 	// This is on by default.
-	PodReplacementPolicy *k8s_io_api_batch_v1.PodReplacementPolicy `json:"podReplacementPolicy,omitempty" protobuf:"bytes,14,opt,name=podReplacementPolicy,casttype=podReplacementPolicy"`
+	PodReplacementPolicy *batchv1.PodReplacementPolicy `json:"podReplacementPolicy,omitempty" protobuf:"bytes,14,opt,name=podReplacementPolicy,casttype=podReplacementPolicy"`
 	// ManagedBy field indicates the controller that manages a Job. The k8s Job
 	// controller reconciles jobs which don't have this field at all or the field
 	// value is the reserved string `kubernetes.io/job-controller`, but skips
@@ -293,16 +293,16 @@ type JobSpec struct {
 	ManagedBy *string `json:"managedBy,omitempty" protobuf:"bytes,15,opt,name=managedBy"`
 }
 
-func (in *JobSpec) DeepCopyAs() *k8s_io_api_batch_v1.JobSpec {
+func (in *JobSpec) DeepCopyAs() *batchv1.JobSpec {
 	if in == nil {
 		return nil
 	}
-	out := new(k8s_io_api_batch_v1.JobSpec)
+	out := new(batchv1.JobSpec)
 	in.DeepCopyIntoAs(out)
 	return out
 }
 
-func (in *JobSpec) DeepCopyIntoAs(out *k8s_io_api_batch_v1.JobSpec) {
+func (in *JobSpec) DeepCopyIntoAs(out *batchv1.JobSpec) {
 	out.Parallelism = in.Parallelism
 	out.Completions = in.Completions
 	out.ActiveDeadlineSeconds = in.ActiveDeadlineSeconds
@@ -326,7 +326,7 @@ type PodPartialSpec struct {
 	// One of Always, OnFailure, Never. In some contexts, only a subset of those values may be permitted.
 	// Default to Always.
 	// More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
-	RestartPolicy k8s_io_api_core_v1.RestartPolicy `json:"restartPolicy,omitempty" protobuf:"bytes,3,opt,name=restartPolicy,casttype=RestartPolicy"`
+	RestartPolicy corev1.RestartPolicy `json:"restartPolicy,omitempty" protobuf:"bytes,3,opt,name=restartPolicy,casttype=RestartPolicy"`
 	// Optional duration in seconds the pod needs to terminate gracefully. May be decreased in delete request.
 	// Value must be non-negative integer. The value zero indicates stop immediately via
 	// the kill signal (no opportunity to shut down).
@@ -346,7 +346,7 @@ type PodPartialSpec struct {
 	// DNS parameters given in DNSConfig will be merged with the policy selected with DNSPolicy.
 	// To have DNS options set along with hostNetwork, you have to specify DNS policy
 	// explicitly to 'ClusterFirstWithHostNet'.
-	DNSPolicy k8s_io_api_core_v1.DNSPolicy `json:"dnsPolicy,omitempty" protobuf:"bytes,6,opt,name=dnsPolicy,casttype=DNSPolicy"`
+	DNSPolicy corev1.DNSPolicy `json:"dnsPolicy,omitempty" protobuf:"bytes,6,opt,name=dnsPolicy,casttype=DNSPolicy"`
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -377,11 +377,11 @@ type PodPartialSpec struct {
 	ShareProcessNamespace *bool `json:"shareProcessNamespace,omitempty" protobuf:"varint,27,opt,name=shareProcessNamespace"`
 	// SecurityContext holds pod-level security attributes and common container settings.
 	// Optional: Defaults to empty.  See type description for default values of each field.
-	SecurityContext *k8s_io_api_core_v1.PodSecurityContext `json:"securityContext,omitempty" protobuf:"bytes,14,opt,name=securityContext"`
+	SecurityContext *corev1.PodSecurityContext `json:"securityContext,omitempty" protobuf:"bytes,14,opt,name=securityContext"`
 	// ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
 	// If specified, these secrets will be passed to individual puller implementations for them to use.
 	// More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod
-	ImagePullSecrets []k8s_io_api_core_v1.LocalObjectReference `json:"imagePullSecrets,omitempty" patchStrategy:"merge" patchMergeKey:"name" protobuf:"bytes,15,rep,name=imagePullSecrets"`
+	ImagePullSecrets []corev1.LocalObjectReference `json:"imagePullSecrets,omitempty" patchStrategy:"merge" patchMergeKey:"name" protobuf:"bytes,15,rep,name=imagePullSecrets"`
 	// Specifies the hostname of the Pod
 	// If not specified, the pod's hostname will be set to a system-defined value.
 	Hostname string `json:"hostname,omitempty" protobuf:"bytes,16,opt,name=hostname"`
@@ -389,15 +389,15 @@ type PodPartialSpec struct {
 	// If not specified, the pod will not have a domainname at all.
 	Subdomain string `json:"subdomain,omitempty" protobuf:"bytes,17,opt,name=subdomain"`
 	// If specified, the pod's scheduling constraints
-	Affinity *k8s_io_api_core_v1.Affinity `json:"affinity,omitempty" protobuf:"bytes,18,opt,name=affinity"`
+	Affinity *corev1.Affinity `json:"affinity,omitempty" protobuf:"bytes,18,opt,name=affinity"`
 	// If specified, the pod will be dispatched by specified scheduler.
 	// If not specified, the pod will be dispatched by default scheduler.
 	SchedulerName string `json:"schedulerName,omitempty" protobuf:"bytes,19,opt,name=schedulerName"`
 	// If specified, the pod's tolerations.
-	Tolerations []k8s_io_api_core_v1.Toleration `json:"tolerations,omitempty" protobuf:"bytes,22,opt,name=tolerations"`
+	Tolerations []corev1.Toleration `json:"tolerations,omitempty" protobuf:"bytes,22,opt,name=tolerations"`
 	// HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
 	// file if specified.
-	HostAliases []k8s_io_api_core_v1.HostAlias `json:"hostAliases,omitempty" patchStrategy:"merge" patchMergeKey:"ip" protobuf:"bytes,23,rep,name=hostAliases"`
+	HostAliases []corev1.HostAlias `json:"hostAliases,omitempty" patchStrategy:"merge" patchMergeKey:"ip" protobuf:"bytes,23,rep,name=hostAliases"`
 	// If specified, indicates the pod's priority. "system-node-critical" and
 	// "system-cluster-critical" are two special keywords which indicate the
 	// highest priorities with the former being the highest priority. Any other
@@ -414,12 +414,12 @@ type PodPartialSpec struct {
 	// Specifies the DNS parameters of a pod.
 	// Parameters specified here will be merged to the generated DNS
 	// configuration based on DNSPolicy.
-	DNSConfig *k8s_io_api_core_v1.PodDNSConfig `json:"dnsConfig,omitempty" protobuf:"bytes,26,opt,name=dnsConfig"`
+	DNSConfig *corev1.PodDNSConfig `json:"dnsConfig,omitempty" protobuf:"bytes,26,opt,name=dnsConfig"`
 	// If specified, all readiness gates will be evaluated for pod readiness.
 	// A pod is ready when all its containers are ready AND
 	// all conditions specified in the readiness gates have status equal to "True"
 	// More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates
-	ReadinessGates []k8s_io_api_core_v1.PodReadinessGate `json:"readinessGates,omitempty" protobuf:"bytes,28,opt,name=readinessGates"`
+	ReadinessGates []corev1.PodReadinessGate `json:"readinessGates,omitempty" protobuf:"bytes,28,opt,name=readinessGates"`
 	// RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used
 	// to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run.
 	// If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an
@@ -433,7 +433,7 @@ type PodPartialSpec struct {
 	// PreemptionPolicy is the Policy for preempting pods with lower priority.
 	// One of Never, PreemptLowerPriority.
 	// Defaults to PreemptLowerPriority if unset.
-	PreemptionPolicy *k8s_io_api_core_v1.PreemptionPolicy `json:"preemptionPolicy,omitempty" protobuf:"bytes,31,opt,name=preemptionPolicy"`
+	PreemptionPolicy *corev1.PreemptionPolicy `json:"preemptionPolicy,omitempty" protobuf:"bytes,31,opt,name=preemptionPolicy"`
 	// Overhead represents the resource overhead associated with running a pod for a given RuntimeClass.
 	// This field will be autopopulated at admission time by the RuntimeClass admission controller. If
 	// the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests.
@@ -441,11 +441,11 @@ type PodPartialSpec struct {
 	// set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value
 	// defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero.
 	// More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md
-	Overhead k8s_io_api_core_v1.ResourceList `json:"overhead,omitempty" protobuf:"bytes,32,opt,name=overhead"`
+	Overhead corev1.ResourceList `json:"overhead,omitempty" protobuf:"bytes,32,opt,name=overhead"`
 	// TopologySpreadConstraints describes how a group of pods ought to spread across topology
 	// domains. Scheduler will schedule pods in a way which abides by the constraints.
 	// All topologySpreadConstraints are ANDed.
-	TopologySpreadConstraints []k8s_io_api_core_v1.TopologySpreadConstraint `json:"topologySpreadConstraints,omitempty" patchStrategy:"merge" patchMergeKey:"topologyKey" protobuf:"bytes,33,opt,name=topologySpreadConstraints"`
+	TopologySpreadConstraints []corev1.TopologySpreadConstraint `json:"topologySpreadConstraints,omitempty" patchStrategy:"merge" patchMergeKey:"topologyKey" protobuf:"bytes,33,opt,name=topologySpreadConstraints"`
 	// If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default).
 	// In Linux containers, this means setting the FQDN in the hostname field of the kernel (the nodename field of struct utsname).
 	// In Windows containers, this means setting the registry value of hostname for the registry key HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters to FQDN.
@@ -483,7 +483,7 @@ type PodPartialSpec struct {
 	// - spec.containers[*].securityContext.procMount
 	// - spec.containers[*].securityContext.runAsUser
 	// - spec.containers[*].securityContext.runAsGroup
-	OS *k8s_io_api_core_v1.PodOS `json:"os,omitempty" protobuf:"bytes,36,opt,name=os"`
+	OS *corev1.PodOS `json:"os,omitempty" protobuf:"bytes,36,opt,name=os"`
 	// Use the host's user namespace.
 	// Optional: Default to true.
 	// If set to true or not present, the pod will be run in the host user namespace, useful
@@ -499,7 +499,7 @@ type PodPartialSpec struct {
 	// scheduler will not attempt to schedule the pod.
 	//
 	// SchedulingGates can only be set at pod creation time, and be removed only afterwards.
-	SchedulingGates []k8s_io_api_core_v1.PodSchedulingGate `json:"schedulingGates,omitempty" patchStrategy:"merge" patchMergeKey:"name" protobuf:"bytes,38,opt,name=schedulingGates"`
+	SchedulingGates []corev1.PodSchedulingGate `json:"schedulingGates,omitempty" patchStrategy:"merge" patchMergeKey:"name" protobuf:"bytes,38,opt,name=schedulingGates"`
 	// ResourceClaims defines which ResourceClaims must be allocated
 	// and reserved before the Pod is allowed to start. The resources
 	// will be made available to those containers which consume them
@@ -509,19 +509,19 @@ type PodPartialSpec struct {
 	// DynamicResourceAllocation feature gate.
 	//
 	// This field is immutable.
-	ResourceClaims []k8s_io_api_core_v1.PodResourceClaim `json:"resourceClaims,omitempty" patchStrategy:"merge,retainKeys" patchMergeKey:"name" protobuf:"bytes,39,rep,name=resourceClaims"`
+	ResourceClaims []corev1.PodResourceClaim `json:"resourceClaims,omitempty" patchStrategy:"merge,retainKeys" patchMergeKey:"name" protobuf:"bytes,39,rep,name=resourceClaims"`
 }
 
-func (in *PodPartialSpec) DeepCopyAs() *k8s_io_api_core_v1.PodSpec {
+func (in *PodPartialSpec) DeepCopyAs() *corev1.PodSpec {
 	if in == nil {
 		return nil
 	}
-	out := new(k8s_io_api_core_v1.PodSpec)
+	out := new(corev1.PodSpec)
 	in.DeepCopyIntoAs(out)
 	return out
 }
 
-func (in *PodPartialSpec) DeepCopyIntoAs(out *k8s_io_api_core_v1.PodSpec) {
+func (in *PodPartialSpec) DeepCopyIntoAs(out *corev1.PodSpec) {
 	out.RestartPolicy = in.RestartPolicy
 	out.TerminationGracePeriodSeconds = in.TerminationGracePeriodSeconds
 	out.ActiveDeadlineSeconds = in.ActiveDeadlineSeconds
@@ -542,7 +542,7 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *k8s_io_api_core_v1.PodSpec) {
 	out.SecurityContext = in.SecurityContext
 	if in.ImagePullSecrets != nil {
 		i, o := &in.ImagePullSecrets, &out.ImagePullSecrets
-		*o = make([]k8s_io_api_core_v1.LocalObjectReference, len(*i))
+		*o = make([]corev1.LocalObjectReference, len(*i))
 		copy(*o, *i)
 	}
 	out.Hostname = in.Hostname
@@ -551,12 +551,12 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *k8s_io_api_core_v1.PodSpec) {
 	out.SchedulerName = in.SchedulerName
 	if in.Tolerations != nil {
 		i, o := &in.Tolerations, &out.Tolerations
-		*o = make([]k8s_io_api_core_v1.Toleration, len(*i))
+		*o = make([]corev1.Toleration, len(*i))
 		copy(*o, *i)
 	}
 	if in.HostAliases != nil {
 		i, o := &in.HostAliases, &out.HostAliases
-		*o = make([]k8s_io_api_core_v1.HostAlias, len(*i))
+		*o = make([]corev1.HostAlias, len(*i))
 		copy(*o, *i)
 	}
 	out.PriorityClassName = in.PriorityClassName
@@ -564,7 +564,7 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *k8s_io_api_core_v1.PodSpec) {
 	out.DNSConfig = in.DNSConfig
 	if in.ReadinessGates != nil {
 		i, o := &in.ReadinessGates, &out.ReadinessGates
-		*o = make([]k8s_io_api_core_v1.PodReadinessGate, len(*i))
+		*o = make([]corev1.PodReadinessGate, len(*i))
 		copy(*o, *i)
 	}
 	out.RuntimeClassName = in.RuntimeClassName
@@ -573,7 +573,7 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *k8s_io_api_core_v1.PodSpec) {
 	out.Overhead = in.Overhead
 	if in.TopologySpreadConstraints != nil {
 		i, o := &in.TopologySpreadConstraints, &out.TopologySpreadConstraints
-		*o = make([]k8s_io_api_core_v1.TopologySpreadConstraint, len(*i))
+		*o = make([]corev1.TopologySpreadConstraint, len(*i))
 		copy(*o, *i)
 	}
 	out.SetHostnameAsFQDN = in.SetHostnameAsFQDN
@@ -581,12 +581,12 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *k8s_io_api_core_v1.PodSpec) {
 	out.HostUsers = in.HostUsers
 	if in.SchedulingGates != nil {
 		i, o := &in.SchedulingGates, &out.SchedulingGates
-		*o = make([]k8s_io_api_core_v1.PodSchedulingGate, len(*i))
+		*o = make([]corev1.PodSchedulingGate, len(*i))
 		copy(*o, *i)
 	}
 	if in.ResourceClaims != nil {
 		i, o := &in.ResourceClaims, &out.ResourceClaims
-		*o = make([]k8s_io_api_core_v1.PodResourceClaim, len(*i))
+		*o = make([]corev1.PodResourceClaim, len(*i))
 		copy(*o, *i)
 	}
 
@@ -606,7 +606,7 @@ type StatefulSetSpec struct {
 	// <statefulsetname>-<podindex>. For example, a pod in a StatefulSet named
 	// "web" with index number "3" would be named "web-3".
 	// The only allowed template.spec.restartPolicy value is "Always".
-	Template PodPartialTemplateSpec `json:"template" protobuf:"bytes,3,opt,name=template"`
+	Template *PodPartialTemplateSpec `json:"template,omitempty"`
 	// volumeClaimTemplates is a list of claims that pods are allowed to reference.
 	// The StatefulSet controller is responsible for mapping network identities to
 	// claims in a way that maintains the identity of a pod. Every claim in
@@ -614,7 +614,7 @@ type StatefulSetSpec struct {
 	// container in the template. A claim in this list takes precedence over
 	// any volumes in the template, with the same name.
 	// TODO: Define the behavior if a claim already exists with the same name.
-	VolumeClaimTemplates []k8s_io_api_core_v1.PersistentVolumeClaim `json:"volumeClaimTemplates,omitempty" protobuf:"bytes,4,rep,name=volumeClaimTemplates"`
+	VolumeClaimTemplates []corev1.PersistentVolumeClaim `json:"volumeClaimTemplates,omitempty" protobuf:"bytes,4,rep,name=volumeClaimTemplates"`
 	// serviceName is the name of the service that governs this StatefulSet.
 	// This service must exist before the StatefulSet, and is responsible for
 	// the network identity of the set. Pods get DNS/hostnames that follow the
@@ -629,11 +629,11 @@ type StatefulSetSpec struct {
 	// The alternative policy is `Parallel` which will create pods in parallel
 	// to match the desired scale without waiting, and on scale down will delete
 	// all pods at once.
-	PodManagementPolicy k8s_io_api_apps_v1.PodManagementPolicyType `json:"podManagementPolicy,omitempty" protobuf:"bytes,6,opt,name=podManagementPolicy,casttype=PodManagementPolicyType"`
+	PodManagementPolicy appsv1.PodManagementPolicyType `json:"podManagementPolicy,omitempty" protobuf:"bytes,6,opt,name=podManagementPolicy,casttype=PodManagementPolicyType"`
 	// updateStrategy indicates the StatefulSetUpdateStrategy that will be
 	// employed to update Pods in the StatefulSet when a revision is made to
 	// Template.
-	UpdateStrategy k8s_io_api_apps_v1.StatefulSetUpdateStrategy `json:"updateStrategy,omitempty" protobuf:"bytes,7,opt,name=updateStrategy"`
+	UpdateStrategy appsv1.StatefulSetUpdateStrategy `json:"updateStrategy,omitempty" protobuf:"bytes,7,opt,name=updateStrategy"`
 	// revisionHistoryLimit is the maximum number of revisions that will
 	// be maintained in the StatefulSet's revision history. The revision history
 	// consists of all revisions not represented by a currently applied
@@ -650,28 +650,28 @@ type StatefulSetSpec struct {
 	// volume claims when their stateful set is deleted, or when their pod is scaled
 	// down. This requires the StatefulSetAutoDeletePVC feature gate to be enabled,
 	// which is beta.
-	PersistentVolumeClaimRetentionPolicy *k8s_io_api_apps_v1.StatefulSetPersistentVolumeClaimRetentionPolicy `json:"persistentVolumeClaimRetentionPolicy,omitempty" protobuf:"bytes,10,opt,name=persistentVolumeClaimRetentionPolicy"`
+	PersistentVolumeClaimRetentionPolicy *appsv1.StatefulSetPersistentVolumeClaimRetentionPolicy `json:"persistentVolumeClaimRetentionPolicy,omitempty" protobuf:"bytes,10,opt,name=persistentVolumeClaimRetentionPolicy"`
 	// ordinals controls the numbering of replica indices in a StatefulSet. The
 	// default ordinals behavior assigns a "0" index to the first replica and
 	// increments the index by one for each additional replica requested.
-	Ordinals *k8s_io_api_apps_v1.StatefulSetOrdinals `json:"ordinals,omitempty" protobuf:"bytes,11,opt,name=ordinals"`
+	Ordinals *appsv1.StatefulSetOrdinals `json:"ordinals,omitempty" protobuf:"bytes,11,opt,name=ordinals"`
 }
 
-func (in *StatefulSetSpec) DeepCopyAs() *k8s_io_api_apps_v1.StatefulSetSpec {
+func (in *StatefulSetSpec) DeepCopyAs() *appsv1.StatefulSetSpec {
 	if in == nil {
 		return nil
 	}
-	out := new(k8s_io_api_apps_v1.StatefulSetSpec)
+	out := new(appsv1.StatefulSetSpec)
 	in.DeepCopyIntoAs(out)
 	return out
 }
 
-func (in *StatefulSetSpec) DeepCopyIntoAs(out *k8s_io_api_apps_v1.StatefulSetSpec) {
+func (in *StatefulSetSpec) DeepCopyIntoAs(out *appsv1.StatefulSetSpec) {
 	out.Replicas = in.Replicas
 	in.Template.DeepCopyIntoAs(&out.Template)
 	if in.VolumeClaimTemplates != nil {
 		i, o := &in.VolumeClaimTemplates, &out.VolumeClaimTemplates
-		*o = make([]k8s_io_api_core_v1.PersistentVolumeClaim, len(*i))
+		*o = make([]corev1.PersistentVolumeClaim, len(*i))
 		copy(*o, *i)
 	}
 	out.ServiceName = in.ServiceName
