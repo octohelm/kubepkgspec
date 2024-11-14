@@ -35,6 +35,12 @@ func VolumeConvertorsFrom(kpkg *v1alpha1.KubePkg) map[string]VolumeConverter {
 				VolumeEmptyDir: x,
 			}
 
+		case *v1alpha1.VolumeImage:
+			volumes[n] = &volumeImageConverter{
+				ResourceName: SubResourceName(kpkg, n),
+				VolumeImage:  x,
+			}
+
 		case *v1alpha1.VolumePersistentVolumeClaim:
 			volumes[n] = &volumePersistentVolumeClaimConverter{
 				ResourceName:                SubResourceName(kpkg, n),
@@ -124,6 +130,31 @@ func (c *volumeHostPathConverter) MountTo(container *corev1.Container) (*corev1.
 		if v.HostPath == nil {
 			v.HostPath = &corev1.HostPathVolumeSource{}
 		}
+
+		sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
+
+		return v, nil
+	}
+
+	return nil, nil
+}
+
+type volumeImageConverter struct {
+	ResourceName string
+	*v1alpha1.VolumeImage
+}
+
+func (volumeImageConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
+	return nil, nil
+}
+
+func (c *volumeImageConverter) MountTo(container *corev1.Container) (*corev1.Volume, error) {
+	if c.MountPath != "export" {
+		v := &corev1.Volume{
+			Name: c.ResourceName,
+		}
+
+		v.Image = c.Opt
 
 		sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
 

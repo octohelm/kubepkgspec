@@ -51,9 +51,11 @@ func (Volume) Mapping() map[string]any {
 	return map[string]any{
 		"EmptyDir":              VolumeMounter(&VolumeEmptyDir{}),
 		"HostPath":              VolumeMounter(&VolumeHostPath{}),
-		"Secret":                VolumeMounter(&VolumeSecret{}),
-		"ConfigMap":             VolumeMounter(&VolumeConfigMap{}),
+		"Image":                 VolumeMounter(&VolumeImage{}),
 		"PersistentVolumeClaim": VolumeMounter(&VolumePersistentVolumeClaim{}),
+
+		"Secret":    VolumeMounter(&VolumeSecret{}),
+		"ConfigMap": VolumeMounter(&VolumeConfigMap{}),
 	}
 }
 

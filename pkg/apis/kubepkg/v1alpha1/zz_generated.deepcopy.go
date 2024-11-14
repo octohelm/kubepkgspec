@@ -845,6 +845,21 @@ func (in *VolumeHostPath) DeepCopyInto(out *VolumeHostPath) {
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
 
 }
+func (in *VolumeImage) DeepCopy() *VolumeImage {
+	if in == nil {
+		return nil
+	}
+	out := new(VolumeImage)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *VolumeImage) DeepCopyInto(out *VolumeImage) {
+	out.Type = in.Type
+	out.Opt = in.Opt
+	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
+
+}
 func (in *VolumePersistentVolumeClaim) DeepCopy() *VolumePersistentVolumeClaim {
 	if in == nil {
 		return nil

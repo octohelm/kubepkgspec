@@ -1257,6 +1257,26 @@ func (v VolumeHostPath) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
+func (v VolumeImage) RuntimeDoc(names ...string) ([]string, bool) {
+	if len(names) > 0 {
+		switch names[0] {
+		case "Type":
+			return []string{}, true
+		case "Opt":
+			return []string{}, true
+		case "VolumeMount":
+			return []string{}, true
+
+		}
+		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+			return doc, ok
+		}
+
+		return nil, false
+	}
+	return []string{}, true
+}
+
 func (v VolumeMount) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {

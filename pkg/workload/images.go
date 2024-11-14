@@ -68,6 +68,19 @@ func Images(obj iter.Seq[object.Object]) iter.Seq[*kubepkgv1alpha1.Image] {
 					x.Spec.Manifests[name] = sub
 				}
 
+				for name, v := range x.Spec.Volumes {
+					if vi, ok := v.Underlying.(*kubepkgv1alpha1.VolumeImage); ok {
+						if vi.Opt != nil && vi.Opt.Reference != "" {
+							img := ParseImage(vi.Opt.Reference)
+							if !yield(img) {
+								return
+							}
+							vi.Opt.Reference = img.FullName()
+							x.Spec.Volumes[name] = v
+						}
+					}
+				}
+
 			case *appsv1.DaemonSet:
 				for i, c := range x.Spec.Template.Spec.Containers {
 					img := ParseImage(c.Image)
