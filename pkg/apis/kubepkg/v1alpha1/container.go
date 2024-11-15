@@ -9,10 +9,15 @@ import (
 )
 
 type Image struct {
-	Name       string            `json:"name"`
-	Tag        string            `json:"tag,omitempty"`
-	Digest     string            `json:"digest,omitempty"`
-	Platforms  []string          `json:"platforms,omitempty"`
+	// 镜像名
+	Name string `json:"name"`
+	// 镜像标签
+	Tag string `json:"tag,omitempty"`
+	// 镜像摘要
+	Digest string `json:"digest,omitempty"`
+	// 镜像支持的平台
+	Platforms []string `json:"platforms,omitempty"`
+	// 镜像拉取策略
 	PullPolicy corev1.PullPolicy `json:"pullPolicy,omitempty"`
 }
 
@@ -31,14 +36,18 @@ func (v Image) FullName() string {
 }
 
 type Container struct {
+	// 镜像
 	Image Image `json:"image"`
 
-	WorkingDir string                       `json:"workingDir,omitempty"`
-	Command    []string                     `json:"command,omitempty"`
-	Args       []string                     `json:"args,omitempty"`
-	Env        map[string]EnvVarValueOrFrom `json:"env,omitempty"`
-
-	// Ports: [PortName]: ContainerPort
+	// 运行目录
+	WorkingDir string `json:"workingDir,omitempty"`
+	// 命令
+	Command []string `json:"command,omitempty"`
+	// 参数
+	Args []string `json:"args,omitempty"`
+	// 环境变量
+	Env map[string]EnvVarValueOrFrom `json:"env,omitempty"`
+	// 暴露端口
 	Ports map[string]int32 `json:"ports,omitempty"`
 
 	Stdin     bool `json:"stdin,omitempty"`

@@ -5,11 +5,19 @@ DON'T EDIT THIS FILE
 package v1alpha1
 
 // nolint:deadcode,unused
-func runtimeDoc(v any, names ...string) ([]string, bool) {
+func runtimeDoc(v any, prefix string, names ...string) ([]string, bool) {
 	if c, ok := v.(interface {
 		RuntimeDoc(names ...string) ([]string, bool)
 	}); ok {
-		return c.RuntimeDoc(names...)
+		doc, ok := c.RuntimeDoc(names...)
+		if ok {
+			if prefix != "" && len(doc) > 0 {
+				doc[0] = prefix + doc[0]
+				return doc, true
+			}
+
+			return doc, true
+		}
 	}
 	return nil, false
 }
@@ -31,18 +39,28 @@ func (v Container) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Image":
-			return []string{}, true
+			return []string{
+				"镜像",
+			}, true
 		case "WorkingDir":
-			return []string{}, true
+			return []string{
+				"运行目录",
+			}, true
 		case "Command":
-			return []string{}, true
+			return []string{
+				"命令",
+			}, true
 		case "Args":
-			return []string{}, true
+			return []string{
+				"参数",
+			}, true
 		case "Env":
-			return []string{}, true
+			return []string{
+				"环境变量",
+			}, true
 		case "Ports":
 			return []string{
-				"Ports: [PortName]: ContainerPort",
+				"暴露端口",
 			}, true
 		case "Stdin":
 			return []string{}, true
@@ -393,6 +411,7 @@ func (v DigestMeta) RuntimeDoc(names ...string) ([]string, bool) {
 func (DigestMetaType) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
+
 func (v EnvVarValueOrFrom) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
@@ -454,19 +473,30 @@ func (v ExposeNodePort) RuntimeDoc(names ...string) ([]string, bool) {
 func (FileSize) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
+
 func (v Image) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Name":
-			return []string{}, true
+			return []string{
+				"镜像名",
+			}, true
 		case "Tag":
-			return []string{}, true
+			return []string{
+				"镜像标签",
+			}, true
 		case "Digest":
-			return []string{}, true
+			return []string{
+				"镜像摘要",
+			}, true
 		case "Platforms":
-			return []string{}, true
+			return []string{
+				"镜像支持的平台",
+			}, true
 		case "PullPolicy":
-			return []string{}, true
+			return []string{
+				"镜像拉取策略",
+			}, true
 
 		}
 
@@ -670,20 +700,16 @@ func (v JobTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
 func (v KubePkg) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
-		case "TypeMeta":
-			return []string{}, true
-		case "ObjectMeta":
-			return []string{}, true
 		case "Spec":
 			return []string{}, true
 		case "Status":
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.TypeMeta, names...); ok {
+		if doc, ok := runtimeDoc(v.TypeMeta, "", names...); ok {
 			return doc, ok
 		}
-		if doc, ok := runtimeDoc(v.ObjectMeta, names...); ok {
+		if doc, ok := runtimeDoc(v.ObjectMeta, "", names...); ok {
 			return doc, ok
 		}
 
@@ -697,18 +723,14 @@ func (v KubePkg) RuntimeDoc(names ...string) ([]string, bool) {
 func (v KubePkgList) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
-		case "TypeMeta":
-			return []string{}, true
-		case "ListMeta":
-			return []string{}, true
 		case "Items":
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.TypeMeta, names...); ok {
+		if doc, ok := runtimeDoc(v.TypeMeta, "", names...); ok {
 			return doc, ok
 		}
-		if doc, ok := runtimeDoc(v.ListMeta, names...); ok {
+		if doc, ok := runtimeDoc(v.ListMeta, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1000,6 +1022,7 @@ func (v PodPartialTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
 func (ScopeType) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
+
 func (v Service) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
@@ -1058,6 +1081,8 @@ func (v Spec) RuntimeDoc(names ...string) ([]string, bool) {
 		case "ServiceAccount":
 			return []string{}, true
 		case "Manifests":
+			return []string{}, true
+		case "Images":
 			return []string{}, true
 
 		}
@@ -1182,6 +1207,7 @@ func (v Status) RuntimeDoc(names ...string) ([]string, bool) {
 func (Statuses) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
+
 func (v Volume) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
@@ -1204,11 +1230,9 @@ func (v VolumeConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Spec":
 			return []string{}, true
-		case "VolumeMount":
-			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1224,11 +1248,9 @@ func (v VolumeEmptyDir) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Opt":
 			return []string{}, true
-		case "VolumeMount":
-			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1244,11 +1266,9 @@ func (v VolumeHostPath) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Opt":
 			return []string{}, true
-		case "VolumeMount":
-			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1264,11 +1284,9 @@ func (v VolumeImage) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Opt":
 			return []string{}, true
-		case "VolumeMount":
-			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1313,11 +1331,9 @@ func (v VolumePersistentVolumeClaim) RuntimeDoc(names ...string) ([]string, bool
 			return []string{}, true
 		case "Spec":
 			return []string{}, true
-		case "VolumeMount":
-			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1335,11 +1351,9 @@ func (v VolumeSecret) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Spec":
 			return []string{}, true
-		case "VolumeMount":
-			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, names...); ok {
+		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 

@@ -551,6 +551,13 @@ func (in *Spec) DeepCopyInto(out *Spec) {
 	}
 	out.ServiceAccount = in.ServiceAccount
 	out.Manifests = in.Manifests
+	if in.Images != nil {
+		i, o := &in.Images, &out.Images
+		*o = make(map[string]Image, len(*i))
+		for key, val := range *i {
+			(*o)[key] = val
+		}
+	}
 
 }
 func (in *KubePkgList) DeepCopyObject() pkgruntime.Object {

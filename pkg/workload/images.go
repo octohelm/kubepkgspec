@@ -81,6 +81,14 @@ func Images(obj iter.Seq[object.Object]) iter.Seq[*kubepkgv1alpha1.Image] {
 					}
 				}
 
+				for name, image := range x.Spec.Images {
+					img := &image
+					if !yield(img) {
+						return
+					}
+					x.Spec.Images[name] = *img
+				}
+
 			case *appsv1.DaemonSet:
 				for i, c := range x.Spec.Template.Spec.Containers {
 					img := ParseImage(c.Image)

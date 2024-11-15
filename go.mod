@@ -8,11 +8,11 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/go-json-experiment/json v0.0.0-20240815175050-ebd3a8989ca1
 	github.com/innoai-tech/infra v0.0.0-20241111014632-3ea0efbda99f
-	github.com/octohelm/courier v0.0.0-20241112102210-4c2046dd1d5b
-	github.com/octohelm/gengo v0.0.0-20241023040556-a66fecda6cd6
+	github.com/octohelm/courier v0.0.0-20241115093923-2654f419a8ed
+	github.com/octohelm/gengo v0.0.0-20241115071734-9f4b1461bafa
 	github.com/octohelm/kubekit v0.0.0-20241021071650-ce12d81a1113
-	github.com/octohelm/storage v0.0.0-20241025090738-73beed467466
-	github.com/octohelm/x v0.0.0-20241112102041-a15ce954bd07
+	github.com/octohelm/storage v0.0.0-20241115090317-a4c990ec6ce5
+	github.com/octohelm/x v0.0.0-20241115085849-6402f8916ad3
 	github.com/opencontainers/go-digest v1.0.0
 	golang.org/x/sync v0.9.0
 	golang.org/x/tools v0.27.0
@@ -66,7 +66,7 @@ require (
 	golang.org/x/term v0.26.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
+	google.golang.org/protobuf v1.35.2 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
