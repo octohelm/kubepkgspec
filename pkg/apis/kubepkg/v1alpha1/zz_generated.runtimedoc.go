@@ -207,9 +207,10 @@ func (v DeployConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false
@@ -222,11 +223,12 @@ func (v DeployCronJob) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 		case "Spec":
 			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false
@@ -239,11 +241,12 @@ func (v DeployDaemonSet) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 		case "Spec":
 			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false
@@ -256,11 +259,12 @@ func (v DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 		case "Spec":
 			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false
@@ -273,11 +277,27 @@ func (v DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 		case "Ports":
 			return []string{}, true
 		case "Addresses":
+			return []string{}, true
+
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
+		}
+
+		return nil, false
+	}
+	return []string{}, true
+}
+
+func (v DeployInfrastructure) RuntimeDoc(names ...string) ([]string, bool) {
+	if len(names) > 0 {
+		switch names[0] {
+		case "Labels":
+			return []string{}, true
+		case "Annotations":
 			return []string{}, true
 
 		}
@@ -292,11 +312,12 @@ func (v DeployJob) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 		case "Spec":
 			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false
@@ -309,9 +330,10 @@ func (v DeploySecret) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false
@@ -324,11 +346,12 @@ func (v DeployStatefulSet) RuntimeDoc(names ...string) ([]string, bool) {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Annotations":
-			return []string{}, true
 		case "Spec":
 			return []string{}, true
 
+		}
+		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
 		}
 
 		return nil, false

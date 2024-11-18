@@ -56,6 +56,8 @@ spec:
         reload.octohelm.tech/configmap: demo,demo-html
       labels:
         app: demo
+        app.kubernetes.io/instance: demo
+        app.kubernetes.io/version: 0.0.2
     spec:
       affinity:
         nodeAffinity:

@@ -1,12 +1,37 @@
 package v1alpha1
 
 import (
+	"maps"
+	
 	"github.com/octohelm/courier/pkg/validator"
 	"github.com/octohelm/courier/pkg/validator/taggedunion"
+	"github.com/octohelm/courier/pkg/validator/validators"
 )
+
+type DeployInfrastructure struct {
+	Labels      map[string]string `json:"labels,omitempty" validate:"@map<@qualifiedName,@string[0,63]>"`
+	Annotations map[string]string `json:"annotations,omitempty" validate:"@map<@qualifiedName,@string[0,4096]>"`
+}
+
+func (d DeployInfrastructure) GetLabels() map[string]string {
+	return d.Labels
+}
+
+func (d *DeployInfrastructure) SetLabels(labels map[string]string) {
+	if d.Labels == nil {
+		d.Labels = map[string]string{}
+	}
+	maps.Copy(d.Labels, labels)
+}
+
+func init() {
+	validators.RegisterRegexpStrfmtValidator(`^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]$`, "qualified-name", "qualifiedName")
+}
 
 type Deployer interface {
 	GetKind() string
+	GetLabels() map[string]string
+	SetLabels(labels map[string]string)
 }
 
 // +gengo:deepcopy=false

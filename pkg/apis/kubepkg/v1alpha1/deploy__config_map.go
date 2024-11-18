@@ -3,8 +3,8 @@ package v1alpha1
 import "cmp"
 
 type DeployConfigMap struct {
-	Kind        string            `json:"kind" validate:"@string{ConfigMap}"`
-	Annotations map[string]string `json:"annotations,omitempty"`
+	Kind string `json:"kind" validate:"@string{ConfigMap}"`
+	DeployInfrastructure
 }
 
 func (d DeployConfigMap) GetKind() string {

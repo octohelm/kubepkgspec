@@ -122,49 +122,57 @@ package kubepkg
 
 #DeployConfigMap: {
 	kind: "ConfigMap"
+	labels?: [X=string]: string
 	annotations?: [X=string]: string
 }
 
 #DeployCronJob: {
-	kind: "CronJob"
-	annotations?: [X=string]: string
+	kind:  "CronJob"
 	spec?: #CronJobSpec
+	labels?: [X=string]: string
+	annotations?: [X=string]: string
 }
 
 #DeployDaemonSet: {
-	kind: "DaemonSet"
-	annotations?: [X=string]: string
+	kind:  "DaemonSet"
 	spec?: #DaemonSetSpec
+	labels?: [X=string]: string
+	annotations?: [X=string]: string
 }
 
 #DeployDeployment: {
-	kind: "Deployment"
-	annotations?: [X=string]: string
+	kind:  "Deployment"
 	spec?: #DeploymentSpec
+	labels?: [X=string]: string
+	annotations?: [X=string]: string
 }
 
 #DeployEndpoints: {
 	kind: "Endpoints"
-	annotations?: [X=string]: string
 	ports: [X=string]: int
 	addresses?: [...#EndpointAddress]
+	labels?: [X=string]: string
+	annotations?: [X=string]: string
 }
 
 #DeployJob: {
-	kind: "Job"
-	annotations?: [X=string]: string
+	kind:  "Job"
 	spec?: #JobSpec
+	labels?: [X=string]: string
+	annotations?: [X=string]: string
 }
 
 #DeploySecret: {
 	kind: "Secret"
+	labels?: [X=string]: string
 	annotations?: [X=string]: string
 }
 
 #DeployStatefulSet: {
-	kind: "StatefulSet"
-	annotations?: [X=string]: string
+	kind:  "StatefulSet"
 	spec?: #StatefulSetSpec
+	labels?: [X=string]: string
+	annotations?: [X=string]: string
 }
 
 #DeploymentSpec: {

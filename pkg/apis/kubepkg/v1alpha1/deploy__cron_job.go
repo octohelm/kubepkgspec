@@ -7,9 +7,9 @@ import (
 )
 
 type DeployCronJob struct {
-	Kind        string            `json:"kind" validate:"@string{CronJob}"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-	Spec        CronJobSpec       `json:"spec,omitempty"`
+	Kind string `json:"kind" validate:"@string{CronJob}"`
+	DeployInfrastructure
+	Spec CronJobSpec `json:"spec,omitempty"`
 }
 
 func (d DeployCronJob) GetKind() string {

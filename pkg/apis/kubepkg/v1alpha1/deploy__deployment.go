@@ -6,9 +6,9 @@ import (
 )
 
 type DeployDeployment struct {
-	Kind        string            `json:"kind" validate:"@string{Deployment}"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-	Spec        DeploymentSpec    `json:"spec,omitempty"`
+	Kind string `json:"kind" validate:"@string{Deployment}"`
+	DeployInfrastructure
+	Spec DeploymentSpec `json:"spec,omitempty"`
 }
 
 func (d DeployDeployment) GetKind() string {

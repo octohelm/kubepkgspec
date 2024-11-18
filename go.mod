@@ -8,7 +8,7 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/go-json-experiment/json v0.0.0-20240815175050-ebd3a8989ca1
 	github.com/innoai-tech/infra v0.0.0-20241111014632-3ea0efbda99f
-	github.com/octohelm/courier v0.0.0-20241115093923-2654f419a8ed
+	github.com/octohelm/courier v0.0.0-20241118030434-74c185ad1f19
 	github.com/octohelm/gengo v0.0.0-20241115071734-9f4b1461bafa
 	github.com/octohelm/kubekit v0.0.0-20241021071650-ce12d81a1113
 	github.com/octohelm/storage v0.0.0-20241115090317-a4c990ec6ce5
@@ -76,7 +76,5 @@ require (
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078 // indirect
 	sigs.k8s.io/controller-tools v0.16.5 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
-	sigs.k8s.io/structured-merge-diff/v4 v4.4.2 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.4.3 // indirect
 )
-
-replace sigs.k8s.io/structured-merge-diff/v4 => sigs.k8s.io/structured-merge-diff/v4 v4.4.1

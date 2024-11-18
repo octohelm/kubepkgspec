@@ -6,9 +6,9 @@ import (
 )
 
 type DeployDaemonSet struct {
-	Kind        string            `json:"kind" validate:"@string{DaemonSet}"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-	Spec        DaemonSetSpec     `json:"spec,omitempty"`
+	Kind string `json:"kind" validate:"@string{DaemonSet}"`
+	DeployInfrastructure
+	Spec DaemonSetSpec `json:"spec,omitempty"`
 }
 
 func (d DeployDaemonSet) GetKind() string {

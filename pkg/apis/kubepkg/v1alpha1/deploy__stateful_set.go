@@ -6,9 +6,9 @@ import (
 )
 
 type DeployStatefulSet struct {
-	Kind        string            `json:"kind" validate:"@string{StatefulSet}"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-	Spec        StatefulSetSpec   `json:"spec,omitempty"`
+	Kind string `json:"kind" validate:"@string{StatefulSet}"`
+	DeployInfrastructure
+	Spec StatefulSetSpec `json:"spec,omitempty"`
 }
 
 func (d DeployStatefulSet) GetKind() string {

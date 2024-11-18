@@ -6,9 +6,9 @@ import (
 )
 
 type DeployJob struct {
-	Kind        string            `json:"kind" validate:"@string{Job}"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-	Spec        JobSpec           `json:"spec,omitempty"`
+	Kind string `json:"kind" validate:"@string{Job}"`
+	DeployInfrastructure
+	Spec JobSpec `json:"spec,omitempty"`
 }
 
 func (d DeployJob) GetKind() string {

@@ -38,7 +38,6 @@ func (v Image) FullName() string {
 type Container struct {
 	// 镜像
 	Image Image `json:"image"`
-
 	// 运行目录
 	WorkingDir string `json:"workingDir,omitempty"`
 	// 命令

@@ -146,6 +146,26 @@ func (in *DeployConfigMap) DeepCopy() *DeployConfigMap {
 
 func (in *DeployConfigMap) DeepCopyInto(out *DeployConfigMap) {
 	out.Kind = in.Kind
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
+
+}
+func (in *DeployInfrastructure) DeepCopy() *DeployInfrastructure {
+	if in == nil {
+		return nil
+	}
+	out := new(DeployInfrastructure)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *DeployInfrastructure) DeepCopyInto(out *DeployInfrastructure) {
+	if in.Labels != nil {
+		i, o := &in.Labels, &out.Labels
+		*o = make(map[string]string, len(*i))
+		for key, val := range *i {
+			(*o)[key] = val
+		}
+	}
 	if in.Annotations != nil {
 		i, o := &in.Annotations, &out.Annotations
 		*o = make(map[string]string, len(*i))
@@ -166,13 +186,7 @@ func (in *DeployCronJob) DeepCopy() *DeployCronJob {
 
 func (in *DeployCronJob) DeepCopyInto(out *DeployCronJob) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
 
 }
@@ -187,13 +201,7 @@ func (in *DeployDaemonSet) DeepCopy() *DeployDaemonSet {
 
 func (in *DeployDaemonSet) DeepCopyInto(out *DeployDaemonSet) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
 
 }
@@ -208,13 +216,7 @@ func (in *DeployDeployment) DeepCopy() *DeployDeployment {
 
 func (in *DeployDeployment) DeepCopyInto(out *DeployDeployment) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
 
 }
@@ -248,13 +250,7 @@ func (in *DeployEndpoints) DeepCopy() *DeployEndpoints {
 
 func (in *DeployEndpoints) DeepCopyInto(out *DeployEndpoints) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	if in.Ports != nil {
 		i, o := &in.Ports, &out.Ports
 		*o = make(map[string]int32, len(*i))
@@ -280,13 +276,7 @@ func (in *DeployJob) DeepCopy() *DeployJob {
 
 func (in *DeployJob) DeepCopyInto(out *DeployJob) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
 
 }
@@ -328,13 +318,7 @@ func (in *DeploySecret) DeepCopy() *DeploySecret {
 
 func (in *DeploySecret) DeepCopyInto(out *DeploySecret) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 
 }
 func (in *DeployStatefulSet) DeepCopy() *DeployStatefulSet {
@@ -348,13 +332,7 @@ func (in *DeployStatefulSet) DeepCopy() *DeployStatefulSet {
 
 func (in *DeployStatefulSet) DeepCopyInto(out *DeployStatefulSet) {
 	out.Kind = in.Kind
-	if in.Annotations != nil {
-		i, o := &in.Annotations, &out.Annotations
-		*o = make(map[string]string, len(*i))
-		for key, val := range *i {
-			(*o)[key] = val
-		}
-	}
+	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
 
 }

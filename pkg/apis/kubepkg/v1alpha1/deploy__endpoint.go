@@ -6,10 +6,10 @@ import (
 )
 
 type DeployEndpoints struct {
-	Kind        string                   `json:"kind" validate:"@string{Endpoints}"`
-	Annotations map[string]string        `json:"annotations,omitempty"`
-	Ports       map[string]int32         `json:"ports"`
-	Addresses   []corev1.EndpointAddress `json:"addresses,omitempty"`
+	Kind string `json:"kind" validate:"@string{Endpoints}"`
+	DeployInfrastructure
+	Ports     map[string]int32         `json:"ports"`
+	Addresses []corev1.EndpointAddress `json:"addresses,omitempty"`
 }
 
 func (d DeployEndpoints) GetKind() string {

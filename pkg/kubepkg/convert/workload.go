@@ -3,6 +3,8 @@ package convert
 import (
 	"errors"
 	"fmt"
+	"github.com/octohelm/kubepkgspec/pkg/wellknown"
+	"maps"
 	"sort"
 	"strings"
 
@@ -20,10 +22,12 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 	if underlying := kpkg.Spec.Deploy.Underlying; underlying != nil {
 		switch x := underlying.(type) {
 		case *kubepkgv1alpha1.DeployEndpoints:
-			e := &corev1.Endpoints{}
-			e.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Endpoints"))
-			e.SetNamespace(kpkg.Namespace)
-			e.SetName(kpkg.Name)
+			endpoints := &corev1.Endpoints{}
+			endpoints.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Endpoints"))
+			endpoints.SetNamespace(kpkg.Namespace)
+			endpoints.SetName(kpkg.Name)
+			endpoints.Labels = maps.Clone(x.Labels)
+			endpoints.Annotations = maps.Clone(x.Annotations)
 
 			subset := corev1.EndpointSubset{}
 			subset.Addresses = x.Addresses
@@ -41,14 +45,16 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 				subset.Ports = append(subset.Ports, p)
 			}
 
-			e.Subsets = []corev1.EndpointSubset{subset}
+			endpoints.Subsets = []corev1.EndpointSubset{subset}
 
-			return e, nil
+			return endpoints, nil
 		case *kubepkgv1alpha1.DeployDeployment:
 			deployment := &appsv1.Deployment{}
 			deployment.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("Deployment"))
 			deployment.SetNamespace(kpkg.Namespace)
 			deployment.SetName(kpkg.Name)
+			deployment.Labels = maps.Clone(x.Labels)
+			deployment.Annotations = maps.Clone(x.Annotations)
 
 			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
@@ -57,8 +63,10 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 
 			deployment.Spec.Template = *podTemplateSpec
 			deployment.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: deployment.Spec.Template.Labels,
+				MatchLabels: maps.Clone(deployment.Spec.Template.Labels),
 			}
+
+			maps.Copy(deployment.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&deployment.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
@@ -72,6 +80,8 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			statefulSet.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("StatefulSet"))
 			statefulSet.SetNamespace(kpkg.Namespace)
 			statefulSet.SetName(kpkg.Name)
+			statefulSet.Labels = maps.Clone(x.Labels)
+			statefulSet.Annotations = maps.Clone(x.Annotations)
 
 			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
@@ -80,8 +90,10 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 
 			statefulSet.Spec.Template = *podTemplateSpec
 			statefulSet.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: statefulSet.Spec.Template.Labels,
+				MatchLabels: maps.Clone(statefulSet.Spec.Template.Labels),
 			}
+
+			maps.Copy(statefulSet.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&statefulSet.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
@@ -95,6 +107,8 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			daemonSet.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("DaemonSet"))
 			daemonSet.SetNamespace(kpkg.Namespace)
 			daemonSet.SetName(kpkg.Name)
+			daemonSet.Labels = maps.Clone(x.Labels)
+			daemonSet.Annotations = maps.Clone(x.Annotations)
 
 			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
@@ -103,8 +117,10 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 
 			daemonSet.Spec.Template = *podTemplateSpec
 			daemonSet.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: daemonSet.Spec.Template.Labels,
+				MatchLabels: maps.Clone(daemonSet.Spec.Template.Labels),
 			}
+
+			maps.Copy(daemonSet.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&daemonSet.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
@@ -118,6 +134,8 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			job.SetGroupVersionKind(batchv1.SchemeGroupVersion.WithKind("Job"))
 			job.SetNamespace(kpkg.Namespace)
 			job.SetName(kpkg.Name)
+			job.Labels = maps.Clone(x.Labels)
+			job.Annotations = maps.Clone(x.Annotations)
 
 			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
@@ -125,6 +143,11 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			}
 
 			job.Spec.Template = *podTemplateSpec
+			job.Spec.Selector = &metav1.LabelSelector{
+				MatchLabels: maps.Clone(job.Spec.Template.Labels),
+			}
+
+			maps.Copy(job.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&job.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
@@ -138,6 +161,8 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			cronJob.SetGroupVersionKind(batchv1.SchemeGroupVersion.WithKind("CronJob"))
 			cronJob.SetNamespace(kpkg.Namespace)
 			cronJob.SetName(kpkg.Name)
+			cronJob.Labels = maps.Clone(x.Labels)
+			cronJob.Annotations = maps.Clone(x.Annotations)
 
 			podTemplateSpec, err := ToPodTemplateSpec(kpkg)
 			if err != nil {
@@ -145,6 +170,11 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			}
 
 			cronJob.Spec.JobTemplate.Spec.Template = *podTemplateSpec
+			cronJob.Spec.JobTemplate.Spec.Selector = &metav1.LabelSelector{
+				MatchLabels: maps.Clone(cronJob.Spec.JobTemplate.Spec.Template.Labels),
+			}
+
+			maps.Copy(cronJob.Spec.JobTemplate.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&cronJob.Spec, (&x.Spec).DeepCopyAs())
 			if err != nil {
@@ -158,6 +188,8 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			cm.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))
 			cm.SetNamespace(kpkg.Namespace)
 			cm.SetName(kpkg.Name)
+			cm.Labels = maps.Clone(x.Labels)
+			cm.Annotations = maps.Clone(x.Annotations)
 
 			configurationType := ""
 			if x.Annotations != nil {
@@ -187,6 +219,8 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			secret.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Secret"))
 			secret.SetNamespace(kpkg.Namespace)
 			secret.SetName(kpkg.Name)
+			secret.Labels = maps.Clone(x.Labels)
+			secret.Annotations = maps.Clone(x.Annotations)
 
 			configurationType := ""
 			if x.Annotations != nil {
@@ -225,7 +259,17 @@ func ToPodTemplateSpec(kpkg *kubepkgv1alpha1.KubePkg) (*corev1.PodTemplateSpec, 
 	if template.Labels == nil {
 		template.Labels = map[string]string{}
 	}
+
 	template.Labels["app"] = kpkg.Name
+
+	if kpkg.Spec.Deploy.Underlying != nil {
+		if err := wellknown.LabelAppInstance.SetTo(kpkg.Spec.Deploy.Underlying, kpkg.Name); err != nil {
+			return nil, err
+		}
+		if err := wellknown.LabelAppVersion.SetTo(kpkg.Spec.Deploy.Underlying, kpkg.Spec.Version); err != nil {
+			return nil, err
+		}
+	}
 
 	initContainerNames := make([]string, 0, len(kpkg.Spec.Containers))
 	containerNames := make([]string, 0, len(kpkg.Spec.Containers))
