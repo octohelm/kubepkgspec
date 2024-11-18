@@ -1,15 +1,27 @@
 package convert
 
 import (
+	"github.com/octohelm/kubekit/pkg/metadata"
 	"io"
 	"strings"
 
 	"github.com/go-json-experiment/json"
 	jsonv1 "github.com/go-json-experiment/json/v1"
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/wellknown"
 	"github.com/octohelm/x/anyjson"
 	"golang.org/x/sync/errgroup"
 )
+
+func LabelInstanceAndVersion(kpkg *v1alpha1.KubePkg, o metadata.LabelsAccessor) error {
+	if err := wellknown.LabelAppInstance.SetTo(o, kpkg.Name); err != nil {
+		return err
+	}
+	if err := wellknown.LabelAppVersion.SetTo(o, kpkg.Spec.Version); err != nil {
+		return err
+	}
+	return nil
+}
 
 func Must[T any](v *T) *T {
 	if v == nil {

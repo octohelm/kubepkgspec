@@ -7,6 +7,9 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    app.kubernetes.io/instance: demo
+    app.kubernetes.io/version: 0.0.2
   name: demo
   namespace: default
 spec:
@@ -20,6 +23,9 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
+  labels:
+    app.kubernetes.io/instance: demo
+    app.kubernetes.io/version: 0.0.2
   name: demo
   namespace: default
 spec:
@@ -38,6 +44,9 @@ spec:
 apiVersion: v1
 kind: Endpoints
 metadata:
+  labels:
+    app.kubernetes.io/instance: demo
+    app.kubernetes.io/version: 0.0.2
   name: demo
   namespace: default
 subsets:

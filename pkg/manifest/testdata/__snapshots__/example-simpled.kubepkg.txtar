@@ -27,7 +27,7 @@ spec:
         http: /
       ports:
         http: 80
-  version: ""
+  version: 0.0.2
   volumes:
     demo-html:
       mountPath: /usr/share/nginx/html

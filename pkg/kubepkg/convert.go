@@ -56,14 +56,19 @@ func (c *converter) build(options ...Option) {
 	}
 }
 
-func (e *converter) register(o object.Object) {
+func (e *converter) register(o object.Object, kpkg *v1alpha1.KubePkg) error {
 	if o == nil || o.GetObjectKind() == nil {
-		return
+		return nil
 	}
 	if e.manifests == nil {
 		e.manifests = map[string]object.Object{}
 	}
+
+	if err := convert.LabelInstanceAndVersion(kpkg, o); err != nil {
+		return err
+	}
 	e.manifests[objectID(o)] = o
+	return nil
 }
 
 func (e *converter) walk(kpkg *v1alpha1.KubePkg) error {
@@ -200,7 +205,9 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 								httpRoute.Spec.Rules = append(httpRoute.Spec.Rules, rule)
 							}
 
-							e.register(httpRoute)
+							if err := e.register(httpRoute, kpkg); err != nil {
+								return err
+							}
 						}
 
 					}
@@ -209,7 +216,9 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 			}
 		}
 
-		e.register(service)
+		if err := e.register(service, kpkg); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -223,7 +232,10 @@ func (e *converter) walkVolumes(kpkg *v1alpha1.KubePkg) error {
 		if err != nil {
 			return err
 		}
-		e.register(r)
+
+		if err := e.register(r, kpkg); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -236,7 +248,9 @@ func (e *converter) walkRbac(kpkg *v1alpha1.KubePkg) error {
 		serviceAccount.SetNamespace(kpkg.Namespace)
 		serviceAccount.SetName(kpkg.Name)
 
-		e.register(serviceAccount)
+		if err := e.register(serviceAccount, kpkg); err != nil {
+			return err
+		}
 
 		if sa.Scope == v1alpha1.ScopeTypeCluster {
 			clusterRole := &rbacv1.ClusterRole{}
@@ -260,8 +274,13 @@ func (e *converter) walkRbac(kpkg *v1alpha1.KubePkg) error {
 				Namespace: serviceAccount.Namespace,
 			}}
 
-			e.register(clusterRole)
-			e.register(clusterRoleBinding)
+			if err := e.register(clusterRole, kpkg); err != nil {
+				return err
+			}
+
+			if err := e.register(clusterRoleBinding, kpkg); err != nil {
+				return err
+			}
 
 			return nil
 		}
@@ -286,8 +305,13 @@ func (e *converter) walkRbac(kpkg *v1alpha1.KubePkg) error {
 			Namespace: serviceAccount.Namespace,
 		}}
 
-		e.register(role)
-		e.register(roleBinding)
+		if err := e.register(role, kpkg); err != nil {
+			return err
+		}
+
+		if err := e.register(roleBinding, kpkg); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -298,8 +322,7 @@ func (e *converter) walkDeploy(kpkg *v1alpha1.KubePkg) error {
 	if err != nil {
 		return err
 	}
-	e.register(d)
-	return nil
+	return e.register(d, kpkg)
 }
 
 func (e *converter) walkManifests(kpkg *v1alpha1.KubePkg) error {
@@ -323,7 +346,9 @@ func (e *converter) walkManifests(kpkg *v1alpha1.KubePkg) error {
 			}
 		}
 
-		e.register(m)
+		if err := e.register(m, kpkg); err != nil {
+			return err
+		}
 	}
 
 	return i.Err()

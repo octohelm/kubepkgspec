@@ -3,7 +3,6 @@ package convert
 import (
 	"errors"
 	"fmt"
-	"github.com/octohelm/kubepkgspec/pkg/wellknown"
 	"maps"
 	"sort"
 	"strings"
@@ -21,33 +20,6 @@ import (
 func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 	if underlying := kpkg.Spec.Deploy.Underlying; underlying != nil {
 		switch x := underlying.(type) {
-		case *kubepkgv1alpha1.DeployEndpoints:
-			endpoints := &corev1.Endpoints{}
-			endpoints.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Endpoints"))
-			endpoints.SetNamespace(kpkg.Namespace)
-			endpoints.SetName(kpkg.Name)
-			endpoints.Labels = maps.Clone(x.Labels)
-			endpoints.Annotations = maps.Clone(x.Annotations)
-
-			subset := corev1.EndpointSubset{}
-			subset.Addresses = x.Addresses
-
-			portNames := make([]string, 0, len(x.Ports))
-			for n := range x.Ports {
-				portNames = append(portNames, n)
-			}
-			sort.Strings(portNames)
-			for _, n := range portNames {
-				p := corev1.EndpointPort{}
-				p.Port = x.Ports[n]
-				p.Name, p.Protocol, _ = DecodePortName(n)
-
-				subset.Ports = append(subset.Ports, p)
-			}
-
-			endpoints.Subsets = []corev1.EndpointSubset{subset}
-
-			return endpoints, nil
 		case *kubepkgv1alpha1.DeployDeployment:
 			deployment := &appsv1.Deployment{}
 			deployment.SetGroupVersionKind(appsv1.SchemeGroupVersion.WithKind("Deployment"))
@@ -143,10 +115,6 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			}
 
 			job.Spec.Template = *podTemplateSpec
-			job.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: maps.Clone(job.Spec.Template.Labels),
-			}
-
 			maps.Copy(job.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&job.Spec, (&x.Spec).DeepCopyAs())
@@ -170,10 +138,6 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			}
 
 			cronJob.Spec.JobTemplate.Spec.Template = *podTemplateSpec
-			cronJob.Spec.JobTemplate.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: maps.Clone(cronJob.Spec.JobTemplate.Spec.Template.Labels),
-			}
-
 			maps.Copy(cronJob.Spec.JobTemplate.Spec.Template.Labels, x.Labels)
 
 			spec, err := Merge(&cronJob.Spec, (&x.Spec).DeepCopyAs())
@@ -183,6 +147,33 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			cronJob.Spec = *spec
 
 			return cronJob, nil
+		case *kubepkgv1alpha1.DeployEndpoints:
+			endpoints := &corev1.Endpoints{}
+			endpoints.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Endpoints"))
+			endpoints.SetNamespace(kpkg.Namespace)
+			endpoints.SetName(kpkg.Name)
+			endpoints.Labels = maps.Clone(x.Labels)
+			endpoints.Annotations = maps.Clone(x.Annotations)
+
+			subset := corev1.EndpointSubset{}
+			subset.Addresses = x.Addresses
+
+			portNames := make([]string, 0, len(x.Ports))
+			for n := range x.Ports {
+				portNames = append(portNames, n)
+			}
+			sort.Strings(portNames)
+			for _, n := range portNames {
+				p := corev1.EndpointPort{}
+				p.Port = x.Ports[n]
+				p.Name, p.Protocol, _ = DecodePortName(n)
+
+				subset.Ports = append(subset.Ports, p)
+			}
+
+			endpoints.Subsets = []corev1.EndpointSubset{subset}
+
+			return endpoints, nil
 		case *kubepkgv1alpha1.DeployConfigMap:
 			cm := &corev1.ConfigMap{}
 			cm.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))
@@ -263,10 +254,7 @@ func ToPodTemplateSpec(kpkg *kubepkgv1alpha1.KubePkg) (*corev1.PodTemplateSpec, 
 	template.Labels["app"] = kpkg.Name
 
 	if kpkg.Spec.Deploy.Underlying != nil {
-		if err := wellknown.LabelAppInstance.SetTo(kpkg.Spec.Deploy.Underlying, kpkg.Name); err != nil {
-			return nil, err
-		}
-		if err := wellknown.LabelAppVersion.SetTo(kpkg.Spec.Deploy.Underlying, kpkg.Spec.Version); err != nil {
+		if err := LabelInstanceAndVersion(kpkg, kpkg.Spec.Deploy.Underlying); err != nil {
 			return nil, err
 		}
 	}
