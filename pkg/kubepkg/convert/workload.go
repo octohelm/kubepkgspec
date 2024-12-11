@@ -10,7 +10,7 @@ import (
 	"github.com/distribution/reference"
 	kubepkgv1alpha1 "github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/kubepkgspec/pkg/object"
-	"github.com/octohelm/kubepkgspec/pkg/reload"
+	"github.com/octohelm/kubepkgspec/pkg/reloader"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -200,7 +200,7 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 
 			cm.Data = data
 
-			if err := reload.AnnotateDigestTo(cm, reload.ScopeConfigMapDigest, kpkg.Name, cm.Data); err != nil {
+			if err := reloader.AnnotateDigestTo(cm, cm.Data); err != nil {
 				return nil, err
 			}
 
@@ -231,7 +231,7 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 
 			secret.StringData = data
 
-			if err := reload.AnnotateDigestTo(secret, reload.ScopeSecretDigest, kpkg.Name, secret.StringData); err != nil {
+			if err := reloader.AnnotateDigestTo(secret, secret.StringData); err != nil {
 				return nil, err
 			}
 

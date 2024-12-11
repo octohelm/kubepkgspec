@@ -3,7 +3,6 @@ package kubepkg
 import (
 	"fmt"
 	"iter"
-	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"strings"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -12,6 +11,7 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 
 	kubepkgv1alpha1 "github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/kubepkgspec/pkg/kubepkg/convert"

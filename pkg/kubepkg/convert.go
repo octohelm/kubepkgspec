@@ -18,7 +18,7 @@ import (
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/kubepkgspec/pkg/kubepkg/convert"
 	"github.com/octohelm/kubepkgspec/pkg/object"
-	"github.com/octohelm/kubepkgspec/pkg/reload"
+	"github.com/octohelm/kubepkgspec/pkg/reloader"
 )
 
 type Option = func(c *converter)
@@ -384,12 +384,12 @@ func (c *completer) patchNamespace(o object.Object) (object.Object, error) {
 func (c *completer) patchConfigMapOrSecret(o object.Object) (object.Object, error) {
 	switch x := o.(type) {
 	case *corev1.ConfigMap:
-		if err := reload.AnnotateDigestTo(x, reload.ScopeConfigMapDigest, x.Name, x.Data); err != nil {
+		if err := reloader.AnnotateDigestTo(x, x.Data); err != nil {
 			return nil, err
 		}
 		return x, nil
 	case *corev1.Secret:
-		if err := reload.AnnotateDigestTo(x, reload.ScopeSecretDigest, x.Name, x.StringData); err != nil {
+		if err := reloader.AnnotateDigestTo(x, x.StringData); err != nil {
 			return nil, err
 		}
 		return x, nil

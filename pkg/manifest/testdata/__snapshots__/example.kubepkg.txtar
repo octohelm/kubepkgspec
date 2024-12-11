@@ -10,7 +10,7 @@ data:
 kind: ConfigMap
 metadata:
   annotations:
-    digest.configmap.octohelm.tech/demo: sha256:b7cd93ed3ee6375b5d4fe8602512e2bd1d85729f0f98f62f0f0cdb322a62dd56
+    spec/digest: sha256:9b7cca89595dc25c3ead51b6fedc30ece1f333f853899d019560739743cb9462
   labels:
     app.kubernetes.io/instance: demo
     app.kubernetes.io/version: 0.0.2
@@ -23,7 +23,7 @@ data:
 kind: ConfigMap
 metadata:
   annotations:
-    digest.configmap.octohelm.tech/demo-html: sha256:6507926d60a024b477a9e34419a78ab284a0ca528d8434851825632545214ece
+    spec/digest: sha256:168120a737f7a27ee31b64540c76a2fea10653f3ec2938b0c2bbb0380d0447c2
   labels:
     app.kubernetes.io/instance: demo
     app.kubernetes.io/version: 0.0.2
@@ -63,9 +63,9 @@ spec:
   template:
     metadata:
       annotations:
-        digest.configmap.octohelm.tech/demo: sha256:b7cd93ed3ee6375b5d4fe8602512e2bd1d85729f0f98f62f0f0cdb322a62dd56
-        digest.configmap.octohelm.tech/demo-html: sha256:6507926d60a024b477a9e34419a78ab284a0ca528d8434851825632545214ece
-        reload.octohelm.tech/configmap: demo,demo-html
+        configmap.reloader.octohelm.tech/reload: demo,demo-html
+        digest.configmap.reloader.octohelm.tech/demo: sha256:9b7cca89595dc25c3ead51b6fedc30ece1f333f853899d019560739743cb9462
+        digest.configmap.reloader.octohelm.tech/demo-html: sha256:168120a737f7a27ee31b64540c76a2fea10653f3ec2938b0c2bbb0380d0447c2
       labels:
         app: demo
         app.kubernetes.io/instance: demo
@@ -120,3 +120,5 @@ spec:
     - path:
         type: PathPrefix
         value: /
+status:
+  parents: []

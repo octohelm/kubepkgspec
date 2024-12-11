@@ -40,6 +40,8 @@ spec:
     - path:
         type: PathPrefix
         value: /
+status:
+  parents: []
 -- demo.default.Endpoints.yaml --
 apiVersion: v1
 kind: Endpoints

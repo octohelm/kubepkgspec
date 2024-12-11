@@ -38,13 +38,13 @@ package kubepkg
 #ConfigMapSpec: data: [X=string]: string
 
 #ConfigMapVolumeSource: {
+	name?: string
 	// items if unspecified, each key-value pair in the Data field of the referenced ConfigMap will be projected into the volume as a file whose name is the key and content is the value
 	items?: [...#KeyToPath]
 	// defaultMode is optional: mode bits used to set permissions on created files by default
 	defaultMode?: int
 	// optional specify whether the ConfigMap or its keys must be defined
 	optional?: bool
-	name?:     string
 }
 
 #Container: {
@@ -127,39 +127,39 @@ package kubepkg
 }
 
 #DeployCronJob: {
-	kind:  "CronJob"
-	spec?: #CronJobSpec
+	kind: "CronJob"
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	spec?: #CronJobSpec
 }
 
 #DeployDaemonSet: {
-	kind:  "DaemonSet"
-	spec?: #DaemonSetSpec
+	kind: "DaemonSet"
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	spec?: #DaemonSetSpec
 }
 
 #DeployDeployment: {
-	kind:  "Deployment"
-	spec?: #DeploymentSpec
+	kind: "Deployment"
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	spec?: #DeploymentSpec
 }
 
 #DeployEndpoints: {
 	kind: "Endpoints"
-	ports: [X=string]: int
-	addresses?: [...#EndpointAddress]
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	ports: [X=string]: int
+	addresses?: [...#EndpointAddress]
 }
 
 #DeployJob: {
-	kind:  "Job"
-	spec?: #JobSpec
+	kind: "Job"
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	spec?: #JobSpec
 }
 
 #DeploySecret: {
@@ -169,10 +169,10 @@ package kubepkg
 }
 
 #DeployStatefulSet: {
-	kind:  "StatefulSet"
-	spec?: #StatefulSetSpec
+	kind: "StatefulSet"
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	spec?: #StatefulSetSpec
 }
 
 #DeploymentSpec: {
@@ -361,11 +361,11 @@ package kubepkg
 }
 
 #KubePkg: {
+	kind?:       string
+	apiVersion?: string
 	metadata?:   #ObjectMeta
 	spec:        #Spec
 	status?:     #Status
-	kind?:       string
-	apiVersion?: string
 }
 
 #LabelSelector: {
@@ -543,14 +543,14 @@ package kubepkg
 #PersistentVolumeAccessMode: string
 
 #PersistentVolumeClaim: {
+	kind?:       string
+	apiVersion?: string
 	// Standard object's metadata
 	metadata?: #ObjectMeta
 	// spec defines the desired characteristics of a volume requested by a pod author
 	spec?: #PersistentVolumeClaimSpec
 	// status represents the current information/status of a persistent volume claim
-	status?:     #PersistentVolumeClaimStatus
-	kind?:       string
-	apiVersion?: string
+	status?: #PersistentVolumeClaimStatus
 }
 
 #PersistentVolumeClaimCondition: {
@@ -858,6 +858,10 @@ package kubepkg
 }
 
 #Probe: {
+	exec?:      #ExecAction
+	httpGet?:   #HTTPGetAction
+	tcpSocket?: #TCPSocketAction
+	grpc?:      #GRPCAction
 	// Number of seconds after the container has started before liveness probes are initiated
 	initialDelaySeconds?: int
 	// Number of seconds after which the probe times out
@@ -870,10 +874,6 @@ package kubepkg
 	failureThreshold?: int
 	// Optional duration in seconds the pod needs to terminate gracefully upon probe failure
 	terminationGracePeriodSeconds?: int
-	exec?:                          #ExecAction
-	httpGet?:                       #HTTPGetAction
-	tcpSocket?:                     #TCPSocketAction
-	grpc?:                          #GRPCAction
 }
 
 #ProcMountType: string

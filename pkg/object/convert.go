@@ -1,8 +1,9 @@
 package object
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/go-json-experiment/json"
+	jsonv1 "github.com/go-json-experiment/json/v1"
 )
 
 func Convert(o Object) (Object, error) {
@@ -10,11 +11,11 @@ func Convert(o Object) (Object, error) {
 
 	typed, err := Scheme.New(gvk)
 	if err == nil {
-		raw, err := json.Marshal(o)
+		raw, err := json.Marshal(o, jsonv1.OmitEmptyWithLegacyDefinition(true))
 		if err != nil {
 			return nil, err
 		}
-		if err := json.Unmarshal(raw, typed); err != nil {
+		if err := json.Unmarshal(raw, typed, jsonv1.OmitEmptyWithLegacyDefinition(true)); err != nil {
 			return nil, fmt.Errorf("convert failed: %w", err)
 		}
 

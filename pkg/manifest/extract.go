@@ -1,13 +1,13 @@
 package manifest
 
 import (
-	"github.com/octohelm/kubepkgspec/pkg/install"
-	"github.com/octohelm/kubepkgspec/pkg/kubepkg"
-	"github.com/octohelm/kubepkgspec/pkg/reload"
 	"iter"
 
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
+	"github.com/octohelm/kubepkgspec/pkg/install"
+	"github.com/octohelm/kubepkgspec/pkg/kubepkg"
 	"github.com/octohelm/kubepkgspec/pkg/object"
+	"github.com/octohelm/kubepkgspec/pkg/reloader"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -39,7 +39,7 @@ func Extract(kpkg *v1alpha1.KubePkg, options ...kubepkg.Option) (iter.Seq[object
 	if err != nil {
 		return nil, err
 	}
-	if err := reload.Patch(manifests); err != nil {
+	if err := reloader.Patch(manifests); err != nil {
 		return nil, err
 	}
 	return manifests, nil

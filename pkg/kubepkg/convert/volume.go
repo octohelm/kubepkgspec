@@ -1,12 +1,13 @@
 package convert
 
 import (
+	"sort"
+
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/kubepkgspec/pkg/object"
-	"github.com/octohelm/kubepkgspec/pkg/reload"
+	"github.com/octohelm/kubepkgspec/pkg/reloader"
 	"github.com/octohelm/x/ptr"
 	corev1 "k8s.io/api/core/v1"
-	"sort"
 )
 
 type VolumeConverter interface {
@@ -237,7 +238,7 @@ func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Ob
 		cm.Data = spec.Data
 	}
 
-	if err := reload.AnnotateDigestTo(cm, reload.ScopeConfigMapDigest, cm.Name, cm.Data); err != nil {
+	if err := reloader.AnnotateDigestTo(cm, cm.Data); err != nil {
 		return nil, err
 	}
 
@@ -314,7 +315,7 @@ func (c *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Objec
 		secret.StringData = spec.Data
 	}
 
-	if err := reload.AnnotateDigestTo(secret, reload.ScopeSecretDigest, secret.Name, secret.StringData); err != nil {
+	if err := reloader.AnnotateDigestTo(secret, secret.StringData); err != nil {
 		return nil, err
 	}
 
