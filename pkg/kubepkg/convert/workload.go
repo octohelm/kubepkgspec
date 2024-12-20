@@ -247,11 +247,22 @@ func ToPodTemplateSpec(kpkg *kubepkgv1alpha1.KubePkg) (*corev1.PodTemplateSpec, 
 		return nil, errors.New("containers should not empty")
 	}
 	template := &corev1.PodTemplateSpec{}
+
 	if template.Labels == nil {
 		template.Labels = map[string]string{}
 	}
 
+	if template.Annotations == nil {
+		template.Annotations = map[string]string{}
+	}
+
 	template.Labels["app"] = kpkg.Name
+
+	if kpkg.Annotations != nil {
+		if v, ok := kpkg.Annotations["spec/digest"]; ok {
+			template.Annotations["spec/digest"] = v
+		}
+	}
 
 	if kpkg.Spec.Deploy.Underlying != nil {
 		if err := LabelInstanceAndVersion(kpkg, kpkg.Spec.Deploy.Underlying); err != nil {
