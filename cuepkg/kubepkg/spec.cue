@@ -396,13 +396,13 @@ package kubepkg
 }
 
 #LifecycleHandler: {
-	// Exec specifies the action to take
+	// Exec specifies a command to execute in the container
 	exec?: #ExecAction
-	// HTTPGet specifies the http request to perform
+	// HTTPGet specifies an HTTP GET request to perform
 	httpGet?: #HTTPGetAction
 	// Deprecated
 	tcpSocket?: #TCPSocketAction
-	// Sleep represents the duration that the container should sleep before being terminated
+	// Sleep represents a duration that the container should sleep
 	sleep?: #SleepAction
 }
 
@@ -554,7 +554,9 @@ package kubepkg
 }
 
 #PersistentVolumeClaimCondition: {
-	type:   #PersistentVolumeClaimConditionType
+	// Type is the type of the condition
+	type: #PersistentVolumeClaimConditionType
+	// Status is the status of the condition
 	status: #ConditionStatus
 	// lastProbeTime is the time we probed the condition
 	lastProbeTime?: #Time
@@ -666,8 +668,9 @@ package kubepkg
 }
 
 #PodDNSConfigOption: {
-	// Required
-	name?:  string
+	// Name is this DNS resolver option's name
+	name?: string
+	// Value is this DNS resolver option's value
 	value?: string
 }
 
@@ -803,6 +806,8 @@ package kubepkg
 	resourceClaimTemplateName?: string
 }
 
+#PodSELinuxChangePolicy: string
+
 #PodSchedulingGate: {
 	// Name of the scheduling gate
 	name: string
@@ -833,6 +838,8 @@ package kubepkg
 	seccompProfile?: #SeccompProfile
 	// appArmorProfile is the AppArmor options to use by the containers in this pod
 	appArmorProfile?: #AppArmorProfile
+	// seLinuxChangePolicy defines how the container's SELinux label is applied to all volumes used by the Pod
+	seLinuxChangePolicy?: #PodSELinuxChangePolicy
 }
 
 #PolicyRule: {

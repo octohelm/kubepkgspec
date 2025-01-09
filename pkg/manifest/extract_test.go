@@ -13,7 +13,6 @@ import (
 	"github.com/octohelm/kubepkgspec/pkg/workload"
 	"github.com/octohelm/x/anyjson"
 	testingx "github.com/octohelm/x/testing"
-	"golang.org/x/tools/txtar"
 	appsv1 "k8s.io/api/apps/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -35,9 +34,9 @@ func TestExtract(t *testing.T) {
 		list, err := SortedExtract(kpkg)
 		testingx.Expect(t, err, testingx.BeNil[error]())
 
-		s := &txtar.Archive{}
+		s := testingx.NewSnapshot()
 		for _, o := range list {
-			s.Files = append(s.Files, asTxtTarFile(o))
+			s = s.With(asTxtTarFile(o))
 		}
 		testingx.Expect(t, s, testingx.MatchSnapshot("proxy.kubepkg"))
 	})
@@ -49,10 +48,11 @@ func TestExtract(t *testing.T) {
 			list, err := SortedExtract(kpkg)
 			testingx.Expect(t, err, testingx.BeNil[error]())
 
-			s := &txtar.Archive{}
+			s := testingx.NewSnapshot()
 			for _, o := range list {
-				s.Files = append(s.Files, asTxtTarFile(o))
+				s = s.With(asTxtTarFile(o))
 			}
+
 			testingx.Expect(t, s, testingx.MatchSnapshot("example.kubepkg"))
 
 			t.Run("should extract as kubepkg from manifests", func(t *testing.T) {
@@ -60,9 +60,9 @@ func TestExtract(t *testing.T) {
 				testingx.Expect(t, err, testingx.BeNil[error]())
 
 				list, err := SortedExtract(kpkg)
-				s := &txtar.Archive{}
+				s := testingx.NewSnapshot()
 				for _, o := range list {
-					s.Files = append(s.Files, asTxtTarFile(o.(object.Object)))
+					s = s.With(asTxtTarFile(o))
 				}
 				testingx.Expect(t, s, testingx.MatchSnapshot("example-simpled.kubepkg"))
 			})
@@ -101,25 +101,20 @@ func TestExtract(t *testing.T) {
 		list, err := SortedExtract(kpkg)
 		testingx.Expect(t, err, testingx.BeNil[error]())
 
-		s := &txtar.Archive{}
+		s := testingx.NewSnapshot()
 		for _, o := range list {
-			s.Files = append(s.Files, asTxtTarFile(o))
+			s = s.With(asTxtTarFile(o))
 		}
-
 		testingx.Expect(t, s, testingx.MatchSnapshot("from-manifests.kubepkg"))
 	})
 }
 
-func asTxtTarFile(o object.Object) txtar.File {
-	x := txtar.File{
-		Name: o.GetName(),
-	}
-
+func asTxtTarFile(o object.Object) (string, []byte) {
+	filename := o.GetName()
 	if namespace := o.GetNamespace(); namespace != "" {
-		x.Name += "." + namespace
+		filename += "." + namespace
 	}
-
-	x.Name += "." + o.GetObjectKind().GroupVersionKind().Kind + "." + "yaml"
+	filename += "." + o.GetObjectKind().GroupVersionKind().Kind + "." + "yaml"
 
 	obj := &anyjson.Object{}
 	if err := convert.Unmarshal(o, obj); err != nil {
@@ -130,6 +125,5 @@ func asTxtTarFile(o object.Object) txtar.File {
 	if err != nil {
 		panic(err)
 	}
-	x.Data = data
-	return x
+	return filename, data
 }
