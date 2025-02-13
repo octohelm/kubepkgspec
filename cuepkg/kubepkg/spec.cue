@@ -178,7 +178,7 @@ package kubepkg
 #DeploymentSpec: {
 	// Number of desired pods. This is a pointer to distinguish between explicit
 	replicas?: int
-	// Template describes the pods that will be created.
+	// describes the pods that will be created.
 	template?: #PodPartialTemplateSpec
 	// The deployment strategy to use to replace existing pods with new ones.
 	strategy?: #DeploymentStrategy
@@ -241,7 +241,6 @@ package kubepkg
 
 #ExposeIngress: {
 	type: "Ingress"
-	// Gateway
 	gateway?: [...string]
 }
 
@@ -345,7 +344,7 @@ package kubepkg
 	suspend?: bool
 	// podReplacementPolicy specifies when to create replacement Pods.
 	podReplacementPolicy?: #PodReplacementPolicy
-	// ManagedBy field indicates the controller that manages a Job. The k8s Job
+	// field indicates the controller that manages a Job. The k8s Job
 	managedBy?: string
 }
 
@@ -726,13 +725,13 @@ package kubepkg
 	activeDeadlineSeconds?: int
 	// Set DNS policy for the pod.
 	dnsPolicy?: #DNSPolicy
-	// NodeSelector is a selector which must be true for the pod to fit on a node.
+	// is a selector which must be true for the pod to fit on a node.
 	nodeSelector?: {
 		[X=string]: string
 	}
-	// AutomountServiceAccountToken indicates whether a service account token should be automatically mounted.
+	// indicates whether a service account token should be automatically mounted.
 	automountServiceAccountToken?: bool
-	// NodeName indicates in which node this pod is scheduled.
+	// indicates in which node this pod is scheduled.
 	nodeName?: string
 	// Host networking requested for this pod. Use the host's network namespace.
 	hostNetwork?: bool
@@ -742,9 +741,9 @@ package kubepkg
 	hostIPC?: bool
 	// Share a single process namespace between all of the containers in a pod.
 	shareProcessNamespace?: bool
-	// SecurityContext holds pod-level security attributes and common container settings.
+	// holds pod-level security attributes and common container settings.
 	securityContext?: #PodSecurityContext
-	// ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
+	// is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
 	imagePullSecrets?: [...#LocalObjectReference]
 	// Specifies the hostname of the Pod
 	hostname?: string
@@ -756,7 +755,7 @@ package kubepkg
 	schedulerName?: string
 	// If specified, the pod's tolerations.
 	tolerations?: [...#Toleration]
-	// HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
+	// is an optional list of hosts and IPs that will be injected into the pod's hosts
 	hostAliases?: [...#HostAlias]
 	// If specified, indicates the pod's priority. "system-node-critical" and
 	priorityClassName?: string
@@ -766,15 +765,15 @@ package kubepkg
 	dnsConfig?: #PodDNSConfig
 	// If specified, all readiness gates will be evaluated for pod readiness.
 	readinessGates?: [...#PodReadinessGate]
-	// RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used
+	// refers to a RuntimeClass object in the node.k8s.io group, which should be used
 	runtimeClassName?: string
-	// EnableServiceLinks indicates whether information about services should be injected into pod's
+	// indicates whether information about services should be injected into pod's
 	enableServiceLinks?: bool
-	// PreemptionPolicy is the Policy for preempting pods with lower priority.
+	// is the Policy for preempting pods with lower priority.
 	preemptionPolicy?: #PreemptionPolicy
-	// Overhead represents the resource overhead associated with running a pod for a given RuntimeClass.
+	// represents the resource overhead associated with running a pod for a given RuntimeClass.
 	overhead?: #ResourceList
-	// TopologySpreadConstraints describes how a group of pods ought to spread across topology
+	// describes how a group of pods ought to spread across topology
 	topologySpreadConstraints?: [...#TopologySpreadConstraint]
 	// If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default).
 	setHostnameAsFQDN?: bool
@@ -782,10 +781,11 @@ package kubepkg
 	os?: #PodOS
 	// Use the host's user namespace.
 	hostUsers?: bool
-	// SchedulingGates is an opaque list of values that if specified will block scheduling the pod.
+	// is an opaque list of values that if specified will block scheduling the pod.
 	schedulingGates?: [...#PodSchedulingGate]
-	// ResourceClaims defines which ResourceClaims must be allocated
+	// defines which ResourceClaims must be allocated
 	resourceClaims?: [...#PodResourceClaim]
+	resources?: #ResourceRequirements
 }
 
 #PodPartialTemplateSpec: spec?: #PodPartialSpec
@@ -993,15 +993,14 @@ package kubepkg
 }
 
 #Service: {
-	// Ports [PortName]servicePort
+	// [PortName]servicePort
 	ports?: {
 		[X=string]: int
 	}
-	// Paths [PortName]BashPath
+	// [PortName]BashPath
 	paths?: {
 		[X=string]: string
 	}
-	// ClusterIP
 	clusterIP?: string
 	expose?:    #Expose
 }
@@ -1185,7 +1184,7 @@ package kubepkg
 	spec?:             #ConfigMapSpec
 	mountPath:         string
 	mountPropagation?: "Bidirectional" | "HostToContainer"
-	// Prefix mountPath == export, use as envFrom
+	// mountPath == export, use as envFrom
 	prefix?:   string
 	optional?: bool
 	// else volumeMounts
@@ -1198,7 +1197,7 @@ package kubepkg
 	opt?:              #EmptyDirVolumeSource
 	mountPath:         string
 	mountPropagation?: "Bidirectional" | "HostToContainer"
-	// Prefix mountPath == export, use as envFrom
+	// mountPath == export, use as envFrom
 	prefix?:   string
 	optional?: bool
 	// else volumeMounts
@@ -1211,7 +1210,7 @@ package kubepkg
 	opt?:              #HostPathVolumeSource
 	mountPath:         string
 	mountPropagation?: "Bidirectional" | "HostToContainer"
-	// Prefix mountPath == export, use as envFrom
+	// mountPath == export, use as envFrom
 	prefix?:   string
 	optional?: bool
 	// else volumeMounts
@@ -1224,7 +1223,7 @@ package kubepkg
 	opt?:              #ImageVolumeSource
 	mountPath:         string
 	mountPropagation?: "Bidirectional" | "HostToContainer"
-	// Prefix mountPath == export, use as envFrom
+	// mountPath == export, use as envFrom
 	prefix?:   string
 	optional?: bool
 	// else volumeMounts
@@ -1238,7 +1237,7 @@ package kubepkg
 	spec:              #PersistentVolumeClaimSpec
 	mountPath:         string
 	mountPropagation?: "Bidirectional" | "HostToContainer"
-	// Prefix mountPath == export, use as envFrom
+	// mountPath == export, use as envFrom
 	prefix?:   string
 	optional?: bool
 	// else volumeMounts
@@ -1259,7 +1258,7 @@ package kubepkg
 	spec?:             #ConfigMapSpec
 	mountPath:         string
 	mountPropagation?: "Bidirectional" | "HostToContainer"
-	// Prefix mountPath == export, use as envFrom
+	// mountPath == export, use as envFrom
 	prefix?:   string
 	optional?: bool
 	// else volumeMounts

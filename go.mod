@@ -5,18 +5,18 @@ go 1.24.0
 require (
 	github.com/go-courier/logr v0.3.1 // indirect
 	github.com/innoai-tech/infra v0.0.0-20250213031804-1df17550f6a3
-	github.com/octohelm/courier v0.0.0-20250213031428-2432e8681d86
+	github.com/octohelm/courier v0.0.0-20250213104025-f21d0877d28c
 	github.com/octohelm/enumeration v0.0.0-20250115091102-ddf41951d733
-	github.com/octohelm/gengo v0.0.0-20250208093034-2a09863d11f8
-	github.com/octohelm/kubekit v0.0.0-20250109062627-2d1a880b15da
-	github.com/octohelm/x v0.0.0-20250212034859-0e2c4f726784
+	github.com/octohelm/gengo v0.0.0-20250213040207-59af51fbf311
+	github.com/octohelm/kubekit v0.0.0-20250213040807-96036c24f7d0
+	github.com/octohelm/x v0.0.0-20250213100717-a5d72cc790e0
 )
 
 require (
 	cuelang.org/go v0.12.0
 	github.com/containerd/platforms v0.2.1
 	github.com/distribution/reference v0.6.0
-	github.com/go-json-experiment/json v0.0.0-20250212230008-60a0516c2895
+	github.com/go-json-experiment/json v0.0.0-20250213060926-925ba3f173fa
 	github.com/opencontainers/go-digest v1.0.0
 	golang.org/x/sync v0.11.0
 	k8s.io/api v0.32.1
@@ -78,7 +78,7 @@ require (
 	k8s.io/kube-openapi v0.0.0-20241212222426-2c72e554b1e7 // indirect
 	k8s.io/utils v0.0.0-20241210054802-24370beab758 // indirect
 	mvdan.cc/gofumpt v0.7.0 // indirect
-	sigs.k8s.io/controller-tools v0.17.0 // indirect
+	sigs.k8s.io/controller-tools v0.17.2 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.5.0 // indirect
 )
