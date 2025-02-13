@@ -16,6 +16,7 @@ func (DigestMetaType) EnumValues() []any {
 		DigestMetaBlob, DigestMetaManifest,
 	}
 }
+
 func ParseDigestMetaTypeLabelString(label string) (DigestMetaType, error) {
 	switch label {
 	case "blob":
@@ -47,6 +48,7 @@ func (ScopeType) EnumValues() []any {
 		ScopeTypeCluster, ScopeTypeNamespace,
 	}
 }
+
 func ParseScopeTypeLabelString(label string) (ScopeType, error) {
 	switch label {
 	case "Cluster":

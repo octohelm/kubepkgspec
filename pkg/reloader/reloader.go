@@ -27,7 +27,7 @@ func DigestFromValues[Values map[string]string](values Values) (digest.Digest, e
 
 	enc := jsontext.NewEncoder(hasher.Hash())
 
-	if err := enc.WriteToken(jsontext.ObjectStart); err != nil {
+	if err := enc.WriteToken(jsontext.BeginObject); err != nil {
 		return "", err
 	}
 
@@ -41,7 +41,7 @@ func DigestFromValues[Values map[string]string](values Values) (digest.Digest, e
 		}
 	}
 
-	if err := enc.WriteToken(jsontext.ObjectEnd); err != nil {
+	if err := enc.WriteToken(jsontext.EndObject); err != nil {
 		return "", err
 	}
 

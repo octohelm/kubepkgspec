@@ -64,7 +64,6 @@ func (in *CronJobSpec) DeepCopyIntoAs(out *batchv1.CronJobSpec) {
 	in.JobTemplate.DeepCopyIntoAs(&out.JobTemplate)
 	out.SuccessfulJobsHistoryLimit = in.SuccessfulJobsHistoryLimit
 	out.FailedJobsHistoryLimit = in.FailedJobsHistoryLimit
-
 }
 
 type DaemonSetSpec struct {
@@ -102,14 +101,13 @@ func (in *DaemonSetSpec) DeepCopyIntoAs(out *appsv1.DaemonSetSpec) {
 	out.UpdateStrategy = in.UpdateStrategy
 	out.MinReadySeconds = in.MinReadySeconds
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
-
 }
 
 type DeploymentSpec struct {
 	// Number of desired pods. This is a pointer to distinguish between explicit
 	// zero and not specified. Defaults to 1.
 	Replicas *int32 `json:"replicas,omitempty" protobuf:"varint,1,opt,name=replicas"`
-	// Template describes the pods that will be created.
+	// describes the pods that will be created.
 	// The only allowed template.spec.restartPolicy value is "Always".
 	Template *PodPartialTemplateSpec `json:"template,omitempty"`
 	// The deployment strategy to use to replace existing pods with new ones.
@@ -149,7 +147,6 @@ func (in *DeploymentSpec) DeepCopyIntoAs(out *appsv1.DeploymentSpec) {
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
 	out.Paused = in.Paused
 	out.ProgressDeadlineSeconds = in.ProgressDeadlineSeconds
-
 }
 
 type JobSpec struct {
@@ -278,7 +275,7 @@ type JobSpec struct {
 	// This is an beta field. To use this, enable the JobPodReplacementPolicy feature toggle.
 	// This is on by default.
 	PodReplacementPolicy *batchv1.PodReplacementPolicy `json:"podReplacementPolicy,omitempty" protobuf:"bytes,14,opt,name=podReplacementPolicy,casttype=podReplacementPolicy"`
-	// ManagedBy field indicates the controller that manages a Job. The k8s Job
+	// field indicates the controller that manages a Job. The k8s Job
 	// controller reconciles jobs which don't have this field at all or the field
 	// value is the reserved string `kubernetes.io/job-controller`, but skips
 	// reconciling Jobs with a custom value for this field.
@@ -288,8 +285,8 @@ type JobSpec struct {
 	// characters as defined by RFC 3986. The value cannot exceed 63 characters.
 	// This field is immutable.
 	//
-	// This field is alpha-level. The job controller accepts setting the field
-	// when the feature gate JobManagedBy is enabled (disabled by default).
+	// This field is beta-level. The job controller accepts setting the field
+	// when the feature gate JobManagedBy is enabled (enabled by default).
 	ManagedBy *string `json:"managedBy,omitempty" protobuf:"bytes,15,opt,name=managedBy"`
 }
 
@@ -318,7 +315,6 @@ func (in *JobSpec) DeepCopyIntoAs(out *batchv1.JobSpec) {
 	out.Suspend = in.Suspend
 	out.PodReplacementPolicy = in.PodReplacementPolicy
 	out.ManagedBy = in.ManagedBy
-
 }
 
 type PodPartialSpec struct {
@@ -347,13 +343,13 @@ type PodPartialSpec struct {
 	// To have DNS options set along with hostNetwork, you have to specify DNS policy
 	// explicitly to 'ClusterFirstWithHostNet'.
 	DNSPolicy corev1.DNSPolicy `json:"dnsPolicy,omitempty" protobuf:"bytes,6,opt,name=dnsPolicy,casttype=DNSPolicy"`
-	// NodeSelector is a selector which must be true for the pod to fit on a node.
+	// is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 	NodeSelector map[string]string `json:"nodeSelector,omitempty" protobuf:"bytes,7,rep,name=nodeSelector"`
-	// AutomountServiceAccountToken indicates whether a service account token should be automatically mounted.
+	// indicates whether a service account token should be automatically mounted.
 	AutomountServiceAccountToken *bool `json:"automountServiceAccountToken,omitempty" protobuf:"varint,21,opt,name=automountServiceAccountToken"`
-	// NodeName indicates in which node this pod is scheduled.
+	// indicates in which node this pod is scheduled.
 	// If empty, this pod is a candidate for scheduling by the scheduler defined in schedulerName.
 	// Once this field is set, the kubelet for this node becomes responsible for the lifecycle of this pod.
 	// This field should not be used to express a desire for the pod to be scheduled on a specific node.
@@ -375,10 +371,10 @@ type PodPartialSpec struct {
 	// HostPID and ShareProcessNamespace cannot both be set.
 	// Optional: Default to false.
 	ShareProcessNamespace *bool `json:"shareProcessNamespace,omitempty" protobuf:"varint,27,opt,name=shareProcessNamespace"`
-	// SecurityContext holds pod-level security attributes and common container settings.
+	// holds pod-level security attributes and common container settings.
 	// Optional: Defaults to empty.  See type description for default values of each field.
 	SecurityContext *corev1.PodSecurityContext `json:"securityContext,omitempty" protobuf:"bytes,14,opt,name=securityContext"`
-	// ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
+	// is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
 	// If specified, these secrets will be passed to individual puller implementations for them to use.
 	// More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod
 	ImagePullSecrets []corev1.LocalObjectReference `json:"imagePullSecrets,omitempty" patchStrategy:"merge" patchMergeKey:"name" protobuf:"bytes,15,rep,name=imagePullSecrets"`
@@ -395,7 +391,7 @@ type PodPartialSpec struct {
 	SchedulerName string `json:"schedulerName,omitempty" protobuf:"bytes,19,opt,name=schedulerName"`
 	// If specified, the pod's tolerations.
 	Tolerations []corev1.Toleration `json:"tolerations,omitempty" protobuf:"bytes,22,opt,name=tolerations"`
-	// HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
+	// is an optional list of hosts and IPs that will be injected into the pod's hosts
 	// file if specified.
 	HostAliases []corev1.HostAlias `json:"hostAliases,omitempty" patchStrategy:"merge" patchMergeKey:"ip" protobuf:"bytes,23,rep,name=hostAliases"`
 	// If specified, indicates the pod's priority. "system-node-critical" and
@@ -420,21 +416,21 @@ type PodPartialSpec struct {
 	// all conditions specified in the readiness gates have status equal to "True"
 	// More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates
 	ReadinessGates []corev1.PodReadinessGate `json:"readinessGates,omitempty" protobuf:"bytes,28,opt,name=readinessGates"`
-	// RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used
+	// refers to a RuntimeClass object in the node.k8s.io group, which should be used
 	// to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run.
 	// If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an
 	// empty definition that uses the default runtime handler.
 	// More info: https://git.k8s.io/enhancements/keps/sig-node/585-runtime-class
 	RuntimeClassName *string `json:"runtimeClassName,omitempty" protobuf:"bytes,29,opt,name=runtimeClassName"`
-	// EnableServiceLinks indicates whether information about services should be injected into pod's
+	// indicates whether information about services should be injected into pod's
 	// environment variables, matching the syntax of Docker links.
 	// Optional: Defaults to true.
 	EnableServiceLinks *bool `json:"enableServiceLinks,omitempty" protobuf:"varint,30,opt,name=enableServiceLinks"`
-	// PreemptionPolicy is the Policy for preempting pods with lower priority.
+	// is the Policy for preempting pods with lower priority.
 	// One of Never, PreemptLowerPriority.
 	// Defaults to PreemptLowerPriority if unset.
 	PreemptionPolicy *corev1.PreemptionPolicy `json:"preemptionPolicy,omitempty" protobuf:"bytes,31,opt,name=preemptionPolicy"`
-	// Overhead represents the resource overhead associated with running a pod for a given RuntimeClass.
+	// represents the resource overhead associated with running a pod for a given RuntimeClass.
 	// This field will be autopopulated at admission time by the RuntimeClass admission controller. If
 	// the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests.
 	// The RuntimeClass admission controller will reject Pod create requests which have the overhead already
@@ -442,7 +438,7 @@ type PodPartialSpec struct {
 	// defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero.
 	// More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md
 	Overhead corev1.ResourceList `json:"overhead,omitempty" protobuf:"bytes,32,opt,name=overhead"`
-	// TopologySpreadConstraints describes how a group of pods ought to spread across topology
+	// describes how a group of pods ought to spread across topology
 	// domains. Scheduler will schedule pods in a way which abides by the constraints.
 	// All topologySpreadConstraints are ANDed.
 	TopologySpreadConstraints []corev1.TopologySpreadConstraint `json:"topologySpreadConstraints,omitempty" patchStrategy:"merge" patchMergeKey:"topologyKey" protobuf:"bytes,33,opt,name=topologySpreadConstraints"`
@@ -494,13 +490,13 @@ type PodPartialSpec struct {
 	// containers as root without actually having root privileges on the host.
 	// This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.
 	HostUsers *bool `json:"hostUsers,omitempty" protobuf:"bytes,37,opt,name=hostUsers"`
-	// SchedulingGates is an opaque list of values that if specified will block scheduling the pod.
+	// is an opaque list of values that if specified will block scheduling the pod.
 	// If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the
 	// scheduler will not attempt to schedule the pod.
 	//
 	// SchedulingGates can only be set at pod creation time, and be removed only afterwards.
 	SchedulingGates []corev1.PodSchedulingGate `json:"schedulingGates,omitempty" patchStrategy:"merge" patchMergeKey:"name" protobuf:"bytes,38,opt,name=schedulingGates"`
-	// ResourceClaims defines which ResourceClaims must be allocated
+	// defines which ResourceClaims must be allocated
 	// and reserved before the Pod is allowed to start. The resources
 	// will be made available to those containers which consume them
 	// by name.
@@ -510,6 +506,17 @@ type PodPartialSpec struct {
 	//
 	// This field is immutable.
 	ResourceClaims []corev1.PodResourceClaim `json:"resourceClaims,omitempty" patchStrategy:"merge,retainKeys" patchMergeKey:"name" protobuf:"bytes,39,rep,name=resourceClaims"`
+	// is the total amount of CPU and Memory resources required by all
+	// containers in the pod. It supports specifying Requests and Limits for
+	// "cpu" and "memory" resource names only. ResourceClaims are not supported.
+	//
+	// This field enables fine-grained control over resource allocation for the
+	// entire pod, allowing resource sharing among containers in a pod.
+	// TODO: For beta graduation, expand this comment with a detailed explanation.
+	//
+	// This is an alpha field and requires enabling the PodLevelResources feature
+	// gate.
+	Resources *corev1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,40,opt,name=resources"`
 }
 
 func (in *PodPartialSpec) DeepCopyAs() *corev1.PodSpec {
@@ -589,7 +596,7 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *corev1.PodSpec) {
 		*o = make([]corev1.PodResourceClaim, len(*i))
 		copy(*o, *i)
 	}
-
+	out.Resources = in.Resources
 }
 
 type StatefulSetSpec struct {
@@ -648,8 +655,7 @@ type StatefulSetSpec struct {
 	// volume claims are created as needed and retained until manually deleted. This
 	// policy allows the lifecycle to be altered, for example by deleting persistent
 	// volume claims when their stateful set is deleted, or when their pod is scaled
-	// down. This requires the StatefulSetAutoDeletePVC feature gate to be enabled,
-	// which is beta.
+	// down.
 	PersistentVolumeClaimRetentionPolicy *appsv1.StatefulSetPersistentVolumeClaimRetentionPolicy `json:"persistentVolumeClaimRetentionPolicy,omitempty" protobuf:"bytes,10,opt,name=persistentVolumeClaimRetentionPolicy"`
 	// ordinals controls the numbering of replica indices in a StatefulSet. The
 	// default ordinals behavior assigns a "0" index to the first replica and
@@ -681,5 +687,4 @@ func (in *StatefulSetSpec) DeepCopyIntoAs(out *appsv1.StatefulSetSpec) {
 	out.MinReadySeconds = in.MinReadySeconds
 	out.PersistentVolumeClaimRetentionPolicy = in.PersistentVolumeClaimRetentionPolicy
 	out.Ordinals = in.Ordinals
-
 }

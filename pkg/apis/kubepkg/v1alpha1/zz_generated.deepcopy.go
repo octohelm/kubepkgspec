@@ -27,8 +27,8 @@ func (in *ConfigMapSpec) DeepCopyInto(out *ConfigMapSpec) {
 			(*o)[key] = val
 		}
 	}
-
 }
+
 func (in *Container) DeepCopy() *Container {
 	if in == nil {
 		return nil
@@ -76,8 +76,8 @@ func (in *Container) DeepCopyInto(out *Container) {
 	out.SecurityContext = in.SecurityContext
 	out.TerminationMessagePath = in.TerminationMessagePath
 	out.TerminationMessagePolicy = in.TerminationMessagePolicy
-
 }
+
 func (in *Image) DeepCopy() *Image {
 	if in == nil {
 		return nil
@@ -97,8 +97,8 @@ func (in *Image) DeepCopyInto(out *Image) {
 		copy(*o, *i)
 	}
 	out.PullPolicy = in.PullPolicy
-
 }
+
 func (in *CronJobSpec) DeepCopy() *CronJobSpec {
 	if in == nil {
 		return nil
@@ -117,8 +117,8 @@ func (in *CronJobSpec) DeepCopyInto(out *CronJobSpec) {
 	out.JobTemplate = in.JobTemplate
 	out.SuccessfulJobsHistoryLimit = in.SuccessfulJobsHistoryLimit
 	out.FailedJobsHistoryLimit = in.FailedJobsHistoryLimit
-
 }
+
 func (in *DaemonSetSpec) DeepCopy() *DaemonSetSpec {
 	if in == nil {
 		return nil
@@ -133,8 +133,8 @@ func (in *DaemonSetSpec) DeepCopyInto(out *DaemonSetSpec) {
 	out.UpdateStrategy = *in.UpdateStrategy.DeepCopy()
 	out.MinReadySeconds = in.MinReadySeconds
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
-
 }
+
 func (in *DeployConfigMap) DeepCopy() *DeployConfigMap {
 	if in == nil {
 		return nil
@@ -147,8 +147,8 @@ func (in *DeployConfigMap) DeepCopy() *DeployConfigMap {
 func (in *DeployConfigMap) DeepCopyInto(out *DeployConfigMap) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
-
 }
+
 func (in *DeployInfrastructure) DeepCopy() *DeployInfrastructure {
 	if in == nil {
 		return nil
@@ -173,8 +173,8 @@ func (in *DeployInfrastructure) DeepCopyInto(out *DeployInfrastructure) {
 			(*o)[key] = val
 		}
 	}
-
 }
+
 func (in *DeployCronJob) DeepCopy() *DeployCronJob {
 	if in == nil {
 		return nil
@@ -188,8 +188,8 @@ func (in *DeployCronJob) DeepCopyInto(out *DeployCronJob) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *DeployDaemonSet) DeepCopy() *DeployDaemonSet {
 	if in == nil {
 		return nil
@@ -203,8 +203,8 @@ func (in *DeployDaemonSet) DeepCopyInto(out *DeployDaemonSet) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *DeployDeployment) DeepCopy() *DeployDeployment {
 	if in == nil {
 		return nil
@@ -218,8 +218,8 @@ func (in *DeployDeployment) DeepCopyInto(out *DeployDeployment) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *DeploymentSpec) DeepCopy() *DeploymentSpec {
 	if in == nil {
 		return nil
@@ -237,8 +237,8 @@ func (in *DeploymentSpec) DeepCopyInto(out *DeploymentSpec) {
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
 	out.Paused = in.Paused
 	out.ProgressDeadlineSeconds = in.ProgressDeadlineSeconds
-
 }
+
 func (in *DeployEndpoints) DeepCopy() *DeployEndpoints {
 	if in == nil {
 		return nil
@@ -263,8 +263,8 @@ func (in *DeployEndpoints) DeepCopyInto(out *DeployEndpoints) {
 		*o = make([]corev1.EndpointAddress, len(*i))
 		copy(*o, *i)
 	}
-
 }
+
 func (in *DeployJob) DeepCopy() *DeployJob {
 	if in == nil {
 		return nil
@@ -278,8 +278,8 @@ func (in *DeployJob) DeepCopyInto(out *DeployJob) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *JobSpec) DeepCopy() *JobSpec {
 	if in == nil {
 		return nil
@@ -305,8 +305,8 @@ func (in *JobSpec) DeepCopyInto(out *JobSpec) {
 	out.Suspend = in.Suspend
 	out.PodReplacementPolicy = in.PodReplacementPolicy
 	out.ManagedBy = in.ManagedBy
-
 }
+
 func (in *DeploySecret) DeepCopy() *DeploySecret {
 	if in == nil {
 		return nil
@@ -319,8 +319,8 @@ func (in *DeploySecret) DeepCopy() *DeploySecret {
 func (in *DeploySecret) DeepCopyInto(out *DeploySecret) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
-
 }
+
 func (in *DeployStatefulSet) DeepCopy() *DeployStatefulSet {
 	if in == nil {
 		return nil
@@ -334,8 +334,8 @@ func (in *DeployStatefulSet) DeepCopyInto(out *DeployStatefulSet) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *StatefulSetSpec) DeepCopy() *StatefulSetSpec {
 	if in == nil {
 		return nil
@@ -360,8 +360,8 @@ func (in *StatefulSetSpec) DeepCopyInto(out *StatefulSetSpec) {
 	out.MinReadySeconds = in.MinReadySeconds
 	out.PersistentVolumeClaimRetentionPolicy = in.PersistentVolumeClaimRetentionPolicy
 	out.Ordinals = in.Ordinals
-
 }
+
 func (in *DigestMeta) DeepCopy() *DigestMeta {
 	if in == nil {
 		return nil
@@ -378,8 +378,8 @@ func (in *DigestMeta) DeepCopyInto(out *DigestMeta) {
 	in.Size.DeepCopyInto(&out.Size)
 	out.Tag = in.Tag
 	out.Platform = in.Platform
-
 }
+
 func (in *DigestMetaType) DeepCopy() *DigestMetaType {
 	if in == nil {
 		return nil
@@ -393,6 +393,7 @@ func (in *DigestMetaType) DeepCopy() *DigestMetaType {
 func (in *DigestMetaType) DeepCopyInto(out *DigestMetaType) {
 	*out = *in
 }
+
 func (in *FileSize) DeepCopy() *FileSize {
 	if in == nil {
 		return nil
@@ -406,6 +407,7 @@ func (in *FileSize) DeepCopy() *FileSize {
 func (in *FileSize) DeepCopyInto(out *FileSize) {
 	*out = *in
 }
+
 func (in *EnvVarValueOrFrom) DeepCopy() *EnvVarValueOrFrom {
 	if in == nil {
 		return nil
@@ -418,8 +420,8 @@ func (in *EnvVarValueOrFrom) DeepCopy() *EnvVarValueOrFrom {
 func (in *EnvVarValueOrFrom) DeepCopyInto(out *EnvVarValueOrFrom) {
 	out.Value = in.Value
 	out.ValueFrom = in.ValueFrom
-
 }
+
 func (in *ExposeIngress) DeepCopy() *ExposeIngress {
 	if in == nil {
 		return nil
@@ -436,8 +438,8 @@ func (in *ExposeIngress) DeepCopyInto(out *ExposeIngress) {
 		*o = make([]string, len(*i))
 		copy(*o, *i)
 	}
-
 }
+
 func (in *ExposeNodePort) DeepCopy() *ExposeNodePort {
 	if in == nil {
 		return nil
@@ -449,8 +451,8 @@ func (in *ExposeNodePort) DeepCopy() *ExposeNodePort {
 
 func (in *ExposeNodePort) DeepCopyInto(out *ExposeNodePort) {
 	out.Type = in.Type
-
 }
+
 func (in *JobTemplateSpec) DeepCopy() *JobTemplateSpec {
 	if in == nil {
 		return nil
@@ -462,8 +464,8 @@ func (in *JobTemplateSpec) DeepCopy() *JobTemplateSpec {
 
 func (in *JobTemplateSpec) DeepCopyInto(out *JobTemplateSpec) {
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *KubePkg) DeepCopyObject() pkgruntime.Object {
 	if c := in.DeepCopy(); c != nil {
 		return c
@@ -485,8 +487,8 @@ func (in *KubePkg) DeepCopyInto(out *KubePkg) {
 	out.ObjectMeta = *in.ObjectMeta.DeepCopy()
 	in.Spec.DeepCopyInto(&out.Spec)
 	out.Status = in.Status
-
 }
+
 func (in *Spec) DeepCopy() *Spec {
 	if in == nil {
 		return nil
@@ -536,8 +538,8 @@ func (in *Spec) DeepCopyInto(out *Spec) {
 			(*o)[key] = val
 		}
 	}
-
 }
+
 func (in *KubePkgList) DeepCopyObject() pkgruntime.Object {
 	if c := in.DeepCopy(); c != nil {
 		return c
@@ -562,8 +564,8 @@ func (in *KubePkgList) DeepCopyInto(out *KubePkgList) {
 		*o = make([]KubePkg, len(*i))
 		copy(*o, *i)
 	}
-
 }
+
 func (in *PodPartialSpec) DeepCopy() *PodPartialSpec {
 	if in == nil {
 		return nil
@@ -641,8 +643,8 @@ func (in *PodPartialSpec) DeepCopyInto(out *PodPartialSpec) {
 		*o = make([]corev1.PodResourceClaim, len(*i))
 		copy(*o, *i)
 	}
-
 }
+
 func (in *PodPartialTemplateSpec) DeepCopy() *PodPartialTemplateSpec {
 	if in == nil {
 		return nil
@@ -654,8 +656,8 @@ func (in *PodPartialTemplateSpec) DeepCopy() *PodPartialTemplateSpec {
 
 func (in *PodPartialTemplateSpec) DeepCopyInto(out *PodPartialTemplateSpec) {
 	in.Spec.DeepCopyInto(&out.Spec)
-
 }
+
 func (in *ScopeType) DeepCopy() *ScopeType {
 	if in == nil {
 		return nil
@@ -669,6 +671,7 @@ func (in *ScopeType) DeepCopy() *ScopeType {
 func (in *ScopeType) DeepCopyInto(out *ScopeType) {
 	*out = *in
 }
+
 func (in *Service) DeepCopy() *Service {
 	if in == nil {
 		return nil
@@ -695,8 +698,8 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	out.ClusterIP = in.ClusterIP
 	out.Expose = in.Expose
-
 }
+
 func (in *ServiceAccount) DeepCopy() *ServiceAccount {
 	if in == nil {
 		return nil
@@ -713,8 +716,8 @@ func (in *ServiceAccount) DeepCopyInto(out *ServiceAccount) {
 		*o = make([]rbacv1.PolicyRule, len(*i))
 		copy(*o, *i)
 	}
-
 }
+
 func (in *Status) DeepCopy() *Status {
 	if in == nil {
 		return nil
@@ -749,8 +752,8 @@ func (in *Status) DeepCopyInto(out *Status) {
 		*o = make([]DigestMeta, len(*i))
 		copy(*o, *i)
 	}
-
 }
+
 func (in Statuses) DeepCopy() Statuses {
 	if in == nil {
 		return nil
@@ -780,8 +783,8 @@ func (in *VolumeConfigMap) DeepCopyInto(out *VolumeConfigMap) {
 	out.Opt = in.Opt
 	out.Spec = in.Spec
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
-
 }
+
 func (in *VolumeMount) DeepCopy() *VolumeMount {
 	if in == nil {
 		return nil
@@ -798,8 +801,8 @@ func (in *VolumeMount) DeepCopyInto(out *VolumeMount) {
 	out.Optional = in.Optional
 	out.ReadOnly = in.ReadOnly
 	out.SubPath = in.SubPath
-
 }
+
 func (in *VolumeEmptyDir) DeepCopy() *VolumeEmptyDir {
 	if in == nil {
 		return nil
@@ -813,8 +816,8 @@ func (in *VolumeEmptyDir) DeepCopyInto(out *VolumeEmptyDir) {
 	out.Type = in.Type
 	out.Opt = in.Opt
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
-
 }
+
 func (in *VolumeHostPath) DeepCopy() *VolumeHostPath {
 	if in == nil {
 		return nil
@@ -828,8 +831,8 @@ func (in *VolumeHostPath) DeepCopyInto(out *VolumeHostPath) {
 	out.Type = in.Type
 	out.Opt = in.Opt
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
-
 }
+
 func (in *VolumeImage) DeepCopy() *VolumeImage {
 	if in == nil {
 		return nil
@@ -843,8 +846,8 @@ func (in *VolumeImage) DeepCopyInto(out *VolumeImage) {
 	out.Type = in.Type
 	out.Opt = in.Opt
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
-
 }
+
 func (in *VolumePersistentVolumeClaim) DeepCopy() *VolumePersistentVolumeClaim {
 	if in == nil {
 		return nil
@@ -859,8 +862,8 @@ func (in *VolumePersistentVolumeClaim) DeepCopyInto(out *VolumePersistentVolumeC
 	out.Opt = in.Opt
 	out.Spec = *in.Spec.DeepCopy()
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
-
 }
+
 func (in *VolumeSecret) DeepCopy() *VolumeSecret {
 	if in == nil {
 		return nil
@@ -875,8 +878,8 @@ func (in *VolumeSecret) DeepCopyInto(out *VolumeSecret) {
 	out.Opt = in.Opt
 	out.Spec = in.Spec
 	in.VolumeMount.DeepCopyInto(&out.VolumeMount)
-
 }
+
 func (in *cronJobSpec) DeepCopy() *cronJobSpec {
 	if in == nil {
 		return nil
@@ -895,8 +898,8 @@ func (in *cronJobSpec) DeepCopyInto(out *cronJobSpec) {
 	out.JobTemplate = *in.JobTemplate.DeepCopy()
 	out.SuccessfulJobsHistoryLimit = in.SuccessfulJobsHistoryLimit
 	out.FailedJobsHistoryLimit = in.FailedJobsHistoryLimit
-
 }
+
 func (in *daemonSetSpec) DeepCopy() *daemonSetSpec {
 	if in == nil {
 		return nil
@@ -912,8 +915,8 @@ func (in *daemonSetSpec) DeepCopyInto(out *daemonSetSpec) {
 	out.UpdateStrategy = *in.UpdateStrategy.DeepCopy()
 	out.MinReadySeconds = in.MinReadySeconds
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
-
 }
+
 func (in *deploymentSpec) DeepCopy() *deploymentSpec {
 	if in == nil {
 		return nil
@@ -932,8 +935,8 @@ func (in *deploymentSpec) DeepCopyInto(out *deploymentSpec) {
 	out.RevisionHistoryLimit = in.RevisionHistoryLimit
 	out.Paused = in.Paused
 	out.ProgressDeadlineSeconds = in.ProgressDeadlineSeconds
-
 }
+
 func (in *jobSpec) DeepCopy() *jobSpec {
 	if in == nil {
 		return nil
@@ -960,8 +963,8 @@ func (in *jobSpec) DeepCopyInto(out *jobSpec) {
 	out.Suspend = in.Suspend
 	out.PodReplacementPolicy = in.PodReplacementPolicy
 	out.ManagedBy = in.ManagedBy
-
 }
+
 func (in *podPartialSpec) DeepCopy() *podPartialSpec {
 	if in == nil {
 		return nil
@@ -1061,8 +1064,9 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 		*o = make([]corev1.PodResourceClaim, len(*i))
 		copy(*o, *i)
 	}
-
+	out.Resources = in.Resources
 }
+
 func (in *statefulSetSpec) DeepCopy() *statefulSetSpec {
 	if in == nil {
 		return nil
@@ -1088,5 +1092,4 @@ func (in *statefulSetSpec) DeepCopyInto(out *statefulSetSpec) {
 	out.MinReadySeconds = in.MinReadySeconds
 	out.PersistentVolumeClaimRetentionPolicy = in.PersistentVolumeClaimRetentionPolicy
 	out.Ordinals = in.Ordinals
-
 }

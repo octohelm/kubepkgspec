@@ -4,6 +4,8 @@ DON'T EDIT THIS FILE
 */
 package v1alpha1
 
+import _ "embed"
+
 // nolint:deadcode,unused
 func runtimeDoc(v any, prefix string, names ...string) ([]string, bool) {
 	if c, ok := v.(interface {
@@ -22,12 +24,11 @@ func runtimeDoc(v any, prefix string, names ...string) ([]string, bool) {
 	return nil, false
 }
 
-func (v ConfigMapSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *ConfigMapSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Data":
 			return []string{}, true
-
 		}
 
 		return nil, false
@@ -35,7 +36,7 @@ func (v ConfigMapSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Container) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Container) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Image":
@@ -92,7 +93,7 @@ func (v Container) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v CronJobSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *CronJobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Schedule":
@@ -152,7 +153,7 @@ func (v CronJobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DaemonSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DaemonSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Template":
@@ -189,12 +190,11 @@ func (v DaemonSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Deploy) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Deploy) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Underlying":
 			return []string{}, true
-
 		}
 
 		return nil, false
@@ -202,14 +202,13 @@ func (v Deploy) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -218,25 +217,7 @@ func (v DeployConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployCronJob) RuntimeDoc(names ...string) ([]string, bool) {
-	if len(names) > 0 {
-		switch names[0] {
-		case "Kind":
-			return []string{}, true
-		case "Spec":
-			return []string{}, true
-
-		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
-			return doc, ok
-		}
-
-		return nil, false
-	}
-	return []string{}, true
-}
-
-func (v DeployDaemonSet) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployCronJob) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
@@ -245,7 +226,7 @@ func (v DeployDaemonSet) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -254,7 +235,7 @@ func (v DeployDaemonSet) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployDaemonSet) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
@@ -263,7 +244,7 @@ func (v DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -272,7 +253,25 @@ func (v DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
+	if len(names) > 0 {
+		switch names[0] {
+		case "Kind":
+			return []string{}, true
+		case "Spec":
+			return []string{}, true
+
+		}
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
+			return doc, ok
+		}
+
+		return nil, false
+	}
+	return []string{}, true
+}
+
+func (v *DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
@@ -283,7 +282,7 @@ func (v DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -292,7 +291,7 @@ func (v DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployInfrastructure) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployInfrastructure) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Labels":
@@ -307,7 +306,7 @@ func (v DeployInfrastructure) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployJob) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployJob) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
@@ -316,7 +315,7 @@ func (v DeployJob) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -325,14 +324,13 @@ func (v DeployJob) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeploySecret) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeploySecret) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -341,7 +339,7 @@ func (v DeploySecret) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeployStatefulSet) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployStatefulSet) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
@@ -350,7 +348,7 @@ func (v DeployStatefulSet) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.DeployInfrastructure, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.DeployInfrastructure, "", names...); ok {
 			return doc, ok
 		}
 
@@ -359,7 +357,7 @@ func (v DeployStatefulSet) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DeploymentSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeploymentSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Replicas":
@@ -369,7 +367,7 @@ func (v DeploymentSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "Template":
 			return []string{
-				"Template describes the pods that will be created.",
+				"describes the pods that will be created.",
 				"The only allowed template.spec.restartPolicy value is \"Always\".",
 			}, true
 		case "Strategy":
@@ -408,7 +406,7 @@ func (v DeploymentSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v DigestMeta) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DigestMeta) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -431,11 +429,11 @@ func (v DigestMeta) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (DigestMetaType) RuntimeDoc(names ...string) ([]string, bool) {
+func (*DigestMetaType) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v EnvVarValueOrFrom) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *EnvVarValueOrFrom) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Value":
@@ -450,12 +448,11 @@ func (v EnvVarValueOrFrom) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Expose) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Expose) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Underlying":
 			return []string{}, true
-
 		}
 
 		return nil, false
@@ -463,27 +460,12 @@ func (v Expose) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v ExposeIngress) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *ExposeIngress) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
 			return []string{}, true
 		case "Gateway":
-			return []string{
-				"Gateway",
-			}, true
-
-		}
-
-		return nil, false
-	}
-	return []string{}, true
-}
-
-func (v ExposeNodePort) RuntimeDoc(names ...string) ([]string, bool) {
-	if len(names) > 0 {
-		switch names[0] {
-		case "Type":
 			return []string{}, true
 
 		}
@@ -493,11 +475,23 @@ func (v ExposeNodePort) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (FileSize) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *ExposeNodePort) RuntimeDoc(names ...string) ([]string, bool) {
+	if len(names) > 0 {
+		switch names[0] {
+		case "Type":
+			return []string{}, true
+		}
+
+		return nil, false
+	}
 	return []string{}, true
 }
 
-func (v Image) RuntimeDoc(names ...string) ([]string, bool) {
+func (*FileSize) RuntimeDoc(names ...string) ([]string, bool) {
+	return []string{}, true
+}
+
+func (v *Image) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Name":
@@ -528,7 +522,7 @@ func (v Image) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Parallelism":
@@ -686,7 +680,7 @@ func (v JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "ManagedBy":
 			return []string{
-				"ManagedBy field indicates the controller that manages a Job. The k8s Job",
+				"field indicates the controller that manages a Job. The k8s Job",
 				"controller reconciles jobs which don't have this field at all or the field",
 				"value is the reserved string `kubernetes.io/job-controller`, but skips",
 				"reconciling Jobs with a custom value for this field.",
@@ -707,12 +701,11 @@ func (v JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v JobTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *JobTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Spec":
 			return []string{}, true
-
 		}
 
 		return nil, false
@@ -720,7 +713,7 @@ func (v JobTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v KubePkg) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *KubePkg) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Spec":
@@ -729,42 +722,37 @@ func (v KubePkg) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.TypeMeta, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.TypeMeta, "", names...); ok {
 			return doc, ok
 		}
-		if doc, ok := runtimeDoc(v.ObjectMeta, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.ObjectMeta, "", names...); ok {
 			return doc, ok
 		}
 
 		return nil, false
 	}
-	return []string{
-		"KubePkg",
-	}, true
+	return []string{}, true
 }
 
-func (v KubePkgList) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *KubePkgList) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Items":
 			return []string{}, true
-
 		}
-		if doc, ok := runtimeDoc(v.TypeMeta, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.TypeMeta, "", names...); ok {
 			return doc, ok
 		}
-		if doc, ok := runtimeDoc(v.ListMeta, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.ListMeta, "", names...); ok {
 			return doc, ok
 		}
 
 		return nil, false
 	}
-	return []string{
-		"KubePkgList",
-	}, true
+	return []string{}, true
 }
 
-func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "RestartPolicy":
@@ -802,17 +790,17 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "NodeSelector":
 			return []string{
-				"NodeSelector is a selector which must be true for the pod to fit on a node.",
+				"is a selector which must be true for the pod to fit on a node.",
 				"Selector which must match a node's labels for the pod to be scheduled on that node.",
 				"More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/",
 			}, true
 		case "AutomountServiceAccountToken":
 			return []string{
-				"AutomountServiceAccountToken indicates whether a service account token should be automatically mounted.",
+				"indicates whether a service account token should be automatically mounted.",
 			}, true
 		case "NodeName":
 			return []string{
-				"NodeName indicates in which node this pod is scheduled.",
+				"indicates in which node this pod is scheduled.",
 				"If empty, this pod is a candidate for scheduling by the scheduler defined in schedulerName.",
 				"Once this field is set, the kubelet for this node becomes responsible for the lifecycle of this pod.",
 				"This field should not be used to express a desire for the pod to be scheduled on a specific node.",
@@ -844,12 +832,12 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "SecurityContext":
 			return []string{
-				"SecurityContext holds pod-level security attributes and common container settings.",
+				"holds pod-level security attributes and common container settings.",
 				"Optional: Defaults to empty.  See type description for default values of each field.",
 			}, true
 		case "ImagePullSecrets":
 			return []string{
-				"ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.",
+				"is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.",
 				"If specified, these secrets will be passed to individual puller implementations for them to use.",
 				"More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod",
 			}, true
@@ -878,7 +866,7 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "HostAliases":
 			return []string{
-				"HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts",
+				"is an optional list of hosts and IPs that will be injected into the pod's hosts",
 				"file if specified.",
 			}, true
 		case "PriorityClassName":
@@ -913,7 +901,7 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "RuntimeClassName":
 			return []string{
-				"RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used",
+				"refers to a RuntimeClass object in the node.k8s.io group, which should be used",
 				"to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run.",
 				"If unset or empty, the \"legacy\" RuntimeClass will be used, which is an implicit class with an",
 				"empty definition that uses the default runtime handler.",
@@ -921,19 +909,19 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "EnableServiceLinks":
 			return []string{
-				"EnableServiceLinks indicates whether information about services should be injected into pod's",
+				"indicates whether information about services should be injected into pod's",
 				"environment variables, matching the syntax of Docker links.",
 				"Optional: Defaults to true.",
 			}, true
 		case "PreemptionPolicy":
 			return []string{
-				"PreemptionPolicy is the Policy for preempting pods with lower priority.",
+				"is the Policy for preempting pods with lower priority.",
 				"One of Never, PreemptLowerPriority.",
 				"Defaults to PreemptLowerPriority if unset.",
 			}, true
 		case "Overhead":
 			return []string{
-				"Overhead represents the resource overhead associated with running a pod for a given RuntimeClass.",
+				"represents the resource overhead associated with running a pod for a given RuntimeClass.",
 				"This field will be autopopulated at admission time by the RuntimeClass admission controller. If",
 				"the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests.",
 				"The RuntimeClass admission controller will reject Pod create requests which have the overhead already",
@@ -943,7 +931,7 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "TopologySpreadConstraints":
 			return []string{
-				"TopologySpreadConstraints describes how a group of pods ought to spread across topology",
+				"describes how a group of pods ought to spread across topology",
 				"domains. Scheduler will schedule pods in a way which abides by the constraints.",
 				"All topologySpreadConstraints are ANDed.",
 			}, true
@@ -1003,7 +991,7 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "SchedulingGates":
 			return []string{
-				"SchedulingGates is an opaque list of values that if specified will block scheduling the pod.",
+				"is an opaque list of values that if specified will block scheduling the pod.",
 				"If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the",
 				"scheduler will not attempt to schedule the pod.",
 				"",
@@ -1011,7 +999,7 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "ResourceClaims":
 			return []string{
-				"ResourceClaims defines which ResourceClaims must be allocated",
+				"defines which ResourceClaims must be allocated",
 				"and reserved before the Pod is allowed to start. The resources",
 				"will be made available to those containers which consume them",
 				"by name.",
@@ -1029,12 +1017,11 @@ func (v PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v PodPartialTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *PodPartialTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Spec":
 			return []string{}, true
-
 		}
 
 		return nil, false
@@ -1042,25 +1029,23 @@ func (v PodPartialTemplateSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (ScopeType) RuntimeDoc(names ...string) ([]string, bool) {
+func (*ScopeType) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Service) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Service) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Ports":
 			return []string{
-				"Ports [PortName]servicePort",
+				"[PortName]servicePort",
 			}, true
 		case "Paths":
 			return []string{
-				"Paths [PortName]BashPath",
+				"[PortName]BashPath",
 			}, true
 		case "ClusterIP":
-			return []string{
-				"ClusterIP",
-			}, true
+			return []string{}, true
 		case "Expose":
 			return []string{}, true
 
@@ -1071,7 +1056,7 @@ func (v Service) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v ServiceAccount) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *ServiceAccount) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Scope":
@@ -1086,7 +1071,7 @@ func (v ServiceAccount) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Spec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Spec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Version":
@@ -1115,7 +1100,7 @@ func (v Spec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v StatefulSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *StatefulSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Replicas":
@@ -1208,7 +1193,7 @@ func (v StatefulSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Status) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Status) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Endpoint":
@@ -1227,16 +1212,15 @@ func (v Status) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (Statuses) RuntimeDoc(names ...string) ([]string, bool) {
+func (*Statuses) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v Volume) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *Volume) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Underlying":
 			return []string{}, true
-
 		}
 
 		return nil, false
@@ -1244,7 +1228,7 @@ func (v Volume) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v VolumeConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumeConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -1255,7 +1239,7 @@ func (v VolumeConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1264,7 +1248,7 @@ func (v VolumeConfigMap) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v VolumeEmptyDir) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumeEmptyDir) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -1273,7 +1257,7 @@ func (v VolumeEmptyDir) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1282,7 +1266,7 @@ func (v VolumeEmptyDir) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v VolumeHostPath) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumeHostPath) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -1291,7 +1275,7 @@ func (v VolumeHostPath) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1300,7 +1284,7 @@ func (v VolumeHostPath) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v VolumeImage) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumeImage) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -1309,7 +1293,7 @@ func (v VolumeImage) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1318,7 +1302,7 @@ func (v VolumeImage) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v VolumeMount) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumeMount) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "MountPath":
@@ -1327,7 +1311,7 @@ func (v VolumeMount) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Prefix":
 			return []string{
-				"Prefix mountPath == export, use as envFrom",
+				"mountPath == export, use as envFrom",
 			}, true
 		case "Optional":
 			return []string{}, true
@@ -1345,7 +1329,7 @@ func (v VolumeMount) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v VolumePersistentVolumeClaim) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumePersistentVolumeClaim) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -1356,7 +1340,7 @@ func (v VolumePersistentVolumeClaim) RuntimeDoc(names ...string) ([]string, bool
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
@@ -1365,7 +1349,7 @@ func (v VolumePersistentVolumeClaim) RuntimeDoc(names ...string) ([]string, bool
 	return []string{}, true
 }
 
-func (v VolumeSecret) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *VolumeSecret) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Type":
@@ -1376,7 +1360,7 @@ func (v VolumeSecret) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 
 		}
-		if doc, ok := runtimeDoc(v.VolumeMount, "", names...); ok {
+		if doc, ok := runtimeDoc(&v.VolumeMount, "", names...); ok {
 			return doc, ok
 		}
 
