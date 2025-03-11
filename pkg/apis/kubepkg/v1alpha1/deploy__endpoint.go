@@ -9,7 +9,7 @@ type DeployEndpoints struct {
 	Kind string `json:"kind" validate:"@string{Endpoints}"`
 	DeployInfrastructure
 	Ports     map[string]int32         `json:"ports"`
-	Addresses []corev1.EndpointAddress `json:"addresses,omitempty"`
+	Addresses []corev1.EndpointAddress `json:"addresses,omitzero"`
 }
 
 func (d DeployEndpoints) GetKind() string {

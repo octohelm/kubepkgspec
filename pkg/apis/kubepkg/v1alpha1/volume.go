@@ -10,6 +10,10 @@ type Volume struct {
 	Underlying VolumeMounter `json:"-"`
 }
 
+func (in Volume) IsZero() bool {
+	return in.Underlying == nil
+}
+
 func (in *Volume) SetUnderlying(u any) {
 	in.Underlying = u.(VolumeMounter)
 }
@@ -66,15 +70,15 @@ type VolumeMounter interface {
 type VolumeMount struct {
 	MountPath string `json:"mountPath"`
 
-	MountPropagation string `json:"mountPropagation,omitempty" validate:"@string{Bidirectional,HostToContainer}"`
+	MountPropagation string `json:"mountPropagation,omitzero" validate:"@string{Bidirectional,HostToContainer}"`
 
 	// Prefix mountPath == export, use as envFrom
-	Prefix   string `json:"prefix,omitempty"`
-	Optional *bool  `json:"optional,omitempty"`
+	Prefix   string `json:"prefix,omitzero"`
+	Optional *bool  `json:"optional,omitzero"`
 
 	// else volumeMounts
-	ReadOnly bool   `json:"readOnly,omitempty"`
-	SubPath  string `json:"subPath,omitempty"`
+	ReadOnly bool   `json:"readOnly,omitzero"`
+	SubPath  string `json:"subPath,omitzero"`
 }
 
 func (vm *VolumeMount) GetVolumeMount() *VolumeMount {

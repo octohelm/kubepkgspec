@@ -5,7 +5,7 @@ import (
 )
 
 type PodPartialTemplateSpec struct {
-	Spec PodPartialSpec `json:"spec,omitempty"`
+	Spec PodPartialSpec `json:"spec,omitzero"`
 }
 
 func (in *PodPartialTemplateSpec) DeepCopyAs() *corev1.PodTemplateSpec {

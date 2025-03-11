@@ -12,13 +12,13 @@ type Image struct {
 	// 镜像名
 	Name string `json:"name"`
 	// 镜像标签
-	Tag string `json:"tag,omitempty"`
+	Tag string `json:"tag,omitzero"`
 	// 镜像摘要
-	Digest string `json:"digest,omitempty"`
+	Digest string `json:"digest,omitzero"`
 	// 镜像支持的平台
-	Platforms []string `json:"platforms,omitempty"`
+	Platforms []string `json:"platforms,omitzero"`
 	// 镜像拉取策略
-	PullPolicy corev1.PullPolicy `json:"pullPolicy,omitempty"`
+	PullPolicy corev1.PullPolicy `json:"pullPolicy,omitzero"`
 }
 
 func (v Image) FullName() string {
@@ -39,29 +39,29 @@ type Container struct {
 	// 镜像
 	Image Image `json:"image"`
 	// 运行目录
-	WorkingDir string `json:"workingDir,omitempty"`
+	WorkingDir string `json:"workingDir,omitzero"`
 	// 命令
-	Command []string `json:"command,omitempty"`
+	Command []string `json:"command,omitzero"`
 	// 参数
-	Args []string `json:"args,omitempty"`
+	Args []string `json:"args,omitzero"`
 	// 环境变量
-	Env map[string]EnvVarValueOrFrom `json:"env,omitempty"`
+	Env map[string]EnvVarValueOrFrom `json:"env,omitzero"`
 	// 暴露端口
-	Ports map[string]int32 `json:"ports,omitempty"`
+	Ports map[string]int32 `json:"ports,omitzero"`
 
-	Stdin     bool `json:"stdin,omitempty"`
-	StdinOnce bool `json:"stdinOnce,omitempty"`
-	TTY       bool `json:"tty,omitempty"`
+	Stdin     bool `json:"stdin,omitzero"`
+	StdinOnce bool `json:"stdinOnce,omitzero"`
+	TTY       bool `json:"tty,omitzero"`
 
-	Resources      *corev1.ResourceRequirements `json:"resources,omitempty"`
-	LivenessProbe  *corev1.Probe                `json:"livenessProbe,omitempty"`
-	ReadinessProbe *corev1.Probe                `json:"readinessProbe,omitempty"`
-	StartupProbe   *corev1.Probe                `json:"startupProbe,omitempty"`
-	Lifecycle      *corev1.Lifecycle            `json:"lifecycle,omitempty"`
+	Resources      *corev1.ResourceRequirements `json:"resources,omitzero"`
+	LivenessProbe  *corev1.Probe                `json:"livenessProbe,omitzero"`
+	ReadinessProbe *corev1.Probe                `json:"readinessProbe,omitzero"`
+	StartupProbe   *corev1.Probe                `json:"startupProbe,omitzero"`
+	Lifecycle      *corev1.Lifecycle            `json:"lifecycle,omitzero"`
 
-	SecurityContext          *corev1.SecurityContext         `json:"securityContext,omitempty"`
-	TerminationMessagePath   string                          `json:"terminationMessagePath,omitempty"`
-	TerminationMessagePolicy corev1.TerminationMessagePolicy `json:"terminationMessagePolicy,omitempty"`
+	SecurityContext          *corev1.SecurityContext         `json:"securityContext,omitzero"`
+	TerminationMessagePath   string                          `json:"terminationMessagePath,omitzero"`
+	TerminationMessagePolicy corev1.TerminationMessagePolicy `json:"terminationMessagePolicy,omitzero"`
 }
 
 type EnvVarValueOrFrom struct {

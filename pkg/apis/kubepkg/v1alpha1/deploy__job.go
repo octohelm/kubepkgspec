@@ -8,7 +8,7 @@ import (
 type DeployJob struct {
 	Kind string `json:"kind" validate:"@string{Job}"`
 	DeployInfrastructure
-	Spec JobSpec `json:"spec,omitempty"`
+	Spec JobSpec `json:"spec,omitzero"`
 }
 
 func (d DeployJob) GetKind() string {
@@ -16,6 +16,6 @@ func (d DeployJob) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitempty"
+// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector
 type jobSpec batchv1.JobSpec

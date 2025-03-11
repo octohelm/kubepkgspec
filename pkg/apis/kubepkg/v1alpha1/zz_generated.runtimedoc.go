@@ -690,8 +690,8 @@ func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"characters as defined by RFC 3986. The value cannot exceed 63 characters.",
 				"This field is immutable.",
 				"",
-				"This field is alpha-level. The job controller accepts setting the field",
-				"when the feature gate JobManagedBy is enabled (disabled by default).",
+				"This field is beta-level. The job controller accepts setting the field",
+				"when the feature gate JobManagedBy is enabled (enabled by default).",
 			}, true
 
 		}
@@ -1009,6 +1009,19 @@ func (v *PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"",
 				"This field is immutable.",
 			}, true
+		case "Resources":
+			return []string{
+				"is the total amount of CPU and Memory resources required by all",
+				"containers in the pod. It supports specifying Requests and Limits for",
+				"\"cpu\" and \"memory\" resource names only. ResourceClaims are not supported.",
+				"",
+				"This field enables fine-grained control over resource allocation for the",
+				"entire pod, allowing resource sharing among containers in a pod.",
+				"TODO: For beta graduation, expand this comment with a detailed explanation.",
+				"",
+				"This is an alpha field and requires enabling the PodLevelResources feature",
+				"gate.",
+			}, true
 
 		}
 
@@ -1176,8 +1189,7 @@ func (v *StatefulSetSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"volume claims are created as needed and retained until manually deleted. This",
 				"policy allows the lifecycle to be altered, for example by deleting persistent",
 				"volume claims when their stateful set is deleted, or when their pod is scaled",
-				"down. This requires the StatefulSetAutoDeletePVC feature gate to be enabled,",
-				"which is beta.",
+				"down.",
 			}, true
 		case "Ordinals":
 			return []string{

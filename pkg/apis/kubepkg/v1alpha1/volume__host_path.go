@@ -6,6 +6,6 @@ import (
 
 type VolumeHostPath struct {
 	Type string                       `json:"type" validate:"@string{HostPath}"`
-	Opt  *corev1.HostPathVolumeSource `json:"opt,omitempty"`
+	Opt  *corev1.HostPathVolumeSource `json:"opt,omitzero"`
 	VolumeMount
 }

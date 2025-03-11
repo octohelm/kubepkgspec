@@ -9,7 +9,7 @@ import (
 type DeployCronJob struct {
 	Kind string `json:"kind" validate:"@string{CronJob}"`
 	DeployInfrastructure
-	Spec CronJobSpec `json:"spec,omitempty"`
+	Spec CronJobSpec `json:"spec,omitzero"`
 }
 
 func (d DeployCronJob) GetKind() string {
@@ -17,12 +17,12 @@ func (d DeployCronJob) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=JobTemplate:*JobTemplateSpec json:"template,omitempty"
+// +gengo:partialstruct:replace=JobTemplate:*JobTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector
 type cronJobSpec batchv1.CronJobSpec
 
 type JobTemplateSpec struct {
-	Spec JobSpec `json:"spec,omitempty"`
+	Spec JobSpec `json:"spec,omitzero"`
 }
 
 func (in *JobTemplateSpec) DeepCopyAs() *batchv1.JobTemplateSpec {

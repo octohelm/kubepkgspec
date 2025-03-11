@@ -6,7 +6,7 @@ import (
 
 type VolumeEmptyDir struct {
 	Type string                       `json:"type" validate:"@string{EmptyDir}"`
-	Opt  *corev1.EmptyDirVolumeSource `json:"opt,omitempty"`
+	Opt  *corev1.EmptyDirVolumeSource `json:"opt,omitzero"`
 
 	VolumeMount
 }

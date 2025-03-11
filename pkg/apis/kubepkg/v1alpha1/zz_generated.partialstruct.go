@@ -37,7 +37,7 @@ type CronJobSpec struct {
 	// not apply to already started executions.  Defaults to false.
 	Suspend *bool `json:"suspend,omitempty" protobuf:"varint,4,opt,name=suspend"`
 	// Specifies the job that will be created when executing a CronJob.
-	JobTemplate *JobTemplateSpec `json:"template,omitempty"`
+	JobTemplate *JobTemplateSpec `json:"template,omitzero"`
 	// The number of successful finished jobs to retain. Value must be non-negative integer.
 	// Defaults to 3.
 	SuccessfulJobsHistoryLimit *int32 `json:"successfulJobsHistoryLimit,omitempty" protobuf:"varint,6,opt,name=successfulJobsHistoryLimit"`
@@ -73,7 +73,7 @@ type DaemonSetSpec struct {
 	// selector is specified).
 	// The only allowed template.spec.restartPolicy value is "Always".
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template
-	Template *PodPartialTemplateSpec `json:"template,omitempty"`
+	Template *PodPartialTemplateSpec `json:"template,omitzero"`
 	// An update strategy to replace existing DaemonSet pods with new pods.
 	UpdateStrategy appsv1.DaemonSetUpdateStrategy `json:"updateStrategy,omitempty" protobuf:"bytes,3,opt,name=updateStrategy"`
 	// The minimum number of seconds for which a newly created DaemonSet pod should
@@ -109,7 +109,7 @@ type DeploymentSpec struct {
 	Replicas *int32 `json:"replicas,omitempty" protobuf:"varint,1,opt,name=replicas"`
 	// describes the pods that will be created.
 	// The only allowed template.spec.restartPolicy value is "Always".
-	Template *PodPartialTemplateSpec `json:"template,omitempty"`
+	Template *PodPartialTemplateSpec `json:"template,omitzero"`
 	// The deployment strategy to use to replace existing pods with new ones.
 	Strategy appsv1.DeploymentStrategy `json:"strategy,omitempty" patchStrategy:"retainKeys" protobuf:"bytes,4,opt,name=strategy"`
 	// Minimum number of seconds for which a newly created pod should be ready
@@ -223,7 +223,7 @@ type JobSpec struct {
 	// Describes the pod that will be created when executing a job.
 	// The only allowed template.spec.restartPolicy values are "Never" or "OnFailure".
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
-	Template *PodPartialTemplateSpec `json:"template,omitempty"`
+	Template *PodPartialTemplateSpec `json:"template,omitzero"`
 	// ttlSecondsAfterFinished limits the lifetime of a Job that has finished
 	// execution (either Complete or Failed). If this field is set,
 	// ttlSecondsAfterFinished after the Job finishes, it is eligible to be
@@ -613,7 +613,7 @@ type StatefulSetSpec struct {
 	// <statefulsetname>-<podindex>. For example, a pod in a StatefulSet named
 	// "web" with index number "3" would be named "web-3".
 	// The only allowed template.spec.restartPolicy value is "Always".
-	Template *PodPartialTemplateSpec `json:"template,omitempty"`
+	Template *PodPartialTemplateSpec `json:"template,omitzero"`
 	// volumeClaimTemplates is a list of claims that pods are allowed to reference.
 	// The StatefulSet controller is responsible for mapping network identities to
 	// claims in a way that maintains the identity of a pod. Every claim in

@@ -7,10 +7,10 @@ import (
 )
 
 type Status struct {
-	Endpoint  map[string]string `json:"endpoint,omitempty"`
-	Resources []map[string]any  `json:"resources,omitempty"`
-	Images    map[string]string `json:"images,omitempty"`
-	Digests   []DigestMeta      `json:"digests,omitempty"`
+	Endpoint  map[string]string `json:"endpoint,omitzero"`
+	Resources []map[string]any  `json:"resources,omitzero"`
+	Images    map[string]string `json:"images,omitzero"`
+	Digests   []DigestMeta      `json:"digests,omitzero"`
 }
 
 func (v *Status) AppendResourceStatus(name string, gvk schema.GroupVersionKind, status map[string]any) {
@@ -41,8 +41,8 @@ type DigestMeta struct {
 	Digest   string         `json:"digest"`
 	Name     string         `json:"name"`
 	Size     FileSize       `json:"size"`
-	Tag      string         `json:"tag,omitempty"`
-	Platform string         `json:"platform,omitempty"`
+	Tag      string         `json:"tag,omitzero"`
+	Platform string         `json:"platform,omitzero"`
 }
 
 type FileSize int64

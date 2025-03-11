@@ -8,7 +8,7 @@ import (
 type DeployStatefulSet struct {
 	Kind string `json:"kind" validate:"@string{StatefulSet}"`
 	DeployInfrastructure
-	Spec StatefulSetSpec `json:"spec,omitempty"`
+	Spec StatefulSetSpec `json:"spec,omitzero"`
 }
 
 func (d DeployStatefulSet) GetKind() string {
@@ -16,6 +16,6 @@ func (d DeployStatefulSet) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitempty"
+// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector
 type statefulSetSpec appsv1.StatefulSetSpec

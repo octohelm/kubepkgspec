@@ -6,8 +6,8 @@ import (
 
 type VolumeSecret struct {
 	Type string                     `json:"type" validate:"@string{Secret}"`
-	Opt  *corev1.SecretVolumeSource `json:"opt,omitempty"`
-	Spec *ConfigMapSpec             `json:"spec,omitempty"`
+	Opt  *corev1.SecretVolumeSource `json:"opt,omitzero"`
+	Spec *ConfigMapSpec             `json:"spec,omitzero"`
 
 	VolumeMount
 }

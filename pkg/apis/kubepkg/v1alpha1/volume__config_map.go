@@ -6,8 +6,8 @@ import (
 
 type VolumeConfigMap struct {
 	Type string                    `json:"type" validate:"@string{ConfigMap}"`
-	Opt  *v1.ConfigMapVolumeSource `json:"opt,omitempty"`
-	Spec *ConfigMapSpec            `json:"spec,omitempty"`
+	Opt  *v1.ConfigMapVolumeSource `json:"opt,omitzero"`
+	Spec *ConfigMapSpec            `json:"spec,omitzero"`
 
 	VolumeMount
 }

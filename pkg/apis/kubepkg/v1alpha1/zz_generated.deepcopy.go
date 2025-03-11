@@ -643,6 +643,7 @@ func (in *PodPartialSpec) DeepCopyInto(out *PodPartialSpec) {
 		*o = make([]corev1.PodResourceClaim, len(*i))
 		copy(*o, *i)
 	}
+	out.Resources = in.Resources
 }
 
 func (in *PodPartialTemplateSpec) DeepCopy() *PodPartialTemplateSpec {

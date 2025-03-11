@@ -6,7 +6,7 @@ import (
 
 type VolumePersistentVolumeClaim struct {
 	Type string                                    `json:"type" validate:"@string{PersistentVolumeClaim}"`
-	Opt  *corev1.PersistentVolumeClaimVolumeSource `json:"opt,omitempty"`
+	Opt  *corev1.PersistentVolumeClaimVolumeSource `json:"opt,omitzero"`
 	Spec corev1.PersistentVolumeClaimSpec          `json:"spec"`
 
 	VolumeMount

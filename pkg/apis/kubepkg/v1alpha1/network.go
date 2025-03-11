@@ -7,13 +7,13 @@ import (
 
 type Service struct {
 	// Ports [PortName]servicePort
-	Ports map[string]int32 `json:"ports,omitempty"`
+	Ports map[string]int32 `json:"ports,omitzero"`
 	// Paths [PortName]BashPath
-	Paths map[string]string `json:"paths,omitempty"`
+	Paths map[string]string `json:"paths,omitzero"`
 	// ClusterIP
-	ClusterIP string `json:"clusterIP,omitempty"`
+	ClusterIP string `json:"clusterIP,omitzero"`
 
-	Expose *Expose `json:"expose,omitempty"`
+	Expose *Expose `json:"expose,omitzero"`
 }
 
 type Exposer interface {
@@ -88,7 +88,7 @@ type ExposeIngress struct {
 	Type string `json:"type" validate:"@string{Ingress}"`
 
 	// Gateway
-	Gateway []string `json:"gateway,omitempty"`
+	Gateway []string `json:"gateway,omitzero"`
 }
 
 func (ExposeIngress) GetType() string {

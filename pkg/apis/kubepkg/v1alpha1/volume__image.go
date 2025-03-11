@@ -6,7 +6,7 @@ import (
 
 type VolumeImage struct {
 	Type string                    `json:"type" validate:"@string{Image}"`
-	Opt  *corev1.ImageVolumeSource `json:"opt,omitempty"`
+	Opt  *corev1.ImageVolumeSource `json:"opt,omitzero"`
 
 	VolumeMount
 }

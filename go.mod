@@ -1,6 +1,6 @@
 module github.com/octohelm/kubepkgspec
 
-go 1.24.0
+go 1.24.1
 
 require (
 	github.com/go-courier/logr v0.3.1 // indirect

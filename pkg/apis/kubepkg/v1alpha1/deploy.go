@@ -2,15 +2,15 @@ package v1alpha1
 
 import (
 	"maps"
-	
+
 	"github.com/octohelm/courier/pkg/validator"
 	"github.com/octohelm/courier/pkg/validator/taggedunion"
 	"github.com/octohelm/courier/pkg/validator/validators"
 )
 
 type DeployInfrastructure struct {
-	Labels      map[string]string `json:"labels,omitempty" validate:"@map<@qualifiedName,@string[0,63]>"`
-	Annotations map[string]string `json:"annotations,omitempty" validate:"@map<@qualifiedName,@string[0,4096]>"`
+	Labels      map[string]string `json:"labels,omitzero" validate:"@map<@qualifiedName,@string[0,63]>"`
+	Annotations map[string]string `json:"annotations,omitzero" validate:"@map<@qualifiedName,@string[0,4096]>"`
 }
 
 func (d DeployInfrastructure) GetLabels() map[string]string {
@@ -37,6 +37,10 @@ type Deployer interface {
 // +gengo:deepcopy=false
 type Deploy struct {
 	Underlying Deployer `json:"-"`
+}
+
+func (in Deploy) IsZero() bool {
+	return in.Underlying == nil
 }
 
 func (in *Deploy) DeepCopy() *Deploy {

@@ -8,7 +8,7 @@ import (
 type DeployDeployment struct {
 	Kind string `json:"kind" validate:"@string{Deployment}"`
 	DeployInfrastructure
-	Spec DeploymentSpec `json:"spec,omitempty"`
+	Spec DeploymentSpec `json:"spec,omitzero"`
 }
 
 func (d DeployDeployment) GetKind() string {
@@ -16,6 +16,6 @@ func (d DeployDeployment) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitempty"
+// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector
 type deploymentSpec appsv1.DeploymentSpec

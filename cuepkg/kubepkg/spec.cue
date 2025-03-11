@@ -785,6 +785,7 @@ package kubepkg
 	schedulingGates?: [...#PodSchedulingGate]
 	// defines which ResourceClaims must be allocated
 	resourceClaims?: [...#PodResourceClaim]
+	// is the total amount of CPU and Memory resources required by all
 	resources?: #ResourceRequirements
 }
 

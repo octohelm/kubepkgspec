@@ -8,7 +8,7 @@ import (
 type DeployDaemonSet struct {
 	Kind string `json:"kind" validate:"@string{DaemonSet}"`
 	DeployInfrastructure
-	Spec DaemonSetSpec `json:"spec,omitempty"`
+	Spec DaemonSetSpec `json:"spec,omitzero"`
 }
 
 func (d DeployDaemonSet) GetKind() string {
@@ -16,6 +16,6 @@ func (d DeployDaemonSet) GetKind() string {
 }
 
 // +gengo:partialstruct
-// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitempty"
+// +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector
 type daemonSetSpec appsv1.DaemonSetSpec
