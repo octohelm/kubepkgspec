@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"maps"
+	"regexp"
 
 	"github.com/octohelm/courier/pkg/validator"
 	"github.com/octohelm/courier/pkg/validator/taggedunion"
@@ -9,8 +10,8 @@ import (
 )
 
 type DeployInfrastructure struct {
-	Labels      map[string]string `json:"labels,omitzero" validate:"@map<@qualifiedName,@string[0,63]>"`
-	Annotations map[string]string `json:"annotations,omitzero" validate:"@map<@qualifiedName,@string[0,4096]>"`
+	Labels      map[string]string `json:"labels,omitzero" validate:"@map<@qualified-name,@string[0,63]>"`
+	Annotations map[string]string `json:"annotations,omitzero" validate:"@map<@qualified-name,@string[0,4096]>"`
 }
 
 func (d DeployInfrastructure) GetLabels() map[string]string {
@@ -25,7 +26,14 @@ func (d *DeployInfrastructure) SetLabels(labels map[string]string) {
 }
 
 func init() {
-	validators.RegisterRegexpStrfmtValidator(`^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]$`, "qualified-name", "qualifiedName")
+	validator.Register(validator.NewFormatValidatorProvider("qualified-name", func(format string) validator.Validator {
+		return &validators.StringValidator{
+			Format:        format,
+			MinLength:     1,
+			Pattern:       regexp.MustCompile(`^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]$`),
+			PatternErrMsg: "必须由字母、数字、'-'、'_' 和 '.' 组成，且以字母或数字开头和结尾，长度不得超过 63，可以带 DNS 子域名前缀和 '/', 如 'example.com/MyName', 'MyName', 'my.name', '123-abc'",
+		}
+	}))
 }
 
 type Deployer interface {

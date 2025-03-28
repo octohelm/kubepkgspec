@@ -98,7 +98,6 @@ func (r *patcher) walk(podSpec *corev1.PodSpec) {
 					r.recordSecret(env.ValueFrom.SecretKeyRef.Name)
 				}
 			}
-
 		}
 	}
 

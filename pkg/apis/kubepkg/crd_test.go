@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 	"os"
 	"sort"
 	"strings"
 	"sync"
 	"testing"
+
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 
 	cueformat "cuelang.org/go/cue/format"
 	testingx "github.com/octohelm/x/testing"

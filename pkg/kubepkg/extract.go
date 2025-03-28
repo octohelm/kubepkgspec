@@ -80,7 +80,6 @@ func Extract(objIter iter.Seq[object.Object]) (iter.Seq[object.Object], error) {
 	}
 
 	return func(yield func(object.Object) bool) {
-
 	}, nil
 }
 

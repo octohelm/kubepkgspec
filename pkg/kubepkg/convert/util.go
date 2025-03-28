@@ -1,9 +1,10 @@
 package convert
 
 import (
-	"github.com/octohelm/kubekit/pkg/metadata"
 	"io"
 	"strings"
+
+	"github.com/octohelm/kubekit/pkg/metadata"
 
 	"github.com/go-json-experiment/json"
 	jsonv1 "github.com/go-json-experiment/json/v1"

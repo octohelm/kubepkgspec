@@ -2,10 +2,11 @@ package kubepkg
 
 import (
 	"fmt"
-	"github.com/octohelm/x/ptr"
 	"iter"
 	"sort"
 	"strings"
+
+	"github.com/octohelm/x/ptr"
 
 	"github.com/containerd/platforms"
 	appsv1 "k8s.io/api/apps/v1"
@@ -209,9 +210,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 								return err
 							}
 						}
-
 					}
-
 				}
 			}
 		}

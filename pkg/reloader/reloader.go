@@ -1,11 +1,12 @@
 package reloader
 
 import (
+	"maps"
+	"slices"
+
 	"github.com/go-json-experiment/json/jsontext"
 	"github.com/octohelm/kubekit/pkg/metadata"
 	"github.com/opencontainers/go-digest"
-	"maps"
-	"slices"
 )
 
 var (
