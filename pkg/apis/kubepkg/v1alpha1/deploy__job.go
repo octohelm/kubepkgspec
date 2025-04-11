@@ -16,6 +16,10 @@ func (d DeployJob) GetKind() string {
 	return cmp.Or(d.Kind, "Job")
 }
 
+func (d *DeployJob) SetKind(kind string) {
+	d.Kind = d.GetKind()
+}
+
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector

@@ -10,3 +10,7 @@ type DeploySecret struct {
 func (d DeploySecret) GetKind() string {
 	return cmp.Or(d.Kind, "Secret")
 }
+
+func (d *DeploySecret) SetKind(kind string) {
+	d.Kind = d.GetKind()
+}

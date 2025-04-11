@@ -16,6 +16,10 @@ func (d DeployStatefulSet) GetKind() string {
 	return cmp.Or(d.Kind, "StatefulSet")
 }
 
+func (d *DeployStatefulSet) SetKind(kind string) {
+	d.Kind = d.GetKind()
+}
+
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector

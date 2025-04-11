@@ -16,3 +16,7 @@ type DeployEndpoints struct {
 func (d DeployEndpoints) GetKind() string {
 	return cmp.Or(d.Kind, "Endpoints")
 }
+
+func (d *DeployEndpoints) SetKind(kind string) {
+	d.Kind = d.GetKind()
+}

@@ -16,6 +16,10 @@ func (d DeployDaemonSet) GetKind() string {
 	return cmp.Or(d.Kind, "DaemonSet")
 }
 
+func (d *DeployDaemonSet) SetKind(kind string) {
+	d.Kind = d.GetKind()
+}
+
 // +gengo:partialstruct
 // +gengo:partialstruct:replace=Template:*PodPartialTemplateSpec json:"template,omitzero"
 // +gengo:partialstruct:omit=Selector

@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"cmp"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -10,6 +11,14 @@ type VolumeConfigMap struct {
 	Spec *ConfigMapSpec            `json:"spec,omitzero"`
 
 	VolumeMount
+}
+
+func (d VolumeConfigMap) GetKind() string {
+	return cmp.Or(d.Type, "ConfigMap")
+}
+
+func (d *VolumeConfigMap) SetKind(kind string) {
+	d.Type = d.GetKind()
 }
 
 type ConfigMapSpec struct {

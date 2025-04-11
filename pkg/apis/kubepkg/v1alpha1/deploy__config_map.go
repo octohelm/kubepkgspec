@@ -10,3 +10,7 @@ type DeployConfigMap struct {
 func (d DeployConfigMap) GetKind() string {
 	return cmp.Or(d.Kind, "ConfigMap")
 }
+
+func (d *DeployConfigMap) SetKind(kind string) {
+	d.Kind = d.GetKind()
+}
