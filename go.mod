@@ -9,10 +9,10 @@ tool (
 
 require (
 	github.com/go-courier/logr v0.3.2 // indirect
-	github.com/innoai-tech/infra v0.0.0-20250331025532-485c79106226
-	github.com/octohelm/courier v0.0.0-20250409025123-af965993745b
+	github.com/innoai-tech/infra v0.0.0-20250415090026-b203b5815587
+	github.com/octohelm/courier v0.0.0-20250416054450-c6bcc185d5c3
 	github.com/octohelm/enumeration v0.0.0-20250115091102-ddf41951d733
-	github.com/octohelm/gengo v0.0.0-20250326091949-b027fe02828d
+	github.com/octohelm/gengo v0.0.0-20250415085555-ac23c78ea087
 	github.com/octohelm/kubekit v0.0.0-20250312095848-866464095748
 	github.com/octohelm/x v0.0.0-20250409031213-9c254440c2b8
 )
@@ -82,7 +82,7 @@ require (
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff // indirect
 	k8s.io/utils v0.0.0-20250321185631-1f6e0b77f77e // indirect
-	mvdan.cc/gofumpt v0.7.0 // indirect
+	mvdan.cc/gofumpt v0.8.0 // indirect
 	sigs.k8s.io/controller-tools v0.17.3 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect

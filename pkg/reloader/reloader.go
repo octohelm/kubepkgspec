@@ -15,7 +15,8 @@ var (
 )
 
 const (
-	AnnotationSpecDigest = metadata.Annotation("spec/digest")
+	AnnotationSpecDigest     = metadata.Annotation("spec/digest")
+	AnnotationRevisionDigest = metadata.Annotation("revision/digest")
 )
 
 var (

@@ -262,6 +262,9 @@ func ToPodTemplateSpec(kpkg *kubepkgv1alpha1.KubePkg) (*corev1.PodTemplateSpec, 
 		if v, ok := kpkg.Annotations["spec/digest"]; ok {
 			template.Annotations["spec/digest"] = v
 		}
+		if v, ok := kpkg.Annotations["revision/digest"]; ok {
+			template.Annotations["revision/digest"] = v
+		}
 	}
 
 	if kpkg.Spec.Deploy.Underlying != nil {
