@@ -3,6 +3,8 @@ package kubepkg
 import (
 	"fmt"
 	"iter"
+	discoveryv1 "k8s.io/api/discovery/v1"
+	"maps"
 	"sort"
 	"strings"
 
@@ -100,7 +102,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 		service.SetNamespace(kpkg.Namespace)
 		service.SetName(convert.SubResourceName(kpkg, n))
 
-		if kpkg.Spec.Deploy.Underlying.GetKind() == (&v1alpha1.DeployEndpoints{}).GetKind() {
+		if kpkg.Spec.Deploy.Underlying.GetKind() == (&v1alpha1.DeployEndpointSlice{}).GetKind() {
 			service.Spec.ClusterIP = corev1.ClusterIPNone
 		} else {
 			service.Spec.Selector = map[string]string{
@@ -217,6 +219,51 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 
 		if err := e.register(service, kpkg); err != nil {
 			return err
+		}
+
+		if x, ok := kpkg.Spec.Deploy.Underlying.(*v1alpha1.DeployEndpointSlice); ok {
+			endpointSlice := &discoveryv1.EndpointSlice{}
+			endpointSlice.SetGroupVersionKind(discoveryv1.SchemeGroupVersion.WithKind("EndpointSlice"))
+			endpointSlice.SetNamespace(kpkg.Namespace)
+			endpointSlice.SetName(service.Name)
+
+			endpointSlice.Labels = maps.Clone(x.Labels)
+			endpointSlice.Annotations = maps.Clone(x.Annotations)
+
+			if endpointSlice.Labels == nil {
+				endpointSlice.Labels = make(map[string]string)
+			}
+
+			endpointSlice.Labels["kubernetes.io/service-name"] = service.Name
+			endpointSlice.Labels["endpointslice-controller.k8s.io"] = "manual"
+
+			endpointPortNames := make([]string, 0, len(x.Ports))
+			for n := range x.Ports {
+				endpointPortNames = append(endpointPortNames, n)
+			}
+			sort.Strings(endpointPortNames)
+			for _, n := range endpointPortNames {
+				p := discoveryv1.EndpointPort{}
+				name, protocol, _ := convert.DecodePortName(n)
+
+				p.Name = ptr.Ptr(name)
+				p.Protocol = ptr.Ptr(protocol)
+				p.Port = ptr.Ptr(x.Ports[n])
+
+				endpointSlice.Ports = append(endpointSlice.Ports, p)
+			}
+
+			endpoint := discoveryv1.Endpoint{}
+
+			endpointSlice.AddressType = x.AddressType
+			endpoint.Addresses = x.Addresses
+			endpoint.Conditions.Ready = ptr.Ptr(true)
+
+			endpointSlice.Endpoints = []discoveryv1.Endpoint{endpoint}
+
+			if err := e.register(endpointSlice, kpkg); err != nil {
+				return err
+			}
 		}
 	}
 

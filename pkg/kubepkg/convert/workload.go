@@ -147,33 +147,6 @@ func DeployResourceFrom(kpkg *kubepkgv1alpha1.KubePkg) (object.Object, error) {
 			cronJob.Spec = *spec
 
 			return cronJob, nil
-		case *kubepkgv1alpha1.DeployEndpoints:
-			endpoints := &corev1.Endpoints{}
-			endpoints.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("Endpoints"))
-			endpoints.SetNamespace(kpkg.Namespace)
-			endpoints.SetName(kpkg.Name)
-			endpoints.Labels = maps.Clone(x.Labels)
-			endpoints.Annotations = maps.Clone(x.Annotations)
-
-			subset := corev1.EndpointSubset{}
-			subset.Addresses = x.Addresses
-
-			portNames := make([]string, 0, len(x.Ports))
-			for n := range x.Ports {
-				portNames = append(portNames, n)
-			}
-			sort.Strings(portNames)
-			for _, n := range portNames {
-				p := corev1.EndpointPort{}
-				p.Port = x.Ports[n]
-				p.Name, p.Protocol, _ = DecodePortName(n)
-
-				subset.Ports = append(subset.Ports, p)
-			}
-
-			endpoints.Subsets = []corev1.EndpointSubset{subset}
-
-			return endpoints, nil
 		case *kubepkgv1alpha1.DeployConfigMap:
 			cm := &corev1.ConfigMap{}
 			cm.SetGroupVersionKind(corev1.SchemeGroupVersion.WithKind("ConfigMap"))

@@ -8,15 +8,14 @@
   "spec": {
     "version": "0.0.2",
     "deploy": {
-      "kind": "Endpoints",
+      "kind": "EndpointSlice",
+      "addressType": "IPv4",
+      "addresses": [
+        "127.0.0.1"
+      ],
       "ports": {
         "http": 80
-      },
-      "addresses": [
-        {
-          "ip": "127.0.0.1"
-        }
-      ]
+      }
     },
     "services": {
       "#": {

@@ -182,9 +182,6 @@ type JobSpec struct {
 	// only when the number of succeeded pods equals to the completions.
 	// When the field is specified, it must be immutable and works only for the Indexed Jobs.
 	// Once the Job meets the SuccessPolicy, the lingering pods are terminated.
-	//
-	// This field is beta-level. To use this field, you must enable the
-	// `JobSuccessPolicy` feature gate (enabled by default).
 	SuccessPolicy *batchv1.SuccessPolicy `json:"successPolicy,omitempty" protobuf:"bytes,16,opt,name=successPolicy"`
 	// Specifies the number of retries before marking this job failed.
 	// Defaults to 6
@@ -195,8 +192,6 @@ type JobSpec struct {
 	// batch.kubernetes.io/job-index-failure-count annotation. It can only
 	// be set when Job's completionMode=Indexed, and the Pod's restart
 	// policy is Never. The field is immutable.
-	// This field is beta-level. It can be used when the `JobBackoffLimitPerIndex`
-	// feature gate is enabled (enabled by default).
 	BackoffLimitPerIndex *int32 `json:"backoffLimitPerIndex,omitempty" protobuf:"varint,12,opt,name=backoffLimitPerIndex"`
 	// Specifies the maximal number of failed indexes before marking the Job as
 	// failed, when backoffLimitPerIndex is set. Once the number of failed
@@ -206,8 +201,6 @@ type JobSpec struct {
 	// It can only be specified when backoffLimitPerIndex is set.
 	// It can be null or up to completions. It is required and must be
 	// less than or equal to 10^4 when is completions greater than 10^5.
-	// This field is beta-level. It can be used when the `JobBackoffLimitPerIndex`
-	// feature gate is enabled (enabled by default).
 	MaxFailedIndexes *int32 `json:"maxFailedIndexes,omitempty" protobuf:"varint,13,opt,name=maxFailedIndexes"`
 	// manualSelector controls generation of pod labels and pod selectors.
 	// Leave `manualSelector` unset unless you are certain what you are doing.

@@ -251,14 +251,16 @@ func (v *DeployDeployment) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
-func (v *DeployEndpoints) RuntimeDoc(names ...string) ([]string, bool) {
+func (v *DeployEndpointSlice) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {
 		case "Kind":
 			return []string{}, true
-		case "Ports":
+		case "AddressType":
 			return []string{}, true
 		case "Addresses":
+			return []string{}, true
+		case "Ports":
 			return []string{}, true
 
 		}
@@ -547,9 +549,6 @@ func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"only when the number of succeeded pods equals to the completions.",
 				"When the field is specified, it must be immutable and works only for the Indexed Jobs.",
 				"Once the Job meets the SuccessPolicy, the lingering pods are terminated.",
-				"",
-				"This field is beta-level. To use this field, you must enable the",
-				"`JobSuccessPolicy` feature gate (enabled by default).",
 			}, true
 		case "BackoffLimit":
 			return []string{
@@ -564,8 +563,6 @@ func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"batch.kubernetes.io/job-index-failure-count annotation. It can only",
 				"be set when Job's completionMode=Indexed, and the Pod's restart",
 				"policy is Never. The field is immutable.",
-				"This field is beta-level. It can be used when the `JobBackoffLimitPerIndex`",
-				"feature gate is enabled (enabled by default).",
 			}, true
 		case "MaxFailedIndexes":
 			return []string{
@@ -577,8 +574,6 @@ func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"It can only be specified when backoffLimitPerIndex is set.",
 				"It can be null or up to completions. It is required and must be",
 				"less than or equal to 10^4 when is completions greater than 10^5.",
-				"This field is beta-level. It can be used when the `JobBackoffLimitPerIndex`",
-				"feature gate is enabled (enabled by default).",
 			}, true
 		case "ManualSelector":
 			return []string{

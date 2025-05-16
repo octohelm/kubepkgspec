@@ -239,29 +239,30 @@ func (in *DeploymentSpec) DeepCopyInto(out *DeploymentSpec) {
 	out.ProgressDeadlineSeconds = in.ProgressDeadlineSeconds
 }
 
-func (in *DeployEndpoints) DeepCopy() *DeployEndpoints {
+func (in *DeployEndpointSlice) DeepCopy() *DeployEndpointSlice {
 	if in == nil {
 		return nil
 	}
-	out := new(DeployEndpoints)
+	out := new(DeployEndpointSlice)
 	in.DeepCopyInto(out)
 	return out
 }
 
-func (in *DeployEndpoints) DeepCopyInto(out *DeployEndpoints) {
+func (in *DeployEndpointSlice) DeepCopyInto(out *DeployEndpointSlice) {
 	out.Kind = in.Kind
 	in.DeployInfrastructure.DeepCopyInto(&out.DeployInfrastructure)
+	out.AddressType = in.AddressType
+	if in.Addresses != nil {
+		i, o := &in.Addresses, &out.Addresses
+		*o = make([]string, len(*i))
+		copy(*o, *i)
+	}
 	if in.Ports != nil {
 		i, o := &in.Ports, &out.Ports
 		*o = make(map[string]int32, len(*i))
 		for key, val := range *i {
 			(*o)[key] = val
 		}
-	}
-	if in.Addresses != nil {
-		i, o := &in.Addresses, &out.Addresses
-		*o = make([]corev1.EndpointAddress, len(*i))
-		copy(*o, *i)
 	}
 }
 

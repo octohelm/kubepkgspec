@@ -1,5 +1,7 @@
 package kubepkg
 
+#AddressType: string
+
 #Affinity: {
 	// Describes node affinity scheduling rules for the pod
 	nodeAffinity?: #NodeAffinity
@@ -118,7 +120,7 @@ package kubepkg
 
 #DaemonSetUpdateStrategyType: "RollingUpdate" | "OnDelete"
 
-#Deploy: #DeployConfigMap | #DeployCronJob | #DeployDaemonSet | #DeployDeployment | #DeployEndpoints | #DeployJob | #DeploySecret | #DeployStatefulSet
+#Deploy: #DeployConfigMap | #DeployCronJob | #DeployDaemonSet | #DeployDeployment | #DeployEndpointSlice | #DeployJob | #DeploySecret | #DeployStatefulSet
 
 #DeployConfigMap: {
 	kind: "ConfigMap"
@@ -147,12 +149,13 @@ package kubepkg
 	spec?: #DeploymentSpec
 }
 
-#DeployEndpoints: {
-	kind: "Endpoints"
+#DeployEndpointSlice: {
+	kind: "EndpointSlice"
 	labels?: [X=string]: string
 	annotations?: [X=string]: string
+	addressType: #AddressType
+	addresses?: [...string]
 	ports: [X=string]: int
-	addresses?: [...#EndpointAddress]
 }
 
 #DeployJob: {
@@ -217,17 +220,6 @@ package kubepkg
 	medium?: #StorageMedium
 	// sizeLimit is the total amount of local storage required for this EmptyDir volume
 	sizeLimit?: #Quantity
-}
-
-#EndpointAddress: {
-	// The IP of this endpoint
-	ip: string
-	// The Hostname of this endpoint
-	hostname?: string
-	// Optional: Node hosting this endpoint
-	nodeName?: string
-	// Reference to object providing the endpoint
-	targetRef?: #ObjectReference
 }
 
 #EnvVarValueOrFrom: string
@@ -392,6 +384,8 @@ package kubepkg
 	postStart?: #LifecycleHandler
 	// PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc
 	preStop?: #LifecycleHandler
+	// StopSignal defines which signal will be sent to a container when it is being stopped
+	stopSignal?: #Signal
 }
 
 #LifecycleHandler: {
@@ -505,23 +499,6 @@ package kubepkg
 	finalizers?: [...string]
 	// ManagedFields maps workflow-id and version to the set of fields that are managed by that workflow
 	managedFields?: [...#ManagedFieldsEntry]
-}
-
-#ObjectReference: {
-	// Kind of the referent
-	kind?: string
-	// Namespace of the referent
-	namespace?: string
-	// Name of the referent
-	name?: string
-	// UID of the referent
-	uid?: #UID
-	// API version of the referent
-	apiVersion?: string
-	// Specific resourceVersion to which this reference is made, if any
-	resourceVersion?: string
-	// If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState
-	fieldPath?: string
 }
 
 #OwnerReference: {
@@ -1010,6 +987,8 @@ package kubepkg
 	scope?: #ScopeType
 	rules: [...#PolicyRule]
 }
+
+#Signal: string
 
 #SleepAction: {
 	// Seconds is the number of seconds to sleep

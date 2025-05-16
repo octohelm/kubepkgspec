@@ -99,6 +99,6 @@ func (Deploy) Mapping() map[string]any {
 		"Secret":    Deployer(&DeploySecret{}),
 		"ConfigMap": Deployer(&DeployConfigMap{}),
 
-		"Endpoints": Deployer(&DeployEndpoints{}),
+		"EndpointSlice": Deployer(&DeployEndpointSlice{}),
 	}
 }

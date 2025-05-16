@@ -42,19 +42,24 @@ spec:
         value: /
 status:
   parents: []
--- demo.default.Endpoints.yaml --
-apiVersion: v1
-kind: Endpoints
+-- demo.default.EndpointSlice.yaml --
+addressType: IPv4
+apiVersion: discovery.k8s.io/v1
+endpoints:
+- addresses:
+  - 127.0.0.1
+  conditions:
+    ready: true
+kind: EndpointSlice
 metadata:
   labels:
     app.kubernetes.io/instance: demo
     app.kubernetes.io/version: 0.0.2
+    endpointslice-controller.k8s.io: manual
+    kubernetes.io/service-name: demo
   name: demo
   namespace: default
-subsets:
-- addresses:
-  - ip: 127.0.0.1
-  ports:
-  - name: http
-    port: 80
-    protocol: TCP
+ports:
+- name: http
+  port: 80
+  protocol: TCP
