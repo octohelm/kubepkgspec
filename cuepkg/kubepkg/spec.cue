@@ -232,8 +232,8 @@ package kubepkg
 #Expose: #ExposeIngress | #ExposeNodePort
 
 #ExposeIngress: {
-	type: "Ingress"
-	gateway?: [...string]
+	type:     "Ingress"
+	gateway?: #StringSlice
 	options?: [X=string]: string
 }
 
@@ -1064,6 +1064,8 @@ package kubepkg
 #StorageMedium: string
 
 #StringOrSlice: string | [...string]
+
+#StringSlice: [...string]
 
 #SuccessPolicy: {
 	// rules represents the list of alternative rules for the declaring the Jobs as successful before `

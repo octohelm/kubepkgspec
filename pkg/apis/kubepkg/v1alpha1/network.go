@@ -53,7 +53,7 @@ func (in *Expose) DeepCopyInto(out *Expose) {
 func (d *Expose) UnmarshalJSON(data []byte) error {
 	vv := Expose{}
 	if err := taggedunion.Unmarshal(data, &vv); err != nil {
-		return fmt.Errorf("unmarshal failed to Expose: %w", err)
+		return fmt.Errorf("unmarshal %s failed to Expose: %w", data, err)
 	}
 	*d = vv
 	return nil
@@ -88,7 +88,7 @@ func (ExposeNodePort) GetType() string {
 type ExposeIngress struct {
 	Type string `json:"type" validate:"@string{Ingress}"`
 	// Gateway
-	Gateway []string `json:"gateway,omitzero"`
+	Gateway StringSlice `json:"gateway,omitzero"`
 	// Options
 	Options map[string]string `json:"options,omitzero"`
 }
