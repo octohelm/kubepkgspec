@@ -234,6 +234,7 @@ package kubepkg
 #ExposeIngress: {
 	type: "Ingress"
 	gateway?: [...string]
+	options?: [X=string]: string
 }
 
 #ExposeNodePort: type: "NodePort"
@@ -975,9 +976,9 @@ package kubepkg
 	ports?: {
 		[X=string]: int
 	}
-	// [PortName]BashPath
+	// [PortName]PathRuleOrMatch
 	paths?: {
-		[X=string]: string
+		[X=string]: #StringOrSlice
 	}
 	clusterIP?: string
 	expose?:    #Expose
@@ -1061,6 +1062,8 @@ package kubepkg
 }
 
 #StorageMedium: string
+
+#StringOrSlice: string | [...string]
 
 #SuccessPolicy: {
 	// rules represents the list of alternative rules for the declaring the Jobs as successful before `

@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"fmt"
 	"github.com/octohelm/courier/pkg/validator"
 	"github.com/octohelm/courier/pkg/validator/taggedunion"
 )
@@ -8,8 +9,8 @@ import (
 type Service struct {
 	// Ports [PortName]servicePort
 	Ports map[string]int32 `json:"ports,omitzero"`
-	// Paths [PortName]BashPath
-	Paths map[string]string `json:"paths,omitzero"`
+	// Paths [PortName]PathRuleOrMatch
+	Paths map[string]StringOrSlice `json:"paths,omitzero"`
 	// ClusterIP
 	ClusterIP string `json:"clusterIP,omitzero"`
 
@@ -52,7 +53,7 @@ func (in *Expose) DeepCopyInto(out *Expose) {
 func (d *Expose) UnmarshalJSON(data []byte) error {
 	vv := Expose{}
 	if err := taggedunion.Unmarshal(data, &vv); err != nil {
-		return err
+		return fmt.Errorf("unmarshal failed to Expose: %w", err)
 	}
 	*d = vv
 	return nil
@@ -86,9 +87,10 @@ func (ExposeNodePort) GetType() string {
 
 type ExposeIngress struct {
 	Type string `json:"type" validate:"@string{Ingress}"`
-
 	// Gateway
 	Gateway []string `json:"gateway,omitzero"`
+	// Options
+	Options map[string]string `json:"options,omitzero"`
 }
 
 func (ExposeIngress) GetType() string {

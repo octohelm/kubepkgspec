@@ -397,10 +397,10 @@ func (e *extractor) resolvePathsFromIngressOrGateway(ks *kubepkgv1alpha1.Service
 									e.markUse(o)
 
 									if ks.Paths == nil {
-										ks.Paths = map[string]string{}
+										ks.Paths = map[string]kubepkgv1alpha1.StringOrSlice{}
 									}
 
-									ks.Paths[portName] = *path
+									ks.Paths[portName] = append(ks.Paths[portName], *path)
 								}
 							}
 						}
@@ -428,10 +428,10 @@ func (e *extractor) resolvePathsFromIngressOrGateway(ks *kubepkgv1alpha1.Service
 									e.markUse(o)
 
 									if ks.Paths == nil {
-										ks.Paths = map[string]string{}
+										ks.Paths = map[string]kubepkgv1alpha1.StringOrSlice{}
 									}
 
-									ks.Paths[portName] = p.Path
+									ks.Paths[portName] = append(ks.Paths[portName], p.Path)
 								}
 							}
 						}

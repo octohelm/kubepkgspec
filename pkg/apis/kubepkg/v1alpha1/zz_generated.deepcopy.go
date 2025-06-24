@@ -439,6 +439,13 @@ func (in *ExposeIngress) DeepCopyInto(out *ExposeIngress) {
 		*o = make([]string, len(*i))
 		copy(*o, *i)
 	}
+	if in.Options != nil {
+		i, o := &in.Options, &out.Options
+		*o = make(map[string]string, len(*i))
+		for key, val := range *i {
+			(*o)[key] = val
+		}
+	}
 }
 
 func (in *ExposeNodePort) DeepCopy() *ExposeNodePort {
@@ -693,7 +700,7 @@ func (in *Service) DeepCopyInto(out *Service) {
 	}
 	if in.Paths != nil {
 		i, o := &in.Paths, &out.Paths
-		*o = make(map[string]string, len(*i))
+		*o = make(map[string]StringOrSlice, len(*i))
 		for key, val := range *i {
 			(*o)[key] = val
 		}
@@ -769,6 +776,20 @@ func (in Statuses) DeepCopyInto(out Statuses) {
 	for k := range in {
 		out[k] = in[k]
 	}
+}
+
+func (in *StringOrSlice) DeepCopy() *StringOrSlice {
+	if in == nil {
+		return nil
+	}
+
+	out := new(StringOrSlice)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *StringOrSlice) DeepCopyInto(out *StringOrSlice) {
+	*out = *in
 }
 
 func (in *VolumeConfigMap) DeepCopy() *VolumeConfigMap {

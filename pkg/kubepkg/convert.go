@@ -2,18 +2,18 @@ package kubepkg
 
 import (
 	"fmt"
+	"github.com/go-json-experiment/json"
 	"iter"
-	discoveryv1 "k8s.io/api/discovery/v1"
 	"maps"
 	"sort"
 	"strings"
 
-	"github.com/octohelm/x/ptr"
-
 	"github.com/containerd/platforms"
+	"github.com/octohelm/x/ptr"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	discoveryv1 "k8s.io/api/discovery/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
@@ -112,7 +112,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 			service.Spec.ClusterIP = s.ClusterIP
 		}
 
-		paths := map[string]string{}
+		paths := map[string][]string{}
 
 		for portName, p := range s.Paths {
 			paths[portName] = p
@@ -135,7 +135,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 
 			if strings.HasPrefix(p.Name, "http") {
 				if _, ok := paths[p.Name]; !ok {
-					paths[p.Name] = "/"
+					paths[p.Name] = []string{"/"}
 				}
 			}
 		}
@@ -161,6 +161,7 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 							httpRoute.SetGroupVersionKind(gatewayv1.SchemeGroupVersion.WithKind("HTTPRoute"))
 							httpRoute.SetNamespace(kpkg.Namespace)
 							httpRoute.SetName(convert.SubResourceName(kpkg, n))
+							httpRoute.Annotations = map[string]string{}
 
 							parts := strings.Split(gateway, ".")
 
@@ -181,15 +182,27 @@ func (e *converter) walkNetworks(kpkg *v1alpha1.KubePkg) error {
 
 							httpRoute.Spec.Rules = []gatewayv1.HTTPRouteRule{}
 
-							for n, path := range s.Paths {
+							if len(x.Options) > 0 {
+								raw, _ := json.Marshal(x.Options)
+								if len(raw) > 0 {
+									httpRoute.Annotations["path-rule.kubepkg.octohelm.tech/options"] = string(raw)
+								}
+							}
+
+							for n, matches := range s.Paths {
+								if len(matches) == 0 {
+									continue
+								}
+
 								rule := gatewayv1.HTTPRouteRule{}
-								rule.Matches = []gatewayv1.HTTPRouteMatch{
-									{
+
+								for _, path := range matches {
+									rule.Matches = append(rule.Matches, gatewayv1.HTTPRouteMatch{
 										Path: &gatewayv1.HTTPPathMatch{
 											Type:  ptr.Ptr(gatewayv1.PathMatchPathPrefix),
 											Value: ptr.Ptr(path),
 										},
-									},
+									})
 								}
 
 								httpBackendRef := gatewayv1.HTTPBackendRef{}

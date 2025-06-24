@@ -449,6 +449,8 @@ func (v *ExposeIngress) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{}, true
 		case "Gateway":
 			return []string{}, true
+		case "Options":
+			return []string{}, true
 
 		}
 
@@ -1030,7 +1032,7 @@ func (v *Service) RuntimeDoc(names ...string) ([]string, bool) {
 			}, true
 		case "Paths":
 			return []string{
-				"[PortName]BashPath",
+				"[PortName]PathRuleOrMatch",
 			}, true
 		case "ClusterIP":
 			return []string{}, true
@@ -1200,6 +1202,10 @@ func (v *Status) RuntimeDoc(names ...string) ([]string, bool) {
 }
 
 func (*Statuses) RuntimeDoc(names ...string) ([]string, bool) {
+	return []string{}, true
+}
+
+func (*StringOrSlice) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
