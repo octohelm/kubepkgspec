@@ -5,7 +5,7 @@ gen:
     {{ gengo }} ./pkg/apis/kubepkg/v1alpha1
 
 test:
-    go test -v -failfast ./...
+    go test -count=1 -v -failfast ./...
 
 fmt:
     {{ gofumpt }} -w -l .

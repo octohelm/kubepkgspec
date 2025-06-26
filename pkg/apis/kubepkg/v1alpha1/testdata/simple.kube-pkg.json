@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "name": "simple"
+  },
+  "spec": {
+    "version": "v1.29.0-alpine",
+    "deploy": {
+      "kind": "Deployment",
+      "spec": {
+        "replicas": 1
+      }
+    },
+    "config": {},
+    "containers": {
+      "algo-configuration": {
+        "image": {
+          "name": "nginx",
+          "tag": "1.29.0-alpine"
+        },
+        "ports": {
+          "http": 80
+        },
+        "livenessProbe": {
+          "httpGet": {
+            "path": "/",
+            "port": 80,
+            "scheme": "HTTP"
+          },
+          "initialDelaySeconds": 5,
+          "timeoutSeconds": 1,
+          "periodSeconds": 10,
+          "successThreshold": 1,
+          "failureThreshold": 3
+        },
+        "readinessProbe": {
+          "httpGet": {
+            "path": "/",
+            "port": 80,
+            "scheme": "HTTP"
+          },
+          "initialDelaySeconds": 5,
+          "timeoutSeconds": 1,
+          "periodSeconds": 10,
+          "successThreshold": 1,
+          "failureThreshold": 3
+        }
+      }
+    },
+    "services": {
+      "#": {
+        "ports": {
+          "http": 80
+        },
+        "paths": {
+          "http": [
+            "/algo-configuration"
+          ]
+        },
+        "expose": {
+          "type": "Ingress",
+          "gateway": [
+            "default"
+          ]
+        }
+      }
+    }
+  }
+}
