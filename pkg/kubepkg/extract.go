@@ -1,6 +1,7 @@
 package kubepkg
 
 import (
+	"cmp"
 	"fmt"
 	"iter"
 	"strings"
@@ -332,9 +333,9 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 	}
 
 	for _, o := range e.manifests {
-		if x, ok := o.(*corev1.Service); ok {
-			if mapContains(selector.MatchLabels, x.Spec.Selector) {
-				e.markUse(x)
+		if s, ok := o.(*corev1.Service); ok {
+			if mapContains(selector.MatchLabels, s.Spec.Selector) {
+				e.markUse(s)
 
 				if k.Spec.Services == nil {
 					k.Spec.Services = map[string]kubepkgv1alpha1.Service{}
@@ -344,27 +345,27 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 					Ports: map[string]int32{},
 				}
 
-				for _, p := range x.Spec.Ports {
-					name := convert.FormatPortName(p.Name, p.Protocol, 0)
+				serviceName := k.Name
+
+				for _, p := range s.Spec.Ports {
+					name := convert.FormatPortName(cmp.Or(p.TargetPort.StrVal, p.Name), p.Protocol, 0)
 
 					svc.Ports[name] = p.Port
 				}
 
-				name := k.Name
-
-				if name == k.Name {
-					name = "#"
-				} else if strings.HasPrefix(name, k.Name) {
-					name = strings.Trim(name[len(k.Name)+1:], "-")
+				if s.Name == k.Name {
+					serviceName = "#"
+				} else if strings.HasPrefix(s.Name, k.Name) {
+					serviceName = strings.Trim(serviceName[len(k.Name)+1:], "-")
 				}
 
 				if svc.Expose == nil {
-					if err := e.resolvePathsFromIngressOrGateway(&svc, x); err != nil {
+					if err := e.resolvePathsFromIngressOrGateway(&svc, s); err != nil {
 						return err
 					}
 				}
 
-				k.Spec.Services[name] = svc
+				k.Spec.Services[serviceName] = svc
 
 				return nil
 			}

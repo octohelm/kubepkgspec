@@ -2,13 +2,13 @@ package kubepkg
 
 import (
 	"fmt"
-	"github.com/go-json-experiment/json"
 	"iter"
 	"maps"
 	"sort"
 	"strings"
 
 	"github.com/containerd/platforms"
+	"github.com/go-json-experiment/json"
 	"github.com/octohelm/x/ptr"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"

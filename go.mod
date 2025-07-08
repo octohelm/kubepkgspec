@@ -9,19 +9,19 @@ tool (
 
 require (
 	github.com/go-courier/logr v0.3.2 // indirect
-	github.com/innoai-tech/infra v0.0.0-20250617102739-32eaecff5ec2
-	github.com/octohelm/courier v0.0.0-20250626030519-93d6fe589100
+	github.com/innoai-tech/infra v0.0.0-20250703075817-5146c534b956
+	github.com/octohelm/courier v0.0.0-20250704062509-2ced01d0483d
 	github.com/octohelm/enumeration v0.0.0-20250115091102-ddf41951d733
 	github.com/octohelm/gengo v0.0.0-20250418031154-d14a228621d4
 	github.com/octohelm/kubekit v0.0.0-20250312095848-866464095748
-	github.com/octohelm/x v0.0.0-20250409031213-9c254440c2b8
+	github.com/octohelm/x v0.0.0-20250708033748-64c90ed759d0
 )
 
 require (
 	cuelang.org/go v0.13.2
 	github.com/containerd/platforms v0.2.1
 	github.com/distribution/reference v0.6.0
-	github.com/go-json-experiment/json v0.0.0-20250625182306-a9cfae7f3654
+	github.com/go-json-experiment/json v0.0.0-20250626171732-1a886bd29d1b
 	github.com/opencontainers/go-digest v1.0.0
 	golang.org/x/sync v0.15.0
 	k8s.io/api v0.33.2
@@ -46,7 +46,7 @@ require (
 	github.com/go-openapi/swag v0.23.1 // indirect
 	github.com/gobuffalo/flect v1.0.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/google/gnostic-models v0.6.9 // indirect
+	github.com/google/gnostic-models v0.7.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -65,6 +65,7 @@ require (
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
@@ -80,7 +81,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/client-go v0.33.2 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20250610211856-8b98d1ed966a // indirect
+	k8s.io/kube-openapi v0.0.0-20250701173324-9bd5c66d9911 // indirect
 	k8s.io/utils v0.0.0-20250604170112-4c0f3b243397 // indirect
 	mvdan.cc/gofumpt v0.8.0 // indirect
 	sigs.k8s.io/controller-tools v0.18.0 // indirect
