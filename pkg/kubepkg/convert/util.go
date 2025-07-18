@@ -100,12 +100,12 @@ func unmarshal(src any, target any) error {
 
 	eg.Go(func() error {
 		defer w.Close()
-		return json.MarshalWrite(w, src, jsonv1.OmitEmptyWithLegacyDefinition(true))
+		return json.MarshalWrite(w, src, jsonv1.OmitEmptyWithLegacySemantics(true))
 	})
 
 	eg.Go(func() error {
 		defer r.Close()
-		return json.UnmarshalRead(r, target, jsonv1.OmitEmptyWithLegacyDefinition(true))
+		return json.UnmarshalRead(r, target, jsonv1.OmitEmptyWithLegacySemantics(true))
 	})
 
 	return eg.Wait()
