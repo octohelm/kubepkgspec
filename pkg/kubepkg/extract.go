@@ -356,7 +356,8 @@ func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1
 				if s.Name == k.Name {
 					serviceName = "#"
 				} else if strings.HasPrefix(s.Name, k.Name) {
-					serviceName = strings.Trim(serviceName[len(k.Name)+1:], "-")
+					fmt.Println(serviceName)
+					serviceName = strings.Trim(s.Name[len(k.Name)+1:], "-")
 				}
 
 				if svc.Expose == nil {
