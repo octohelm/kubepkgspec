@@ -91,7 +91,7 @@ func (r *patcher) walk(podSpec *corev1.PodSpec) {
 		for _, env := range c.Env {
 			if env.ValueFrom != nil {
 				if env.ValueFrom.ConfigMapKeyRef != nil {
-					r.recordSecret(env.ValueFrom.ConfigMapKeyRef.Name)
+					r.recordConfigMap(env.ValueFrom.ConfigMapKeyRef.Name)
 				}
 
 				if env.ValueFrom.SecretKeyRef != nil {
