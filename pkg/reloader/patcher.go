@@ -120,7 +120,7 @@ func (r *patcher) recordConfigMap(name string) {
 
 func (r *patcher) MarshalTo(o metadata.AnnotationsAccessor) error {
 	if len(r.configMaps) > 0 {
-		if err := AnnotationConfigMapReload.MarshalTo(o, slices.Collect(maps.Keys(r.configMaps)), ""); err != nil {
+		if err := AnnotationConfigMapReload.MarshalTo(o, slices.Sorted(maps.Keys(r.configMaps)), ""); err != nil {
 			return err
 		}
 
@@ -134,8 +134,9 @@ func (r *patcher) MarshalTo(o metadata.AnnotationsAccessor) error {
 			}
 		}
 	}
+
 	if len(r.secrets) > 0 {
-		if err := AnnotationSecretReload.MarshalTo(o, slices.Collect(maps.Keys(r.secrets)), ""); err != nil {
+		if err := AnnotationSecretReload.MarshalTo(o, slices.Sorted(maps.Keys(r.secrets)), ""); err != nil {
 			return err
 		}
 
