@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"fmt"
+
 	"github.com/octohelm/courier/pkg/validator"
 	"github.com/octohelm/courier/pkg/validator/taggedunion"
 )
@@ -24,6 +25,10 @@ type Exposer interface {
 // +gengo:deepcopy=false
 type Expose struct {
 	Underlying Exposer `json:"-"`
+}
+
+func (e Expose) IsZero() bool {
+	return e.Underlying == nil
 }
 
 func (in Expose) GetType() string {
