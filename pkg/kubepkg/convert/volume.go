@@ -24,11 +24,13 @@ func VolumeConvertorsFrom(kpkg *v1alpha1.KubePkg) map[string]VolumeConverter {
 			volumes[n] = &volumeConfigMapConverter{
 				ResourceName:    SubResourceName(kpkg, n),
 				VolumeConfigMap: x,
+				External:        IsGlobalRef(n),
 			}
 		case *v1alpha1.VolumeSecret:
 			volumes[n] = &volumeSecretConverter{
 				ResourceName: SubResourceName(kpkg, n),
 				VolumeSecret: x,
+				External:     IsGlobalRef(n),
 			}
 		case *v1alpha1.VolumeEmptyDir:
 			volumes[n] = &volumeEmptyDirConverter{
@@ -207,6 +209,7 @@ func (c volumePersistentVolumeClaimConverter) MountTo(container *corev1.Containe
 
 type volumeConfigMapConverter struct {
 	ResourceName string
+	External     bool
 	*v1alpha1.VolumeConfigMap
 }
 
@@ -225,7 +228,7 @@ func (v *volumeConfigMapConverter) IsOptional() bool {
 }
 
 func (c *volumeConfigMapConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
-	if c.IsZero() {
+	if c.External || c.IsZero() {
 		return nil, nil
 	}
 
@@ -264,7 +267,7 @@ func (c *volumeConfigMapConverter) MountTo(container *corev1.Container) (*corev1
 		return nil, nil
 	}
 
-	if c.IsZero() && !c.IsOptional() {
+	if !c.External && c.IsZero() && !c.IsOptional() {
 		return nil, nil
 	}
 
@@ -284,6 +287,7 @@ func (c *volumeConfigMapConverter) MountTo(container *corev1.Container) (*corev1
 
 type volumeSecretConverter struct {
 	ResourceName string
+	External     bool
 	*v1alpha1.VolumeSecret
 }
 
@@ -302,7 +306,7 @@ func (v *volumeSecretConverter) IsOptional() bool {
 }
 
 func (c *volumeSecretConverter) ToResource(kpkg *v1alpha1.KubePkg) (object.Object, error) {
-	if c.IsZero() {
+	if c.External || c.IsZero() {
 		return nil, nil
 	}
 
@@ -341,7 +345,7 @@ func (c *volumeSecretConverter) MountTo(container *corev1.Container) (*corev1.Vo
 		return nil, nil
 	}
 
-	if c.IsZero() && !c.IsOptional() {
+	if !c.External && c.IsZero() && !c.IsOptional() {
 		return nil, nil
 	}
 
@@ -355,6 +359,7 @@ func (c *volumeSecretConverter) MountTo(container *corev1.Container) (*corev1.Vo
 	v.Secret.SecretName = c.ResourceName
 
 	sortedAppendVolumeMount(container, toVolumeMount(c.ResourceName, c.VolumeMount))
+
 	return v, nil
 }
 

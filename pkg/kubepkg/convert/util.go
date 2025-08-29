@@ -4,10 +4,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/octohelm/kubekit/pkg/metadata"
-
 	"github.com/go-json-experiment/json"
 	jsonv1 "github.com/go-json-experiment/json/v1"
+	"github.com/octohelm/kubekit/pkg/metadata"
 	"github.com/octohelm/kubepkgspec/pkg/apis/kubepkg/v1alpha1"
 	"github.com/octohelm/kubepkgspec/pkg/wellknown"
 	"github.com/octohelm/x/anyjson"
@@ -31,11 +30,15 @@ func Must[T any](v *T) *T {
 	return v
 }
 
+func IsGlobalRef(name string) bool {
+	return name != "" && (name[0] == '~' || name[0] == '/' || name[0] == '@')
+}
+
 func SubResourceName(kpkg *v1alpha1.KubePkg, name string) string {
 	if name == "#" || name == "" {
 		return kpkg.Name
 	}
-	if name[0] == '~' || name[0] == '/' {
+	if IsGlobalRef(name) {
 		return name[1:]
 	}
 	return strings.Join([]string{kpkg.Name, name}, "-")
