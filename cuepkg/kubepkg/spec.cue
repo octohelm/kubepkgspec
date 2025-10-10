@@ -764,7 +764,8 @@ package kubepkg
 	// defines which ResourceClaims must be allocated
 	resourceClaims?: [...#PodResourceClaim]
 	// is the total amount of CPU and Memory resources required by all
-	resources?: #ResourceRequirements
+	resources?:        #ResourceRequirements
+	hostnameOverride?: string
 }
 
 #PodPartialTemplateSpec: spec?: #PodPartialSpec

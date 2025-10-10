@@ -375,7 +375,7 @@ func toVolumeMount(name string, v v1alpha1.VolumeMount) (vv corev1.VolumeMount) 
 	case corev1.MountPropagationHostToContainer:
 		vv.MountPropagation = ptr.Ptr(corev1.MountPropagationHostToContainer)
 	}
-	return
+	return vv
 }
 
 func mountVolume(v *v1alpha1.VolumeMount, vm corev1.VolumeMount) {

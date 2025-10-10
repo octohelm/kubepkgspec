@@ -184,7 +184,8 @@ type JobSpec struct {
 	// Once the Job meets the SuccessPolicy, the lingering pods are terminated.
 	SuccessPolicy *batchv1.SuccessPolicy `json:"successPolicy,omitempty" protobuf:"bytes,16,opt,name=successPolicy"`
 	// Specifies the number of retries before marking this job failed.
-	// Defaults to 6
+	// Defaults to 6, unless backoffLimitPerIndex (only Indexed Job) is specified.
+	// When backoffLimitPerIndex is specified, backoffLimit defaults to 2147483647.
 	BackoffLimit *int32 `json:"backoffLimit,omitempty" protobuf:"varint,7,opt,name=backoffLimit"`
 	// Specifies the limit for the number of retries within an
 	// index before marking this index as failed. When enabled the number of
@@ -265,8 +266,6 @@ type JobSpec struct {
 	//
 	// When using podFailurePolicy, Failed is the the only allowed value.
 	// TerminatingOrFailed and Failed are allowed values when podFailurePolicy is not in use.
-	// This is an beta field. To use this, enable the JobPodReplacementPolicy feature toggle.
-	// This is on by default.
 	PodReplacementPolicy *batchv1.PodReplacementPolicy `json:"podReplacementPolicy,omitempty" protobuf:"bytes,14,opt,name=podReplacementPolicy,casttype=podReplacementPolicy"`
 	// field indicates the controller that manages a Job. The k8s Job
 	// controller reconciles jobs which don't have this field at all or the field
@@ -349,7 +348,9 @@ type PodPartialSpec struct {
 	// https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodename
 	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
 	// Host networking requested for this pod. Use the host's network namespace.
-	// If this option is set, the ports that will be used must be specified.
+	// When using HostNetwork you should specify ports so the scheduler is aware.
+	// When `hostNetwork` is true, specified `hostPort` fields in port definitions must match `containerPort`,
+	// and unspecified `hostPort` fields in port definitions are defaulted to match `containerPort`.
 	// Default to false.
 	HostNetwork bool `json:"hostNetwork,omitempty" protobuf:"varint,11,opt,name=hostNetwork"`
 	// Use the host's pid namespace.
@@ -451,6 +452,7 @@ type PodPartialSpec struct {
 	// - spec.hostPID
 	// - spec.hostIPC
 	// - spec.hostUsers
+	// - spec.resources
 	// - spec.securityContext.appArmorProfile
 	// - spec.securityContext.seLinuxOptions
 	// - spec.securityContext.seccompProfile
@@ -501,7 +503,7 @@ type PodPartialSpec struct {
 	ResourceClaims []corev1.PodResourceClaim `json:"resourceClaims,omitempty" patchStrategy:"merge,retainKeys" patchMergeKey:"name" protobuf:"bytes,39,rep,name=resourceClaims"`
 	// is the total amount of CPU and Memory resources required by all
 	// containers in the pod. It supports specifying Requests and Limits for
-	// "cpu" and "memory" resource names only. ResourceClaims are not supported.
+	// "cpu", "memory" and "hugepages-" resource names only. ResourceClaims are not supported.
 	//
 	// This field enables fine-grained control over resource allocation for the
 	// entire pod, allowing resource sharing among containers in a pod.
@@ -510,6 +512,17 @@ type PodPartialSpec struct {
 	// This is an alpha field and requires enabling the PodLevelResources feature
 	// gate.
 	Resources *corev1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,40,opt,name=resources"`
+	// specifies an explicit override for the pod's hostname as perceived by the pod.
+	// This field only specifies the pod's hostname and does not affect its DNS records.
+	// When this field is set to a non-empty string:
+	// - It takes precedence over the values set in `hostname` and `subdomain`.
+	// - The Pod's hostname will be set to this value.
+	// - `setHostnameAsFQDN` must be nil or set to false.
+	// - `hostNetwork` must be set to false.
+	//
+	// This field must be a valid DNS subdomain as defined in RFC 1123 and contain at most 64 characters.
+	// Requires the HostnameOverride feature gate to be enabled.
+	HostnameOverride *string `json:"hostnameOverride,omitempty" protobuf:"bytes,41,opt,name=hostnameOverride"`
 }
 
 func (in *PodPartialSpec) DeepCopyAs() *corev1.PodSpec {
@@ -590,6 +603,7 @@ func (in *PodPartialSpec) DeepCopyIntoAs(out *corev1.PodSpec) {
 		copy(*o, *i)
 	}
 	out.Resources = in.Resources
+	out.HostnameOverride = in.HostnameOverride
 }
 
 type StatefulSetSpec struct {

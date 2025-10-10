@@ -59,7 +59,7 @@ func Intersection[E comparable](a []E, b []E) (c []E) {
 		}
 	}
 
-	return
+	return c
 }
 
 func Merge[X any](from *X, overwrites *X) (*X, error) {

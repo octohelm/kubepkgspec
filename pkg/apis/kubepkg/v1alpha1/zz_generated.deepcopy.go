@@ -434,11 +434,7 @@ func (in *ExposeIngress) DeepCopy() *ExposeIngress {
 
 func (in *ExposeIngress) DeepCopyInto(out *ExposeIngress) {
 	out.Type = in.Type
-	if in.Gateway != nil {
-		i, o := &in.Gateway, &out.Gateway
-		*o = make([]string, len(*i))
-		copy(*o, *i)
-	}
+	in.Gateway.DeepCopyInto(&out.Gateway)
 	if in.Options != nil {
 		i, o := &in.Options, &out.Options
 		*o = make(map[string]string, len(*i))
@@ -446,6 +442,20 @@ func (in *ExposeIngress) DeepCopyInto(out *ExposeIngress) {
 			(*o)[key] = val
 		}
 	}
+}
+
+func (in *StringSlice) DeepCopy() *StringSlice {
+	if in == nil {
+		return nil
+	}
+
+	out := new(StringSlice)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *StringSlice) DeepCopyInto(out *StringSlice) {
+	*out = *in
 }
 
 func (in *ExposeNodePort) DeepCopy() *ExposeNodePort {
@@ -1088,6 +1098,7 @@ func (in *podPartialSpec) DeepCopyInto(out *podPartialSpec) {
 		copy(*o, *i)
 	}
 	out.Resources = in.Resources
+	out.HostnameOverride = in.HostnameOverride
 }
 
 func (in *statefulSetSpec) DeepCopy() *statefulSetSpec {

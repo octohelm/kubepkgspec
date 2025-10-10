@@ -2,9 +2,8 @@ package convert
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
-
-	"cuelang.org/go/pkg/strconv"
 
 	corev1 "k8s.io/api/core/v1"
 )

@@ -1209,6 +1209,10 @@ func (*StringOrSlice) RuntimeDoc(names ...string) ([]string, bool) {
 	return []string{}, true
 }
 
+func (*StringSlice) RuntimeDoc(names ...string) ([]string, bool) {
+	return []string{}, true
+}
+
 func (v *Volume) RuntimeDoc(names ...string) ([]string, bool) {
 	if len(names) > 0 {
 		switch names[0] {

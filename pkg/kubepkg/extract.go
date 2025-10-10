@@ -324,7 +324,7 @@ func resolvePlatformsFromSpec(t *corev1.PodTemplateSpec) (platforms []string) {
 		}
 	}
 
-	return
+	return platforms
 }
 
 func (e *extractor) resolveNetworks(k *kubepkgv1alpha1.KubePkg, selector *metav1.LabelSelector) error {
