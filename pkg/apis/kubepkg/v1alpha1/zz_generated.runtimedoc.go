@@ -555,7 +555,8 @@ func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 		case "BackoffLimit":
 			return []string{
 				"Specifies the number of retries before marking this job failed.",
-				"Defaults to 6",
+				"Defaults to 6, unless backoffLimitPerIndex (only Indexed Job) is specified.",
+				"When backoffLimitPerIndex is specified, backoffLimit defaults to 2147483647.",
 			}, true
 		case "BackoffLimitPerIndex":
 			return []string{
@@ -652,8 +653,6 @@ func (v *JobSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"",
 				"When using podFailurePolicy, Failed is the the only allowed value.",
 				"TerminatingOrFailed and Failed are allowed values when podFailurePolicy is not in use.",
-				"This is an beta field. To use this, enable the JobPodReplacementPolicy feature toggle.",
-				"This is on by default.",
 			}, true
 		case "ManagedBy":
 			return []string{
@@ -786,7 +785,9 @@ func (v *PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 		case "HostNetwork":
 			return []string{
 				"Host networking requested for this pod. Use the host's network namespace.",
-				"If this option is set, the ports that will be used must be specified.",
+				"When using HostNetwork you should specify ports so the scheduler is aware.",
+				"When `hostNetwork` is true, specified `hostPort` fields in port definitions must match `containerPort`,",
+				"and unspecified `hostPort` fields in port definitions are defaulted to match `containerPort`.",
 				"Default to false.",
 			}, true
 		case "HostPID":
@@ -932,6 +933,7 @@ func (v *PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"- spec.hostPID",
 				"- spec.hostIPC",
 				"- spec.hostUsers",
+				"- spec.resources",
 				"- spec.securityContext.appArmorProfile",
 				"- spec.securityContext.seLinuxOptions",
 				"- spec.securityContext.seccompProfile",
@@ -990,7 +992,7 @@ func (v *PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 			return []string{
 				"is the total amount of CPU and Memory resources required by all",
 				"containers in the pod. It supports specifying Requests and Limits for",
-				"\"cpu\" and \"memory\" resource names only. ResourceClaims are not supported.",
+				"\"cpu\", \"memory\" and \"hugepages-\" resource names only. ResourceClaims are not supported.",
 				"",
 				"This field enables fine-grained control over resource allocation for the",
 				"entire pod, allowing resource sharing among containers in a pod.",
@@ -998,6 +1000,19 @@ func (v *PodPartialSpec) RuntimeDoc(names ...string) ([]string, bool) {
 				"",
 				"This is an alpha field and requires enabling the PodLevelResources feature",
 				"gate.",
+			}, true
+		case "HostnameOverride":
+			return []string{
+				"specifies an explicit override for the pod's hostname as perceived by the pod.",
+				"This field only specifies the pod's hostname and does not affect its DNS records.",
+				"When this field is set to a non-empty string:",
+				"- It takes precedence over the values set in `hostname` and `subdomain`.",
+				"- The Pod's hostname will be set to this value.",
+				"- `setHostnameAsFQDN` must be nil or set to false.",
+				"- `hostNetwork` must be set to false.",
+				"",
+				"This field must be a valid DNS subdomain as defined in RFC 1123 and contain at most 64 characters.",
+				"Requires the HostnameOverride feature gate to be enabled.",
 			}, true
 
 		}

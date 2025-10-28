@@ -764,7 +764,8 @@ package kubepkg
 	// defines which ResourceClaims must be allocated
 	resourceClaims?: [...#PodResourceClaim]
 	// is the total amount of CPU and Memory resources required by all
-	resources?:        #ResourceRequirements
+	resources?: #ResourceRequirements
+	// specifies an explicit override for the pod's hostname as perceived by the pod.
 	hostnameOverride?: string
 }
 

@@ -662,6 +662,7 @@ func (in *PodPartialSpec) DeepCopyInto(out *PodPartialSpec) {
 		copy(*o, *i)
 	}
 	out.Resources = in.Resources
+	out.HostnameOverride = in.HostnameOverride
 }
 
 func (in *PodPartialTemplateSpec) DeepCopy() *PodPartialTemplateSpec {
